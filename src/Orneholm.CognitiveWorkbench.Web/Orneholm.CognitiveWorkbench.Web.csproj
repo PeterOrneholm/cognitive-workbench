@@ -17,8 +17,8 @@
         <Copyright>Copyright © Peter Örneholm</Copyright>
 
         <RepositoryType>git</RepositoryType>
-        <RepositoryUrl>https://github.com/PeterOrneholm/RadioText.net.git</RepositoryUrl>
-        <PackageProjectUrl>https://github.com/PeterOrneholm/RadioText.net</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/PeterOrneholm/cognitive-workbench.git</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/PeterOrneholm/cognitive-workbench</PackageProjectUrl>
     </PropertyGroup>
 
     <ItemGroup>
