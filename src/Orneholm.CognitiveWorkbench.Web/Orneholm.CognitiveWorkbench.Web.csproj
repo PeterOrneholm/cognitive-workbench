@@ -10,7 +10,7 @@
         <NeutralLanguage>en</NeutralLanguage>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
-        <Description>Making news from Swedish Radio searchable!</Description>
+        <Description>Interactive workbench to try out Azure Cognitive Services</Description>
 
         <Authors>Peter Örneholm</Authors>
         <Company>Orneholm AB</Company>

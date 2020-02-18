@@ -7,9 +7,9 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
-COPY ["Orneholm.CognitiveWorkbench.Web/Orneholm.CognitiveWorkbench.Web.csproj", "Orneholm.CognitiveWorkbench.Web/"]
+COPY ["src/Orneholm.CognitiveWorkbench.Web/Orneholm.CognitiveWorkbench.Web.csproj", "Orneholm.CognitiveWorkbench.Web/"]
 RUN dotnet restore "Orneholm.CognitiveWorkbench.Web/Orneholm.CognitiveWorkbench.Web.csproj"
-COPY . .
+COPY /src .
 WORKDIR "/src/Orneholm.CognitiveWorkbench.Web"
 RUN dotnet build "Orneholm.CognitiveWorkbench.Web.csproj" -c Release -o /app/build
 
