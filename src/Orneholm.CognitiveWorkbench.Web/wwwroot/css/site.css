@@ -15,7 +15,7 @@ html {
 }
 
 body {
-    padding: 60px 0 0 0;
+    padding: 0;
     background-color: #1e1e1e;
 }
 
@@ -72,5 +72,6 @@ body {
 /* Content */
 
 .cwb-main-content-wrapper {
+    padding-top: 80px;
     min-height: 80vh;
 }
