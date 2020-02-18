@@ -1,0 +1,127 @@
+@using Microsoft.Extensions.Options
+@inject Microsoft.ApplicationInsights.AspNetCore.JavaScriptSnippet JavaScriptSnippet
+@inject IOptions<GoogleAnalyticsOptions> GoogleAnalyticsOptions
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <base href="/" />
+
+    <!-- CREDITS -->
+    <!--
+
+    This site is created and maintained by Peter Örneholm.
+
+    https://twitter.com/PeterOrneholm
+    https://peter.orneholm.com/
+
+    Source available at GitHub:
+    https://github.com/PeterOrneholm/cognitive-workbench
+
+    -->
+    <!-- Meta -->
+    <title>Cognitive Workbench - Interactive workbench to try out Azure Cognitive Services</title>
+    <meta name="author" content="Peter Örneholm (@@PeterOrneholm)">
+    <meta name="description" content="Interactive workbench to try out Azure Cognitive Services.">
+
+    <!-- Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/icons/cognitiveworkbench-180x180.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/icons/cognitiveworkbench-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/icons/cognitiveworkbench-16x16.png">
+
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <!-- Webapp -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="manifest" href="/manifest.webmanifest">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.12.1/css/all.css" integrity="sha384-TxKWSXbsweFt0o2WqfkfJRRNVaPdzXJ/YLqgStggBVRREXkwU7OKz+xXtqOU4u8+" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.10.1/css/mdb.min.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    @if (!string.IsNullOrWhiteSpace(GoogleAnalyticsOptions.Value.GoogleAnalyticsKey))
+    {
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=@(GoogleAnalyticsOptions.Value.GoogleAnalyticsKey)"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', '@GoogleAnalyticsOptions.Value.GoogleAnalyticsKey');
+        </script>
+    }
+
+    @Html.Raw(JavaScriptSnippet.FullScript)
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light cwb-navbar">
+    <div class="container">
+        <a class="navbar-brand cwb-navbar-brand" href="#"><i class="fad fa-head-side-brain"></i> Cognitive Workbench</a>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Home" asp-action="ComputerVision">Computer Vision</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Home" asp-action="Face">Face</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="bg-light cwb-main-content-wrapper">
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+</div>
+
+<footer class="cwb-footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4">
+                <h4>About</h4>
+                <p>
+                    This site provides an interactive workbench to try out <a href="https://www.microsoft.com/cognitive-services">Azure Cognitive Services</a>.
+                </p>
+                <p>
+                    The <a href="https://github.com/PeterOrneholm/cognitive-workbench">Sourcecode is available at GitHub</a> and <a href="https://hub.docker.com/r/peterorneholm/orneholmcognitiveworkbenchweb">Docker image available at Dockerhub</a>.
+                </p>
+            </div>
+
+            <div class="col-sm-4">
+                <h4>Author</h4>
+                <p>
+                    Developed by <a href="https://twitter.com/PeterOrneholm" target="_blank">@@PeterOrneholm</a> as a demo for the session <a href="http://bit.ly/peterorneholm-democratizing-ai">Democratizing AI with Azure Cognitive Services</a>.
+                </p>
+            </div>
+        </div>
+        <p class="cwb-footer-sitename">
+            Cognitive Workbench
+        </p>
+    </div>
+</footer>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+@RenderSection("Scripts", required: false)
+</body>
+</html>

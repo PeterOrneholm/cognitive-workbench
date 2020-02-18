@@ -1,0 +1,46 @@
+# Azure DevOps Pipeline
+
+name: $(Date:yyyyMMdd)$(Rev:r)
+
+variables:
+  vmImage: 'ubuntu-latest'
+  dockerImageName: 'orneholmcognitiveworkbenchweb'
+  dockerImageTag: $(Build.BuildNumber)
+
+trigger:
+- master
+
+stages:
+- stage: BuildWebImage
+  displayName:  'Build web image'
+  dependsOn: []
+  jobs:
+  - job: BuildWebImage
+    displayName: 'Build'
+
+    pool:
+      vmImage: '$(vmImage)'
+
+    variables:
+      pathToPublishProjects: '**/src/**/*.*sproj'
+
+    steps:
+
+    - task: Docker@2
+      displayName: Login to Docker Hub
+      inputs:
+        command: login
+        containerRegistry: dockerHubDockerRegistryServiceConnection
+    - task: Docker@2
+      displayName: Build and Push
+      inputs:
+        command: buildAndPush
+        buildContext: ''
+        repository: peterorneholm/orneholmcognitiveworkbenchweb
+        Dockerfile: src/Orneholm.CognitiveWorkbench.Web/Dockerfile
+        tags: |
+          latest
+          $(dockerImageTag)
+
+    - publish: '$(Build.ArtifactStagingDirectory)'
+      artifact: '$(artifactName)'

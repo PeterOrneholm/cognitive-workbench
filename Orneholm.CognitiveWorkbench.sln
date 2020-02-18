@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29806.167
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orneholm.CognitiveWorkbench.Web", "src\Orneholm.CognitiveWorkbench.Web\Orneholm.CognitiveWorkbench.Web.csproj", "{8DB5FD8B-B506-455B-A641-5DF9F2697EC1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{979E3AE1-EA4C-489A-8A50-03DF3F696442}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{464EC73E-4300-4436-B54B-A831E22F4C3D}"
+	ProjectSection(SolutionItems) = preProject
+		.dockerignore = .dockerignore
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		azure-pipelines.yml = azure-pipelines.yml
+		global.json = global.json
+		LICENSE.md = LICENSE.md
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8DB5FD8B-B506-455B-A641-5DF9F2697EC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DB5FD8B-B506-455B-A641-5DF9F2697EC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DB5FD8B-B506-455B-A641-5DF9F2697EC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DB5FD8B-B506-455B-A641-5DF9F2697EC1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8DB5FD8B-B506-455B-A641-5DF9F2697EC1} = {979E3AE1-EA4C-489A-8A50-03DF3F696442}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7B68A32E-DFEA-41B6-831D-1DB5DC0B93DB}
+	EndGlobalSection
+EndGlobal
