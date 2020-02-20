@@ -22,11 +22,5 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
         {
             return View();
         }
-
-        [Route("/face")]
-        public IActionResult Face()
-        {
-            return View();
-        }
     }
 }
