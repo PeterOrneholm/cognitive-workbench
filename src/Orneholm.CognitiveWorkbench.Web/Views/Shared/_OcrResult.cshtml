@@ -1,0 +1,135 @@
+@using Orneholm.CognitiveWorkbench.Web.Extensions
+@model Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models.OcrResult
+
+<div class="mb-5">
+    <h4>Metadata</h4>
+
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Key</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Language</th>
+                <td>@Model.Language</td>
+            </tr>
+            <tr>
+                <th>Orientation</th>
+                <td>@Model.Orientation</td>
+            </tr>
+            <tr>
+                <th>Text Angle</th>
+                <td>@Model.TextAngle</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+<div class="my-5">
+    <h4>Regions</h4>
+
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Rectangle</th>
+                <th>Words</th>
+            </tr>
+        </thead>
+        <tbody class="cwb-image-boxes-table" data-cwb-for=".cwb-image-boxes-ocr-regions">
+            @foreach (var region in Model.Regions)
+            {
+                <tr>
+                    <th>@region.BoundingBox.ToDescription()</th>
+                    <td>
+                        <ul class="list-unstyled">
+
+                            @foreach (var line in region.Lines)
+                            {
+                                <li>@string.Join(" ", line.Words.Select(x => x.Text))</li>
+                            }
+                        </ul>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (!Model.Regions.Any())
+    {
+        <p class="p-2">
+            No regions available.
+        </p>
+    }
+</div>
+
+<div class="my-5">
+    <h4>Lines</h4>
+
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Rectangle</th>
+                <th>Words</th>
+            </tr>
+        </thead>
+        <tbody class="cwb-image-boxes-table" data-cwb-for=".cwb-image-boxes-ocr-lines">
+            @foreach (var region in Model.Regions)
+            {
+                foreach (var line in region.Lines)
+                {
+                    <tr>
+                        <th>@line.BoundingBox.ToDescription()</th>
+                        <td>@string.Join(" ", line.Words.Select(x => x.Text))</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+    @if (!Model.Regions.Any())
+    {
+        <p class="p-2">
+            No lines available.
+        </p>
+    }
+</div>
+
+
+<div class="mt-5">
+    <h4>Words</h4>
+
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Rectangle</th>
+                <th>Text</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var region in Model.Regions)
+            {
+                foreach (var line in region.Lines)
+                {
+                    foreach (var word in line.Words)
+                    {
+                        <tr>
+                            <th>@word.BoundingBox.ToDescription()</th>
+                            <td>@word.Text</td>
+                        </tr>
+                    }
+                }
+            }
+        </tbody>
+    </table>
+
+    @if (!Model.Regions.Any())
+    {
+        <p class="p-2">
+            No words available.
+        </p>
+    }
+</div>

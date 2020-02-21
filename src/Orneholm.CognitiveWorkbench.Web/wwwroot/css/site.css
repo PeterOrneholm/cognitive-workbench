@@ -121,11 +121,12 @@ body {
     padding: 3px 7px;
     color: #fafafa;
     position: absolute;
-    bottom: -36px;
+    bottom: 0;
     right: 0;
     display: block;
     text-transform: uppercase;
     font-size: 10px;
+    transform: translateY(100%);
 }
 
     .cwb-image-box .cwb-image-box-info .cwb-image-box-type {
@@ -141,27 +142,35 @@ body {
     background-color: #000;
 }
 
-.cwb-image-boxes-brands .cwb-image-box {
+.cwb-image-boxes-brands .cwb-image-box,
+.cwb-image-boxes-ocr-lines .cwb-image-box {
     border-color: #31CC43;
 }
 
-.cwb-image-boxes-brands .cwb-image-box-info {
+.cwb-image-boxes-brands .cwb-image-box-info,
+.cwb-image-boxes-ocr-lines .cwb-image-box-info {
     background-color: #31CC43;
 }
 
-.cwb-image-boxes-objects .cwb-image-box {
+.cwb-image-boxes-objects .cwb-image-box,
+.cwb-image-boxes-aoi .cwb-image-box,
+.cwb-image-boxes-ocr-words .cwb-image-box {
     border-color: #008BC3;
 }
 
-.cwb-image-boxes-objects .cwb-image-box-info {
+.cwb-image-boxes-objects .cwb-image-box-info,
+.cwb-image-boxes-aoi .cwb-image-box-info,
+.cwb-image-boxes-ocr-words .cwb-image-box-info {
     background-color: #008BC3;
 }
 
-.cwb-image-boxes-faces .cwb-image-box {
+.cwb-image-boxes-faces .cwb-image-box,
+.cwb-image-boxes-ocr-regions .cwb-image-box {
     border-color: #F68B1F;
 }
 
-.cwb-image-boxes-faces .cwb-image-box-info {
+.cwb-image-boxes-faces .cwb-image-box-info,
+.cwb-image-boxes-ocr-regions .cwb-image-box-info {
     background-color: #F68B1F;
 }
 

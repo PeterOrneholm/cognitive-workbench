@@ -6,6 +6,7 @@ using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 using Microsoft.Azure.CognitiveServices.Vision.Face;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
+using Orneholm.CognitiveWorkbench.Web.Extensions;
 using Orneholm.CognitiveWorkbench.Web.Models;
 using ApiKeyServiceClientCredentials = Microsoft.Azure.CognitiveServices.Vision.ComputerVision.ApiKeyServiceClientCredentials;
 
@@ -81,7 +82,14 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
 
             return new VisionAnalyzeResponse
             {
-                ImageUrl = url,
+                ImageInfo = new ImageInfo
+                {
+                    Url = url,
+                    Description = imageAnalysis.Result.Description?.Captions?.FirstOrDefault()?.Text.ToSentence(),
+
+                    Width = imageAnalysis.Result.Metadata.Width,
+                    Height = imageAnalysis.Result.Metadata.Height
+                },
 
                 AnalyzeVisualFeatureTypes = AnalyzeVisualFeatureTypes,
                 AnalyzeDetails = AnalyzeDetails,

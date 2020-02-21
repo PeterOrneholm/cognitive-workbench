@@ -6,7 +6,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Models
 {
     public class VisionAnalyzeResponse
     {
-        public string ImageUrl { get; set; } = string.Empty;
+        public ImageInfo ImageInfo { get; set; } = new ImageInfo();
 
         public List<VisualFeatureTypes> AnalyzeVisualFeatureTypes { get; set; } = new List<VisualFeatureTypes>();
         public List<Details> AnalyzeDetails { get; set; } = new List<Details>();

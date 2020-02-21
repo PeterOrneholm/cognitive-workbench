@@ -41,39 +41,10 @@
 
             <tr>
                 <th>Tags</th>
-                <td colspan="2">@(string.Join(", ", Model.Description.Tags))</td>
+                <td colspan="2">@(string.Join(", ", Model.Description.Tags.Select(x => x.ToCapitalized())))</td>
             </tr>
         </tbody>
     </table>
-</div>
-
-<div class="my-5">
-    <h4>Categories</h4>
-
-    <table class="table table-striped table-hover">
-        <thead class="thead-dark">
-            <tr>
-                <th>Name</th>
-                <th>Score</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var category in Model.Categories.OrderByDescending(x => x.Score))
-            {
-                <tr>
-                    <th>@category.Name</th>
-                    <td>@category.Score.ToDescriptivePercentage()</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-    @if (!Model.Categories.Any())
-    {
-        <p class="p-2">
-            No categories available.
-        </p>
-    }
 </div>
 
 <div class="my-5">
@@ -91,7 +62,7 @@
             @foreach (var tag in Model.Tags.OrderByDescending(x => x.Confidence))
             {
                 <tr>
-                    <th>@tag.Name</th>
+                    <th>@tag.Name.ToCapitalized()</th>
                     <td>@tag.Hint</td>
                     <td>@tag.Confidence.ToDescriptivePercentage()</td>
                 </tr>
@@ -103,6 +74,107 @@
     {
         <p class="p-2">
             No tags available.
+        </p>
+    }
+</div>
+
+<div class="my-5">
+    <h4>Categories</h4>
+
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Name</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var category in Model.Categories.OrderByDescending(x => x.Score))
+            {
+                <tr>
+                    <th>@category.Name.ToCapitalized()</th>
+                    <td>@category.Score.ToDescriptivePercentage()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (!Model.Categories.Any())
+    {
+        <p class="p-2">
+            No categories available.
+        </p>
+    }
+</div>
+
+<div class="my-5">
+    <h4>Celebrities</h4>
+
+    @{
+        var celebrities = Model.Categories.Where(x => x.Detail?.Celebrities != null && x.Detail.Celebrities.Any())
+            .SelectMany(x => x.Detail.Celebrities)
+            .OrderByDescending(x => x.Confidence);
+    }
+
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Name</th>
+                <th>Rectangle</th>
+                <th>Confidence</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var celebrity in celebrities)
+            {
+                <tr>
+                    <th>@celebrity.Name.ToCapitalized()</th>
+                    <td>@celebrity.FaceRectangle.ToDescription()</td>
+                    <td>@celebrity.Confidence.ToDescriptivePercentage()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (!celebrities.Any())
+    {
+        <p class="p-2">
+            No celebrities available.
+        </p>
+    }
+</div>
+
+<div class="my-5">
+    <h4>Landmarks</h4>
+
+    @{
+        var landmarks = Model.Categories.Where(x => x.Detail?.Landmarks != null && x.Detail.Landmarks.Any())
+            .SelectMany(x => x.Detail.Landmarks)
+            .OrderByDescending(x => x.Confidence);
+    }
+
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Name</th>
+                <th>Confidence</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var landmark in landmarks)
+            {
+                <tr>
+                    <th>@landmark.Name.ToCapitalized()</th>
+                    <td>@landmark.Confidence.ToDescriptivePercentage()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (!landmarks.Any())
+    {
+        <p class="p-2">
+            No landmarks available.
         </p>
     }
 </div>
@@ -154,7 +226,7 @@
             @foreach (var obj in Model.Objects.OrderByDescending(x => x.Confidence))
             {
                 <tr>
-                    <th>@obj.ObjectProperty</th>
+                    <th>@obj.ObjectProperty.ToCapitalized()</th>
                     <td>@obj.Rectangle.ToDescription()</td>
                     <td>@obj.Confidence.ToDescriptivePercentage()</td>
                     <td>

@@ -44,6 +44,12 @@ namespace Orneholm.CognitiveWorkbench.Web.Extensions
             return list;
         }
 
+        public static string ToDescription(this string boundingBox)
+        {
+            var box = ParseBox(boundingBox);
+            return $"X: {box[0]}; Y: {box[1]}; W: {box[2]}; H: {box[3]}";
+        }
+
         public static string ToDescription(this FaceRectangle faceRectangle)
         {
             return $"X: {faceRectangle.Left}; Y: {faceRectangle.Top}; W: {faceRectangle.Width}; H: {faceRectangle.Height}";
@@ -52,6 +58,15 @@ namespace Orneholm.CognitiveWorkbench.Web.Extensions
         public static string ToDescription(this BoundingRect boundingRect)
         {
             return $"X: {boundingRect.X}; Y: {boundingRect.Y}; W: {boundingRect.W}; H: {boundingRect.H}";
+        }
+
+        public static string ToCss(this string boundingBox, int imageWidth, int imageHeight)
+        {
+            var box = ParseBox(boundingBox);
+            return $"left: {box[0].ToCssPercentageString(imageWidth)}; " +
+                   $"top: {box[1].ToCssPercentageString(imageHeight)}; " +
+                   $"width: {box[2].ToCssPercentageString(imageWidth)}; " +
+                   $"height: {box[3].ToCssPercentageString(imageHeight)};";
         }
 
         public static string ToCss(this FaceRectangle boundingRect, int imageWidth, int imageHeight)
@@ -68,6 +83,11 @@ namespace Orneholm.CognitiveWorkbench.Web.Extensions
                    $"top: {boundingRect.Y.ToCssPercentageString(imageHeight)}; " +
                    $"width: {boundingRect.W.ToCssPercentageString(imageWidth)}; " +
                    $"height: {boundingRect.H.ToCssPercentageString(imageHeight)};";
+        }
+
+        private static int[] ParseBox(this string boundingBox)
+        {
+            return boundingBox.Split(',').Select(int.Parse).ToArray();
         }
 
         public static string ToCssPercentageString(this int value, int fullValue)
@@ -101,7 +121,17 @@ namespace Orneholm.CognitiveWorkbench.Web.Extensions
                 return string.Empty;
             }
 
-            return text.First().ToString().ToUpper() + text.Substring(1) + ".";
+            return text.ToCapitalized() + ".";
+        }
+
+        public static string ToCapitalized(this string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return string.Empty;
+            }
+
+            return text.First().ToString().ToUpper() + text.Substring(1);
         }
     }
 }
