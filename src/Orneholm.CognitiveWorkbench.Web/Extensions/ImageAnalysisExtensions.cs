@@ -44,6 +44,11 @@ namespace Orneholm.CognitiveWorkbench.Web.Extensions
             return list;
         }
 
+        public static string ToDescription(this Microsoft.Azure.CognitiveServices.Vision.Face.Models.FaceRectangle faceRectangle)
+        {
+            return $"X: {faceRectangle.Left}; Y: {faceRectangle.Top}; W: {faceRectangle.Width}; H: {faceRectangle.Height}";
+        }
+
         public static string ToDescription(this string boundingBox)
         {
             var box = ParseBox(boundingBox);
@@ -58,6 +63,16 @@ namespace Orneholm.CognitiveWorkbench.Web.Extensions
         public static string ToDescription(this BoundingRect boundingRect)
         {
             return $"X: {boundingRect.X}; Y: {boundingRect.Y}; W: {boundingRect.W}; H: {boundingRect.H}";
+        }
+
+
+
+        public static string ToCss(this Microsoft.Azure.CognitiveServices.Vision.Face.Models.FaceRectangle faceRectangle, int imageWidth, int imageHeight)
+        {
+            return $"left: {faceRectangle.Left.ToCssPercentageString(imageWidth)}; " +
+                   $"top: {faceRectangle.Top.ToCssPercentageString(imageHeight)}; " +
+                   $"width: {faceRectangle.Width.ToCssPercentageString(imageWidth)}; " +
+                   $"height: {faceRectangle.Height.ToCssPercentageString(imageHeight)};";
         }
 
         public static string ToCss(this string boundingBox, int imageWidth, int imageHeight)

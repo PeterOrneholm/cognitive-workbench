@@ -16,14 +16,14 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
             _logger = logger;
         }
 
-        [HttpGet("/vision")]
-        public IActionResult Index()
+        [HttpGet("/vision/computer-vision")]
+        public IActionResult ComputerVision()
         {
-            return View(VisionIndexViewModel.NotAnalyzed());
+            return View(ComputerVisionViewModel.NotAnalyzed());
         }
 
-        [HttpPost("/vision")]
-        public async Task<ActionResult<VisionIndexViewModel>> Index([FromForm]VisionAnalyzeRequest request)
+        [HttpPost("/vision/computer-vision")]
+        public async Task<ActionResult<ComputerVisionViewModel>> ComputerVision([FromForm]ComputerVisionAnalyzeRequest request)
         {
             if (string.IsNullOrWhiteSpace(request.ComputerVisionSubscriptionKey))
             {
@@ -40,10 +40,41 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
                 throw new ArgumentException("Missing or invalid ImageUrl", nameof(request.ImageUrl));
             }
 
-            var imageAnalyzer = new ImageAnalyzer(request.ComputerVisionSubscriptionKey, request.ComputerVisionEndpoint, request.FaceSubscriptionKey, request.FaceEndpoint);
+            var imageAnalyzer = new ImageComputerVisionAnalyzer(request.ComputerVisionSubscriptionKey, request.ComputerVisionEndpoint);
             var analyzeResult = await imageAnalyzer.Analyze(request.ImageUrl, request.ImageAnalysisLanguage, request.ImageOcrLanguage);
 
-            return View(VisionIndexViewModel.Analyzed(request, analyzeResult));
+            return View(ComputerVisionViewModel.Analyzed(request, analyzeResult));
+        }
+
+
+        [HttpGet("/vision/face")]
+        public IActionResult Face()
+        {
+            return View(FaceViewModel.NotAnalyzed());
+        }
+
+        [HttpPost("/vision/face")]
+        public async Task<ActionResult<FaceViewModel>> Face([FromForm]FaceAnalyzeRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.FaceSubscriptionKey))
+            {
+                throw new ArgumentException("Missing or invalid FaceSubscriptionKey", nameof(request.FaceSubscriptionKey));
+            }
+
+            if (string.IsNullOrWhiteSpace(request.FaceEndpoint))
+            {
+                throw new ArgumentException("Missing or invalid FaceEndpoint", nameof(request.FaceEndpoint));
+            }
+
+            if (string.IsNullOrWhiteSpace(request.ImageUrl))
+            {
+                throw new ArgumentException("Missing or invalid ImageUrl", nameof(request.ImageUrl));
+            }
+
+            var imageAnalyzer = new ImageFaceAnalyzer(request.FaceSubscriptionKey, request.FaceEndpoint);
+            var analyzeResult = await imageAnalyzer.Analyze(request.ImageUrl);
+
+            return View(FaceViewModel.Analyzed(request, analyzeResult));
         }
     }
 }

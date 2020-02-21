@@ -4,13 +4,12 @@ using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 
 namespace Orneholm.CognitiveWorkbench.Web.Models
 {
-    public class VisionAnalyzeResponse
+    public class ComputerVisionAnalyzeResponse
     {
         public ImageInfo ImageInfo { get; set; } = new ImageInfo();
 
         public List<VisualFeatureTypes> AnalyzeVisualFeatureTypes { get; set; } = new List<VisualFeatureTypes>();
         public List<Details> AnalyzeDetails { get; set; } = new List<Details>();
-        public List<FaceAttributeType> FaceAttributes { get; set; } = new List<FaceAttributeType>();
 
         public ImageAnalysis AnalysisResult { get; set; } = new ImageAnalysis();
         public OcrResult OcrResult { get; set; } = new OcrResult();
