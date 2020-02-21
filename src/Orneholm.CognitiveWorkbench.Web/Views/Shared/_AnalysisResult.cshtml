@@ -1,0 +1,371 @@
+@using Orneholm.CognitiveWorkbench.Web.Extensions
+@model Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models.ImageAnalysis
+
+<div class="mb-5">
+    <h4>Description</h4>
+
+    @{
+        var descriptionCaptions = Model.Description.Captions.OrderByDescending(x => x.Confidence).ToList();
+    }
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Key</th>
+                <th>Value</th>
+                <th>Confidence</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Captions</th>
+                @if (descriptionCaptions.Any())
+                {
+                    <td>@descriptionCaptions.First().Text.ToSentence()</td>
+                    <td>@descriptionCaptions.First().Confidence.ToDescriptivePercentage()</td>
+                }
+                else
+                {
+                    <td></td>
+                    <td></td>
+                }
+            </tr>
+
+            @foreach (var caption in descriptionCaptions.Skip(1))
+            {
+                <tr>
+                    <th></th>
+                    <td>@caption.Text.ToSentence()</td>
+                    <td>@caption.Confidence.ToDescriptivePercentage()</td>
+                </tr>
+            }
+
+            <tr>
+                <th>Tags</th>
+                <td colspan="2">@(string.Join(", ", Model.Description.Tags))</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="my-5">
+    <h4>Categories</h4>
+
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Name</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var category in Model.Categories.OrderByDescending(x => x.Score))
+            {
+                <tr>
+                    <th>@category.Name</th>
+                    <td>@category.Score.ToDescriptivePercentage()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (!Model.Categories.Any())
+    {
+        <p class="p-2">
+            No categories available.
+        </p>
+    }
+</div>
+
+<div class="my-5">
+    <h4>Tags</h4>
+
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Name</th>
+                <th>Hint</th>
+                <th>Confidence</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var tag in Model.Tags.OrderByDescending(x => x.Confidence))
+            {
+                <tr>
+                    <th>@tag.Name</th>
+                    <td>@tag.Hint</td>
+                    <td>@tag.Confidence.ToDescriptivePercentage()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (!Model.Tags.Any())
+    {
+        <p class="p-2">
+            No tags available.
+        </p>
+    }
+</div>
+
+<div class="my-5">
+    <h4>Brands</h4>
+
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Name</th>
+                <th>Rectangle</th>
+                <th>Confidence</th>
+            </tr>
+        </thead>
+        <tbody class="cwb-image-boxes-table" data-cwb-for=".cwb-image-boxes-brands">
+            @foreach (var brand in Model.Brands.OrderByDescending(x => x.Confidence))
+            {
+                <tr>
+                    <th>@brand.Name</th>
+                    <td>@brand.Rectangle.ToDescription()</td>
+                    <td>@brand.Confidence.ToDescriptivePercentage()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (!Model.Brands.Any())
+    {
+        <p class="p-2">
+            No brands available.
+        </p>
+    }
+</div>
+
+<div class="my-5">
+    <h4>Objects</h4>
+
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Name</th>
+                <th>Rectangle</th>
+                <th>Confidence</th>
+                <th>Parent(s)</th>
+            </tr>
+        </thead>
+        <tbody class="cwb-image-boxes-table" data-cwb-for=".cwb-image-boxes-objects">
+            @foreach (var obj in Model.Objects.OrderByDescending(x => x.Confidence))
+            {
+                <tr>
+                    <th>@obj.ObjectProperty</th>
+                    <td>@obj.Rectangle.ToDescription()</td>
+                    <td>@obj.Confidence.ToDescriptivePercentage()</td>
+                    <td>
+                        <ol class="pl-1">
+                            @foreach (var parent in obj.Parent.ToFlatList())
+                            {
+                                <li>@parent.ObjectProperty: @parent.Confidence.ToDescriptivePercentage()</li>
+                            }
+                        </ol>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (!Model.Objects.Any())
+    {
+        <p class="p-2">
+            No objects available.
+        </p>
+    }
+</div>
+
+<div class="my-5">
+    <h4>Faces</h4>
+
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>Rectangle</th>
+            </tr>
+        </thead>
+        <tbody class="cwb-image-boxes-table" data-cwb-for=".cwb-image-boxes-faces">
+            @foreach (var face in Model.Faces)
+            {
+                <tr>
+                    <th>@face.Age</th>
+                    <td>@face.Gender</td>
+                    <td>@face.FaceRectangle.ToDescription()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (!Model.Faces.Any())
+    {
+        <p class="p-2">
+            No faces available.
+        </p>
+    }
+</div>
+
+<div class="my-5">
+    <h4>Adult</h4>
+
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Key</th>
+                <th>Value</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Adult</th>
+                <td>@Model.Adult.IsAdultContent</td>
+                <td>
+                    @Model.Adult.AdultScore.ToDescriptivePercentage()
+                </td>
+            </tr>
+            <tr>
+                <th>Racy</th>
+                <td>@Model.Adult.IsRacyContent</td>
+                <td>
+                    @Model.Adult.RacyScore.ToDescriptivePercentage()
+                </td>
+            </tr>
+            <tr>
+                <th>Gore</th>
+                <td>@Model.Adult.IsGoryContent</td>
+                <td>
+                    @Model.Adult.GoreScore.ToDescriptivePercentage()
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="my-5">
+    <h4>Image type</h4>
+
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Key</th>
+                <th>Value</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Clip Art Type</th>
+                <td>@Model.ImageType.ClipArtType</td>
+                <td>@Model.ImageType.GetClipArtTypeDescription()</td>
+            </tr>
+            <tr>
+                <th>Line Drawing Type</th>
+                <td>@Model.ImageType.LineDrawingType</td>
+                <td>@Model.ImageType.GetLineDrawingTypeDescription()</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="my-5">
+    <h4>Color</h4>
+
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Key</th>
+                <th>Value</th>
+                <th>Preview</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Is Black &amp; White</th>
+                <td>@Model.Color.IsBWImg</td>
+                <td></td>
+            </tr>
+            <tr>
+                <th>Accent Color</th>
+                <td>@Model.Color.AccentColor</td>
+                <td>
+                    <partial name="_ColorSampleBlock" model="@Model.Color.AccentColor" />
+                </td>
+            </tr>
+
+            <tr>
+                <th>Dominant Color Foreground</th>
+                <td>@Model.Color.DominantColorForeground</td>
+                <td>
+                    <partial name="_ColorSampleBlock" model="@Model.Color.DominantColorForeground" />
+                </td>
+            </tr>
+
+            <tr>
+                <th>Dominant Color Background</th>
+                <td>@Model.Color.DominantColorBackground</td>
+                <td>
+                    <partial name="_ColorSampleBlock" model="@Model.Color.DominantColorBackground" />
+                </td>
+            </tr>
+
+            <tr>
+                <th>Dominant Colors</th>
+                @if (Model.Color.DominantColors.Any())
+                {
+                    <td>@Model.Color.DominantColors.First()</td>
+                    <td>
+                        <partial name="_ColorSampleBlock" model="@Model.Color.DominantColors.First()" />
+                    </td>
+                }
+                else
+                {
+                    <td></td>
+                    <td></td>
+                }
+            </tr>
+
+            @foreach (var color in Model.Color.DominantColors.Skip(1))
+            {
+                <tr>
+                    <th></th>
+                    <td>@color</td>
+                    <td>
+                        <partial name="_ColorSampleBlock" model="@color" />
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="mt-5">
+    <h4>Metadata</h4>
+
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Key</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Format</th>
+                <td>@Model.Metadata.Format</td>
+            </tr>
+            <tr>
+                <th>Width (px)</th>
+                <td>@Model.Metadata.Width</td>
+            </tr>
+            <tr>
+                <th>Height (px)</th>
+                <td>@Model.Metadata.Height</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

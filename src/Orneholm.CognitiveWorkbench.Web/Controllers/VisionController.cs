@@ -23,7 +23,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
         }
 
         [HttpPost("/vision")]
-        public async Task<ActionResult<VisionIndexViewModel>> Index([FromBody]VisionAnalyzeRequest request)
+        public async Task<ActionResult<VisionIndexViewModel>> Index([FromForm]VisionAnalyzeRequest request)
         {
             if (string.IsNullOrWhiteSpace(request.ComputerVisionSubscriptionKey))
             {
@@ -43,7 +43,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
             var imageAnalyzer = new ImageAnalyzer(request.ComputerVisionSubscriptionKey, request.ComputerVisionEndpoint, request.FaceSubscriptionKey, request.FaceEndpoint);
             var analyzeResult = await imageAnalyzer.Analyze(request.ImageUrl, request.ImageAnalysisLanguage, request.ImageOcrLanguage);
 
-            return VisionIndexViewModel.Analyzed(analyzeResult);
+            return View(VisionIndexViewModel.Analyzed(request, analyzeResult));
         }
     }
 }

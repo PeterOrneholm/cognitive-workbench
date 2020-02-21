@@ -6,7 +6,6 @@
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 
         <LangVersion>latest</LangVersion>
-        <Nullable>enable</Nullable>
         <NeutralLanguage>en</NeutralLanguage>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 

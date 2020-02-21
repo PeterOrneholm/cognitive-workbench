@@ -12,9 +12,9 @@ namespace Orneholm.CognitiveWorkbench.Web.Models
         public List<Details> AnalyzeDetails { get; set; } = new List<Details>();
         public List<FaceAttributeType> FaceAttributes { get; set; } = new List<FaceAttributeType>();
 
-        public ImageAnalysis? AnalysisResult { get; set; }
-        public OcrResult? OcrResult { get; set; }
-        public AreaOfInterestResult? AreaOfInterestResult { get; set; }
+        public ImageAnalysis AnalysisResult { get; set; } = new ImageAnalysis();
+        public OcrResult OcrResult { get; set; } = new OcrResult();
+        public AreaOfInterestResult AreaOfInterestResult { get; set; } = new AreaOfInterestResult();
 
         public List<DetectedFace> FaceResult { get; set; } = new List<DetectedFace>();
     }

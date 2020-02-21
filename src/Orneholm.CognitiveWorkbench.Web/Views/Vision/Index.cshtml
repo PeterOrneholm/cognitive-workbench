@@ -1,20 +1,263 @@
+@using Orneholm.CognitiveWorkbench.Web.Extensions
 @model VisionIndexViewModel
+<main role="main" class="pb-3">
+    <div class="container">
+        <h2>Vision</h2>
 
-<h2>Vision</h2>
+        <p>
+            Identify and analyze content within images. Objects, faces, landmarks, celebrities etc.
+        </p>
 
-<p>
-    Identify and analyze content within images.
-</p>
+        <form method="post">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="list" href="#cwb-form-computervision-image">Image</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="list" href="#cwb-form-computervision-settings">Settings</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="cwb-form-computervision-image">
+                            <p class="mb-3">
+                                <ul class="list-unstyled text-small">
+                                    <li>
+                                        The image must be presented in JPEG, PNG, GIF, or BMP
+                                    </li>
+                                    <li>
+                                        The file size of the image must be less than 4 megabytes (MB)
+                                    </li>
+                                    <li>
+                                        The dimensions of the image must be greater than 50 x 50 pixels
+                                    </li>
+                                </ul>
+                            </p>
 
-<p>
-    <ul>
-        <li>Analyze</li>
-        <li>OCR</li>
-        <li>Landmarks</li>
-        <li>Celebrities</li>
-    </ul>
-</p>
+                            <div class="form-group">
+                                <label asp-for="VisionAnalyzeRequest.ImageUrl">Image URL</label>
+                                <input type="url" required class="cwb-input-remember form-control" placeholder="https://example.org/url-to/image.jpg" asp-for="VisionAnalyzeRequest.ImageUrl" name="ImageUrl" />
+                            </div>
 
-<p>
-    IsAnalyzed: @Model.IsAnalyzed
-</p>
+                            <button type="submit" class="btn btn-primary">Analyze</button>
+                        </div>
+                        <div class="tab-pane fade" id="cwb-form-computervision-settings">
+                            <p>
+                                This site requires you to set up your own resource(s) for Azure Cognitive Services. Create a resource for Computer Vision using the <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/cognitive-services-apis-create-account?tabs=multiservice%2Cwindows">Azure portal</a> or <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/cognitive-services-apis-create-account-cli?tabs=windows">Azure CLI</a> on your local machine.
+                            </p>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label asp-for="VisionAnalyzeRequest.ComputerVisionSubscriptionKey">Computer Vision - Subscription Key</label>
+                                    <input type="text" required class="cwb-input-remember form-control" placeholder="zq8lp6z7cqtew6h4c0bxy0r5cqx3in36" asp-for="VisionAnalyzeRequest.ComputerVisionSubscriptionKey" name="ComputerVisionSubscriptionKey" />
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label asp-for="VisionAnalyzeRequest.ComputerVisionEndpoint">Computer Vision - Endpoint</label>
+                                    <input type="text" required class="cwb-input-remember form-control" placeholder="https://[COMPUTERVISION-RESOURCENAME].cognitiveservices.azure.com/" asp-for="VisionAnalyzeRequest.ComputerVisionEndpoint" name="ComputerVisionEndpoint" />
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label asp-for="VisionAnalyzeRequest.FaceSubscriptionKey">Face - Subscription Key</label>
+                                    <input type="text" required class="cwb-input-remember form-control" placeholder="6z4sxl87p5yt6uc6moqx9elghazlnj5a" asp-for="VisionAnalyzeRequest.FaceSubscriptionKey" name="FaceSubscriptionKey" />
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label asp-for="VisionAnalyzeRequest.FaceEndpoint">Face - Endpoint</label>
+                                    <input type="text" required class="cwb-input-remember form-control" placeholder="https://[FACE-RESOURCENAME].cognitiveservices.azure.com/" asp-for="VisionAnalyzeRequest.FaceEndpoint" name="FaceEndpoint" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="container-fluid">
+        @if (Model.IsAnalyzed && Model.VisionAnalyzeResponse?.AnalysisResult != null)
+        {
+            <section class="cwb-result-computervision-analyze">
+                <h2 class="mt-5">Computer Vision - Analyze</h2>
+
+                <div class="row">
+                    <div class="col-md-7">
+                        <div class="card mb-3 cwb-result-image">
+                            <img src="@Model.VisionAnalyzeResponse.ImageUrl" class="card-img-top" alt="@Model.VisionAnalyzeResponse.AnalysisResult?.Description.Captions.FirstOrDefault()?.Text.ToSentence()" />
+                            <div class="cwb-image-boxes">
+                                <div class="cwb-image-boxes-brands">
+                                    @foreach (var brand in Model.VisionAnalyzeResponse.AnalysisResult.Brands.OrderByDescending(x => x.Confidence))
+                                    {
+                                        <div class="cwb-image-box"
+                                             style="@brand.Rectangle.ToCss(Model.VisionAnalyzeResponse.AnalysisResult.Metadata.Width, Model.VisionAnalyzeResponse.AnalysisResult.Metadata.Height)">
+                                            <div class="cwb-image-box-info" title="@brand.Confidence.ToDescriptivePercentage()">
+                                                <span class="cwb-image-box-type">Brand</span>
+                                                <span class="cwb-image-box-description">@brand.Name</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="cwb-image-boxes-objects">
+                                    @foreach (var obj in Model.VisionAnalyzeResponse.AnalysisResult.Objects.OrderByDescending(x => x.Confidence))
+                                    {
+                                        <div class="cwb-image-box"
+                                             style="@obj.Rectangle.ToCss(Model.VisionAnalyzeResponse.AnalysisResult.Metadata.Width, Model.VisionAnalyzeResponse.AnalysisResult.Metadata.Height)">
+                                            <div class="cwb-image-box-info" title="@obj.Confidence.ToDescriptivePercentage()">
+                                                <span class="cwb-image-box-type">Object</span>
+                                                <span class="cwb-image-box-description">@obj.ObjectProperty</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="cwb-image-boxes-faces">
+                                    @foreach (var face in Model.VisionAnalyzeResponse.AnalysisResult.Faces)
+                                    {
+                                        <div class="cwb-image-box"
+                                             style="@face.FaceRectangle.ToCss(Model.VisionAnalyzeResponse.AnalysisResult.Metadata.Width, Model.VisionAnalyzeResponse.AnalysisResult.Metadata.Height)">
+                                            <div class="cwb-image-box-info">
+                                                <span class="cwb-image-box-type">Face</span>
+                                                <span class="cwb-image-box-description">Age: @face.Age</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="card mb-3 cwb-result-content">
+                            <div class="card-header">
+                                <ul class="nav nav-tabs card-header-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="list" href="#cwb-result-computervision-analyze-info">Info (Parsed)</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="list" href="#cwb-result-computervision-analyze-json">JSON (Raw)</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="cwb-result-computervision-analyze-info">
+                                        <partial name="_AnalysisResult" model="@Model.VisionAnalyzeResponse.AnalysisResult" />
+                                    </div>
+                                    <div class="tab-pane fade" id="cwb-result-computervision-analyze-json">
+                                        <partial name="_Json" model="@Model.VisionAnalyzeResponse.AnalysisResult" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        }
+
+        @if (Model.IsAnalyzed && Model.VisionAnalyzeResponse?.AnalysisResult != null)
+        {
+            <section class="cwb-result-computervision-analyze">
+                <h2 class="mt-5">Vision - Area of interest</h2>
+
+                <div class="row">
+                    <div class="col-md-7">
+                        <div class="card mb-3 cwb-result-image">
+                            <img src="@Model.VisionAnalyzeResponse.ImageUrl" class="card-img-top" alt="@Model.VisionAnalyzeResponse.AnalysisResult?.Description.Captions.FirstOrDefault()?.Text.ToSentence()" />
+                            <div class="cwb-image-boxes">
+                                <div class="cwb-image-boxes-aoi">
+                                    <div class="cwb-image-box"
+                                         style="@Model.VisionAnalyzeResponse.AreaOfInterestResult.AreaOfInterest.ToCss(Model.VisionAnalyzeResponse.AreaOfInterestResult.Metadata.Width, Model.VisionAnalyzeResponse.AreaOfInterestResult.Metadata.Height)">
+                                        <div class="cwb-image-box-info">
+                                            <span class="cwb-image-box-type">Area of Interest</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-5">
+                        <div class="card mb-3 cwb-result-content">
+                            <div class="card-header">
+                                <ul class="nav nav-tabs card-header-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="list" href="#cwb-result-computervision-aoi-info">Info (Parsed)</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="list" href="#cwb-result-computervision-aoi-json">JSON (Raw)</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="cwb-result-computervision-aoi-info">
+                                        <partial name="_AreaOfInterestResult" model="@Model.VisionAnalyzeResponse.AreaOfInterestResult" />
+                                    </div>
+                                    <div class="tab-pane fade" id="cwb-result-computervision-aoi-json">
+                                        <partial name="_Json" model="@Model.VisionAnalyzeResponse.AreaOfInterestResult" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        }
+
+        @section Scripts
+{
+            <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+            <script>
+                (function () {
+                    var persistedValues = {
+                        get: function (key) {
+                            return localStorage.getItem('cwb.persisted.' + key) || '';
+                        },
+                        set: function (key, value) {
+                            localStorage.setItem('cwb.persisted.' + key, value || '');
+                        }
+                    };
+
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var fields = document.querySelectorAll('input.cwb-input-remember');
+                        fields.forEach(function (field) {
+                            function persist() {
+                                persistedValues.set(field.id, field.value);
+                            }
+
+                            field.value = persistedValues.get(field.id);
+                            field.addEventListener('change', persist);
+                            field.addEventListener('keydown', persist);
+                        });
+                    });
+                }());
+
+                (function () {
+                    document.addEventListener('DOMContentLoaded', function () {
+                        let boxesTableBodies = document.querySelectorAll('.cwb-image-boxes-table');
+                        boxesTableBodies.forEach(function (tbody) {
+                            let target = document.querySelector(tbody.dataset.cwbFor);
+                            let targetBoxes = target.childNodes;
+
+                            for (var i = 0; i < tbody.childNodes.length; i++) {
+                                let sourceRow = tbody.childNodes[i];
+                                let targetBox = targetBoxes[i];
+
+                                sourceRow.addEventListener('mouseover', function () {
+                                    targetBox.classList.toggle('active', true);
+                                });
+
+                                sourceRow.addEventListener('mouseout', function () {
+                                    targetBox.classList.toggle('active', false);
+                                });
+                            }
+                        });
+                    });
+                }());
+            </script>
+        }
+    </div>
+</main>

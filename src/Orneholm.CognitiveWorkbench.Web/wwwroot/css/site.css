@@ -75,3 +75,100 @@ body {
     padding-top: 80px;
     min-height: 80vh;
 }
+
+/* Result */
+
+.cwb-result-content {
+}
+
+    .cwb-result-content pre.prettyprint {
+        border: none;
+        margin: 0;
+    }
+
+    .cwb-result-content table {
+        margin: 0;
+    }
+
+    .cwb-result-content .card-body {
+        padding: 10px 0 0 0;
+    }
+
+        .cwb-result-content .card-body h3, .cwb-result-content .card-body h4 {
+            margin-left: 10px;
+        }
+
+.cwb-result-image {
+    position: relative;
+    position: sticky;
+    top: 70px;
+}
+
+/* Image boxes */
+
+.cwb-image-boxes {
+}
+
+    .cwb-image-boxes .cwb-image-box {
+        position: absolute;
+        border: 1px solid #f00;
+        transition: all 0.3s;
+    }
+
+.cwb-image-box .cwb-image-box-info {
+    background-color: #f00;
+    transition: all 0.3s;
+    padding: 3px 7px;
+    color: #fafafa;
+    position: absolute;
+    bottom: -36px;
+    right: 0;
+    display: block;
+    text-transform: uppercase;
+    font-size: 10px;
+}
+
+    .cwb-image-box .cwb-image-box-info .cwb-image-box-type {
+        font-weight: bold;
+        display: block;
+    }
+
+.cwb-image-boxes .cwb-image-box.active {
+    border-color: #000;
+}
+
+.cwb-image-box.active .cwb-image-box-info {
+    background-color: #000;
+}
+
+.cwb-image-boxes-brands .cwb-image-box {
+    border-color: #31CC43;
+}
+
+.cwb-image-boxes-brands .cwb-image-box-info {
+    background-color: #31CC43;
+}
+
+.cwb-image-boxes-objects .cwb-image-box {
+    border-color: #008BC3;
+}
+
+.cwb-image-boxes-objects .cwb-image-box-info {
+    background-color: #008BC3;
+}
+
+.cwb-image-boxes-faces .cwb-image-box {
+    border-color: #F68B1F;
+}
+
+.cwb-image-boxes-faces .cwb-image-box-info {
+    background-color: #F68B1F;
+}
+
+/* Misc */
+.cwb-color-sample-block {
+    min-width: 40px;
+    min-height: 20px;
+    width: 100%;
+    height: 100%;
+}

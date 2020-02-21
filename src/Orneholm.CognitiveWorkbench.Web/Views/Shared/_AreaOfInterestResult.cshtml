@@ -1,0 +1,48 @@
+@using Orneholm.CognitiveWorkbench.Web.Extensions
+@model Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models.AreaOfInterestResult
+
+<div class="my-b">
+    <h4>Area of Interest</h4>
+
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Key</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Rectangle</th>
+                <td>@Model.AreaOfInterest.ToDescription()</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="mt-5">
+    <h4>Metadata</h4>
+
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Key</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Format</th>
+                <td>@Model.Metadata.Format</td>
+            </tr>
+            <tr>
+                <th>Width (px)</th>
+                <td>@Model.Metadata.Width</td>
+            </tr>
+            <tr>
+                <th>Height (px)</th>
+                <td>@Model.Metadata.Height</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

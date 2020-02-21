@@ -26,6 +26,9 @@ namespace Orneholm.CognitiveWorkbench.Web
                 .AddRazorRuntimeCompilation()
                 .AddJsonOptions(options =>
                 {
+                    options.JsonSerializerOptions.IgnoreNullValues = false;
+                    options.JsonSerializerOptions.WriteIndented = true;
+                    options.JsonSerializerOptions.IgnoreReadOnlyProperties = false;
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                 });
             services.AddApplicationInsightsTelemetry();
