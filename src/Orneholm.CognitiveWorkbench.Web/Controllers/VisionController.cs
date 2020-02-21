@@ -7,19 +7,23 @@ using Orneholm.CognitiveWorkbench.Web.Services;
 
 namespace Orneholm.CognitiveWorkbench.Web.Controllers
 {
-    [ApiController]
-    [Route("/api")]
-    public class ApiController : Controller
+    public class VisionController : Controller
     {
-        private readonly ILogger<ApiController> _logger;
+        private readonly ILogger<VisionController> _logger;
 
-        public ApiController(ILogger<ApiController> logger)
+        public VisionController(ILogger<VisionController> logger)
         {
             _logger = logger;
         }
 
-        [HttpPost("vision/analyze")]
-        public async Task<ActionResult<VisionAnalyzeResponse>> VisionAnalyze([FromBody]VisionAnalyzeRequest request)
+        [HttpGet("/vision")]
+        public IActionResult Index()
+        {
+            return View(VisionIndexViewModel.NotAnalyzed());
+        }
+
+        [HttpPost("/vision")]
+        public async Task<ActionResult<VisionIndexViewModel>> Index([FromBody]VisionAnalyzeRequest request)
         {
             if (string.IsNullOrWhiteSpace(request.ComputerVisionSubscriptionKey))
             {
@@ -39,7 +43,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
             var imageAnalyzer = new ImageAnalyzer(request.ComputerVisionSubscriptionKey, request.ComputerVisionEndpoint, request.FaceSubscriptionKey, request.FaceEndpoint);
             var analyzeResult = await imageAnalyzer.Analyze(request.ImageUrl, request.ImageAnalysisLanguage, request.ImageOcrLanguage);
 
-            return analyzeResult;
+            return VisionIndexViewModel.Analyzed(analyzeResult);
         }
     }
 }

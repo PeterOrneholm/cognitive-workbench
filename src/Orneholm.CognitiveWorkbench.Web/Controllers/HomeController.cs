@@ -16,11 +16,5 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
         {
             return View();
         }
-
-        [Route("/computer-vision")]
-        public IActionResult ComputerVision()
-        {
-            return View();
-        }
     }
 }
