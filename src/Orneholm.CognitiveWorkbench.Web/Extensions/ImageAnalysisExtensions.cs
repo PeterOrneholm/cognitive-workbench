@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
+using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
+using FaceRectangle = Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models.FaceRectangle;
 
 namespace Orneholm.CognitiveWorkbench.Web.Extensions
 {
@@ -42,6 +44,105 @@ namespace Orneholm.CognitiveWorkbench.Web.Extensions
             }
 
             return list;
+        }
+
+        public static string ToEmotion(this Emotion emotion)
+        {
+            var emotions = new Dictionary<string, double>
+            {
+                { "Angry", emotion.Anger },
+                { "Contempt", emotion.Contempt },
+                { "Disgusted", emotion.Disgust },
+                { "Feared", emotion.Fear },
+                { "Happy", emotion.Happiness },
+                { "Neutral", emotion.Neutral },
+                { "Sad", emotion.Sadness },
+                { "Surprised", emotion.Surprise }
+            };
+
+            return emotions.OrderByDescending(x => x.Value).ThenBy(x => x.Key).First().Key;
+        }
+
+        public static Dictionary<string, double> ToEmotions(this Emotion emotion)
+        {
+            var emotions = new Dictionary<string, double>
+            {
+                { "Anger", emotion.Anger },
+                { "Contempt", emotion.Contempt },
+                { "Disgust", emotion.Disgust },
+                { "Fear", emotion.Fear },
+                { "Happiness", emotion.Happiness },
+                { "Neutral", emotion.Neutral },
+                { "Sadness", emotion.Sadness },
+                { "Surprise", emotion.Surprise }
+            };
+
+            return emotions.OrderByDescending(x => x.Value).ThenBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
+        }
+
+        public static Dictionary<string, Coordinate> ToFaceLandmarks(this FaceLandmarks faceLandmarks)
+        {
+            var emotions = new Dictionary<string, Coordinate>
+            {
+                { "EyeLeftBottom", faceLandmarks.EyeLeftBottom },
+                { "EyeLeftInner", faceLandmarks.EyeLeftInner },
+                { "EyeLeftOuter", faceLandmarks.EyeLeftOuter },
+                { "EyeLeftTop", faceLandmarks.EyeLeftTop },
+
+                { "EyeRightBottom", faceLandmarks.EyeRightBottom },
+                { "EyeRightInner", faceLandmarks.EyeRightInner },
+                { "EyeRightOuter", faceLandmarks.EyeRightOuter },
+                { "EyeRightTop", faceLandmarks.EyeRightTop },
+
+                { "EyebrowLeftInner", faceLandmarks.EyebrowLeftInner },
+                { "EyebrowLeftOuter", faceLandmarks.EyebrowLeftOuter },
+
+                { "EyebrowRightInner", faceLandmarks.EyebrowRightInner },
+                { "EyebrowRightOuter", faceLandmarks.EyebrowRightOuter },
+
+                { "MouthLeft", faceLandmarks.MouthLeft },
+                { "MouthRight", faceLandmarks.MouthRight },
+
+                { "PupilLeft", faceLandmarks.PupilLeft },
+                { "PupilRight", faceLandmarks.PupilRight },
+
+                { "NoseTip", faceLandmarks.NoseTip },
+
+                { "NoseRootLeft", faceLandmarks.NoseRootLeft },
+                { "NoseRootRight", faceLandmarks.NoseRootRight },
+
+                { "NoseLeftAlarOutTip", faceLandmarks.NoseLeftAlarOutTip },
+                { "NoseLeftAlarTop", faceLandmarks.NoseLeftAlarTop },
+
+                { "NoseRightAlarOutTip", faceLandmarks.NoseRightAlarOutTip },
+                { "NoseRightAlarTop", faceLandmarks.NoseRightAlarTop },
+
+                { "UpperLipTop", faceLandmarks.UpperLipTop },
+                { "UpperLipBottom", faceLandmarks.UpperLipBottom },
+
+                { "UnderLipTop", faceLandmarks.UnderLipTop },
+                { "UnderLipBottom", faceLandmarks.UnderLipBottom }
+            };
+
+            return emotions.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
+        }
+
+        public static string ToRelativeCss(this Coordinate coordinate, Microsoft.Azure.CognitiveServices.Vision.Face.Models.FaceRectangle faceRectangle, int imageWidth, int imageHeight)
+        {
+            var relativeWidth = faceRectangle.Width;
+            var relativeHeight = faceRectangle.Height;
+            var relativeX = coordinate.X - faceRectangle.Left;
+            var relativeY = coordinate.Y - faceRectangle.Top;
+
+            return $"left: {relativeX.ToCssPercentageString(relativeWidth)}; " +
+                   $"top: {relativeY.ToCssPercentageString(relativeHeight)};";
+        }
+
+
+        public static string ToCss(this Coordinate coordinate, int imageWidth, int imageHeight)
+        {
+            return $"left: {coordinate.X.ToCssPercentageString(imageWidth)}; " +
+                   $"top: {coordinate.Y.ToCssPercentageString(imageHeight)};";
         }
 
         public static string ToDescription(this Microsoft.Azure.CognitiveServices.Vision.Face.Models.FaceRectangle faceRectangle)
@@ -105,6 +206,14 @@ namespace Orneholm.CognitiveWorkbench.Web.Extensions
             return boundingBox.Split(',').Select(int.Parse).ToArray();
         }
 
+        public static string ToCssPercentageString(this double value, int fullValue)
+        {
+            var percentage = value / fullValue;
+            var truncated = TruncateDecimal(percentage, 5);
+
+            return truncated.ToCssPercentageString();
+        }
+
         public static string ToCssPercentageString(this int value, int fullValue)
         {
             var percentage = (double)value / fullValue;
@@ -121,6 +230,11 @@ namespace Orneholm.CognitiveWorkbench.Web.Extensions
         public static string ToDescriptivePercentage(this double score)
         {
             return $"{score:P} ({TruncateDecimal(score, 5)})";
+        }
+
+        public static string ToPercentage(this double score)
+        {
+            return $"{score:P}";
         }
 
         private static double TruncateDecimal(double value, int precision)

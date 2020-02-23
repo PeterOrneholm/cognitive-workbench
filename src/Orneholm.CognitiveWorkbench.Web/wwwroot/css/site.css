@@ -134,6 +134,28 @@ body {
         display: block;
     }
 
+.cwb-image-box .cwb-image-box-metadata {
+    background-color: #000;
+    transition: all 0.3s;
+    padding: 3px 7px;
+    color: #fafafa;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    display: block;
+    text-transform: uppercase;
+    font-size: 12px;
+    transform: translateX(100%);
+    white-space: nowrap;
+    display: none;
+    z-index: 10000;
+}
+
+.cwb-image-box:hover .cwb-image-box-metadata,
+.cwb-image-box.active .cwb-image-box-metadata {
+    display: block;
+}
+
 .cwb-image-boxes .cwb-image-box.active {
     border-color: #000;
 }
@@ -174,6 +196,41 @@ body {
     background-color: #F68B1F;
 }
 
+.cwb-image-box-metadata-table {
+    width: 100%;
+}
+
+    .cwb-image-box-metadata-table td,
+    .cwb-image-box-metadata-table th {
+        padding: 1px 4px;
+    }
+
+.cwb-image-box-metadata-table-header:not(:first-of-type) th {
+    padding-top: 10px;
+}
+
+.cwb-image-box-landmarks {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+    .cwb-image-box-landmarks .cwb-image-box-landmarks-landmark {
+        position: absolute;
+        width: 3px;
+        height: 3px;
+        transform: translateX(-1px) translateY(-1px);
+        border-radius: 50%;
+        background-color: #f00;
+        display: none;
+    }
+
+.cwb-image-box:hover .cwb-image-box-landmarks-landmark,
+.cwb-image-box.active .cwb-image-box-landmarks-landmark {
+    display: block;
+}
 /* Misc */
 .cwb-color-sample-block {
     min-width: 40px;

@@ -1,0 +1,56 @@
+@using Orneholm.CognitiveWorkbench.Web.Extensions
+@model FaceAnalyzeResponse
+
+<div class="mb-5">
+    <h4>Faces</h4>
+
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Age</th>
+                <th>Smile</th>
+                <th>Rectangle</th>
+            </tr>
+        </thead>
+        <tbody class="cwb-image-boxes-table" data-cwb-for=".cwb-image-boxes-faces-full">
+            @foreach (var face in Model.FaceResult)
+            {
+                <tr>
+                    <th>@face.FaceAttributes.Age</th>
+                    <th>@face.FaceAttributes.Smile</th>
+                    <th>@face.FaceRectangle.ToDescription()</th>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (!Model.FaceResult.Any())
+    {
+        <p class="p-2">
+            No faces available.
+        </p>
+    }
+</div>
+
+<div class="mt-5">
+    <h4>Metadata</h4>
+
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Key</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Width (px)</th>
+                <td>@Model.ImageInfo.Width</td>
+            </tr>
+            <tr>
+                <th>Height (px)</th>
+                <td>@Model.ImageInfo.Height</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

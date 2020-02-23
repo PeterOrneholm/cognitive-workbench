@@ -1,4 +1,5 @@
 using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -10,10 +11,12 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
     public class VisionController : Controller
     {
         private readonly ILogger<VisionController> _logger;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public VisionController(ILogger<VisionController> logger)
+        public VisionController(ILogger<VisionController> logger, IHttpClientFactory httpClientFactory)
         {
             _logger = logger;
+            _httpClientFactory = httpClientFactory;
         }
 
         [HttpGet("/vision/computer-vision")]
@@ -71,7 +74,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
                 throw new ArgumentException("Missing or invalid ImageUrl", nameof(request.ImageUrl));
             }
 
-            var imageAnalyzer = new ImageFaceAnalyzer(request.FaceSubscriptionKey, request.FaceEndpoint);
+            var imageAnalyzer = new ImageFaceAnalyzer(request.FaceSubscriptionKey, request.FaceEndpoint, _httpClientFactory);
             var analyzeResult = await imageAnalyzer.Analyze(request.ImageUrl);
 
             return View(FaceViewModel.Analyzed(request, analyzeResult));

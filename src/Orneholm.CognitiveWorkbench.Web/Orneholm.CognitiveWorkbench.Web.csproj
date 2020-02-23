@@ -26,6 +26,7 @@
         <PackageReference Include="Microsoft.Azure.CognitiveServices.Vision.ComputerVision" Version="6.0.0-dev.20190919.3" />
         <PackageReference Include="Microsoft.Azure.CognitiveServices.Vision.Face" Version="2.5.0-preview.1" />
         <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.10" />
+        <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
     </ItemGroup>
 
 </Project>

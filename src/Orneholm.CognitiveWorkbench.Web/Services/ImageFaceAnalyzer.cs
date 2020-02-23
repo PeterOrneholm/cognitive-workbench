@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Azure.CognitiveServices.Vision.Face;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
@@ -29,9 +31,11 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
         };
 
         private readonly FaceClient _faceClient;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public ImageFaceAnalyzer(string faceSubscriptionKey, string faceEndpoint)
+        public ImageFaceAnalyzer(string faceSubscriptionKey, string faceEndpoint, IHttpClientFactory httpClientFactory)
         {
+            _httpClientFactory = httpClientFactory;
             _faceClient = new FaceClient(new ApiKeyServiceClientCredentials(faceSubscriptionKey))
             {
                 Endpoint = faceEndpoint
@@ -41,22 +45,17 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
         public async Task<FaceAnalyzeResponse> Analyze(string url)
         {
             // Face
-            var face = await FaceDetect(url);
+            var face = FaceDetect(url);
+            var imageInfo = GetImageInfo(url);
 
             // Combine
+            await Task.WhenAll(face, imageInfo);
 
             return new FaceAnalyzeResponse
             {
-                ImageInfo = new ImageInfo
-                {
-                    Url = url,
-                    Description = string.Empty,
+                ImageInfo = imageInfo.Result,
 
-                    Width = 1000, // TODO
-                    Height = 1000 // TODO
-                },
-
-                FaceResult = face.ToList()
+                FaceResult = face.Result.ToList()
             };
         }
 
@@ -70,6 +69,23 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
                 null,
                 true
             );
+        }
+
+        private async Task<ImageInfo> GetImageInfo(string url)
+        {
+            var httpClient = _httpClientFactory.CreateClient();
+            var stream = await httpClient.GetStreamAsync(url);
+            using var image = Image.FromStream(stream);
+
+            return new ImageInfo
+            {
+                Url = url,
+
+                Width = image.Width,
+                Height = image.Height,
+
+                Description = $"Image from {url}"
+            };
         }
     }
 }

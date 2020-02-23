@@ -22,6 +22,8 @@ namespace Orneholm.CognitiveWorkbench.Web
         {
             services.Configure<GoogleAnalyticsOptions>(Configuration);
 
+            services.AddHttpClient();
+
             services.AddControllersWithViews()
                 .AddRazorRuntimeCompilation()
                 .AddJsonOptions(options =>
@@ -31,6 +33,7 @@ namespace Orneholm.CognitiveWorkbench.Web
                     options.JsonSerializerOptions.IgnoreReadOnlyProperties = false;
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                 });
+
             services.AddApplicationInsightsTelemetry();
         }
 
