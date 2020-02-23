@@ -4,6 +4,10 @@
 [![Live demo](https://img.shields.io/static/v1?label=Demo&message=Try%20out%20the%20live%20demo&color=#17547a)](https://cognitive-workbench.azurewebsites.net/)
 [![Twitter Follow](https://img.shields.io/badge/Twitter-@PeterOrneholm-blue.svg?logo=twitter)](https://twitter.com/PeterOrneholm)
 
+A site to learn about and demo the capabilities of Azure Cognitive Services. Main focus is on Vision, but more areas might be covered in the future.
+
+Feel free to contribute.
+
 # Third party sources
 
 Icon in logo provided by Fontawesome (Free).
