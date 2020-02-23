@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Orneholm.CognitiveWorkbench.Web.Models;
@@ -12,11 +14,13 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
     {
         private readonly ILogger<VisionController> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly TelemetryClient _telemetryClient;
 
-        public VisionController(ILogger<VisionController> logger, IHttpClientFactory httpClientFactory)
+        public VisionController(ILogger<VisionController> logger, IHttpClientFactory httpClientFactory, TelemetryClient telemetryClient)
         {
             _logger = logger;
             _httpClientFactory = httpClientFactory;
+            _telemetryClient = telemetryClient;
         }
 
         [HttpGet("/vision/computer-vision")]
@@ -42,6 +46,8 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
             {
                 throw new ArgumentException("Missing or invalid ImageUrl", nameof(request.ImageUrl));
             }
+
+            Track("Vision_ComputerVision");
 
             var imageAnalyzer = new ImageComputerVisionAnalyzer(request.ComputerVisionSubscriptionKey, request.ComputerVisionEndpoint);
             var analyzeResult = await imageAnalyzer.Analyze(request.ImageUrl, request.ImageAnalysisLanguage, request.ImageOcrLanguage);
@@ -74,10 +80,20 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
                 throw new ArgumentException("Missing or invalid ImageUrl", nameof(request.ImageUrl));
             }
 
+            Track("Vision_Face");
+
             var imageAnalyzer = new ImageFaceAnalyzer(request.FaceSubscriptionKey, request.FaceEndpoint, _httpClientFactory);
             var analyzeResult = await imageAnalyzer.Analyze(request.ImageUrl);
 
             return View(FaceViewModel.Analyzed(request, analyzeResult));
+        }
+
+        private void Track(string type)
+        {
+            _telemetryClient.TrackEvent("AnalyzeImage", new Dictionary<string, string>()
+            {
+                { "cwb_type", type }
+            });
         }
     }
 }
