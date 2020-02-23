@@ -37,6 +37,10 @@
                                 </ul>
                             </p>
 
+                            <p class="mb-3">
+                                <strong>Note:</strong> You need to provide your own keys for Azure Cognitive Services - Face under the tab <em>Settings</em>.
+                            </p>
+
                             <div class="form-group">
                                 <label asp-for=FaceAnalyzeRequest.ImageUrl>Image URL</label>
                                 <input type="url" required class="cwb-input-remember form-control" placeholder="https://example.org/url-to/image.jpg" asp-for="FaceAnalyzeRequest.ImageUrl" name="ImageUrl" />
