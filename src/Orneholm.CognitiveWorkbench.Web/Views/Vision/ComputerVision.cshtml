@@ -41,6 +41,21 @@
                                 <strong>Note:</strong> You need to provide your own keys for Azure Cognitive Services - Computer Vision under the tab <em>Settings</em>.
                             </p>
 
+                            <div class="form-row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label asp-for="ComputerVisionAnalyzeRequest.ImageAnalysisLanguage">Image Analysis Language</label>
+                                        <input type="text" required class="cwb-input-remember form-control" placeholder="en" asp-for="ComputerVisionAnalyzeRequest.ImageAnalysisLanguage" name="ImageAnalysisLanguage" />
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label asp-for="ComputerVisionAnalyzeRequest.ImageOcrLanguage">Image OCR Language</label>
+                                        <input type="text" required class="cwb-input-remember form-control" placeholder="en" asp-for="ComputerVisionAnalyzeRequest.ImageOcrLanguage" name="ImageOcrLanguage" />
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="form-group">
                                 <label asp-for="ComputerVisionAnalyzeRequest.ImageUrl">Image URL</label>
                                 <input type="url" required class="cwb-input-remember form-control" placeholder="https://example.org/url-to/image.jpg" asp-for="ComputerVisionAnalyzeRequest.ImageUrl" name="ImageUrl" />
@@ -56,7 +71,7 @@
                             <div class="form-row">
                                 <div class="form-group col-md-6">
                                     <label asp-for="ComputerVisionAnalyzeRequest.ComputerVisionSubscriptionKey">Computer Vision - Subscription Key</label>
-                                    <input type="text" required class="cwb-input-remember form-control" placeholder="zq8lp6z7cqtew6h4c0bxy0r5cqx3in36" asp-for="ComputerVisionAnalyzeRequest.ComputerVisionSubscriptionKey" name="ComputerVisionSubscriptionKey" />
+                                    <input type="password" required class="cwb-input-remember form-control" placeholder="zq8lp6z7cqtew6h4c0bxy0r5cqx3in36" asp-for="ComputerVisionAnalyzeRequest.ComputerVisionSubscriptionKey" name="ComputerVisionSubscriptionKey" />
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label asp-for="ComputerVisionAnalyzeRequest.ComputerVisionEndpoint">Computer Vision - Endpoint</label>
