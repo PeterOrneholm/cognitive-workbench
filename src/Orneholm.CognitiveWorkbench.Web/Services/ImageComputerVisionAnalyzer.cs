@@ -33,6 +33,8 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
 
         private readonly ComputerVisionClient _computerVisionClient;
 
+        private readonly int _computerVisionOperationIdLength = 36;
+
         public ImageComputerVisionAnalyzer(string computerVisionSubscriptionKey, string computerVisionEndpoint)
         {
             _computerVisionClient = new ComputerVisionClient(new ApiKeyServiceClientCredentials(computerVisionSubscriptionKey))
@@ -41,15 +43,16 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
             };
         }
 
-        public async Task<ComputerVisionAnalyzeResponse> Analyze(string url, string analysisLanguage, string ocrLanguage)
+        public async Task<ComputerVisionAnalyzeResponse> Analyze(string url, string analysisLanguage, string ocrLanguage, string recognizeTextMode)
         {
             // Computer vision
             var imageAnalysis = ComputerVisionAnalyzeImage(url, analysisLanguage);
             var recognizedPrintedText = ComputerVisionRecognizedPrintedText(url, ocrLanguage);
+            var recognizedText = ComputerVisionRecognizedText(url, recognizeTextMode);
             var areaOfInterest = ComputerVisionGetAreaOfInterest(url);
 
             // Combine
-            await Task.WhenAll(imageAnalysis, recognizedPrintedText, areaOfInterest);
+            await Task.WhenAll(imageAnalysis, recognizedPrintedText, recognizedText, areaOfInterest);
 
             return new ComputerVisionAnalyzeResponse
             {
@@ -67,6 +70,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
 
                 AnalysisResult = imageAnalysis.Result,
                 OcrResult = recognizedPrintedText.Result,
+                RecognizeTextOperationResult = recognizedText.Result,
                 AreaOfInterestResult = areaOfInterest.Result
             };
         }
@@ -86,6 +90,58 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
             return _computerVisionClient.GetAreaOfInterestAsync(url);
         }
 
+        private async Task<TextOperationResult> ComputerVisionRecognizedText(string url, string recognizeTextMode)
+        {
+            var parsedRecognizeTextMode = GetTextRecognitionMode(recognizeTextMode, TextRecognitionMode.Printed);
+            var recognizeTextHeaders = await _computerVisionClient.RecognizeTextAsync(url, parsedRecognizeTextMode);
+
+            // Retrieve the URI where the recognized text will be stored from the Operation-Location header
+            var operationLocation = recognizeTextHeaders.OperationLocation;
+            var operationId = operationLocation.Substring(operationLocation.Length - _computerVisionOperationIdLength);
+
+            var result = await _computerVisionClient.GetTextOperationResultAsync(operationId);
+
+            // Wait for the operation to complete
+            var i = 1;
+            var waitDurationInMs = 500;
+            var maxWaitTimeInMs = 30000;
+            var maxTries = maxWaitTimeInMs / waitDurationInMs;
+
+            while ((result.Status == TextOperationStatusCodes.Running || result.Status == TextOperationStatusCodes.NotStarted)
+                && i <= maxTries)
+            {
+                await Task.Delay(waitDurationInMs);
+
+                result = await _computerVisionClient.GetTextOperationResultAsync(operationId);
+                i++;
+            }
+
+            // Process result
+            if (result.Status == TextOperationStatusCodes.Succeeded)
+            {
+                return result;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private static TextRecognitionMode GetTextRecognitionMode(string recognizeTextMode, TextRecognitionMode defaultMode)
+        {
+            var recognitionMode = defaultMode;
+
+            if (!string.IsNullOrWhiteSpace(recognizeTextMode))
+            {
+                if (Enum.TryParse<TextRecognitionMode>(recognizeTextMode, true, out var parsedRecognitionMode))
+                {
+                    recognitionMode = parsedRecognitionMode;
+                }
+            }
+
+            return recognitionMode;
+        }
+
         private async Task<OcrResult> ComputerVisionRecognizedPrintedText(string url, string ocrLanguage)
         {
             var parsedOcrLanguage = GetOcrLanguage(ocrLanguage);
@@ -98,9 +154,9 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
 
             if (!string.IsNullOrWhiteSpace(imageOcrLanguage))
             {
-                if (Enum.TryParse<OcrLanguages>(imageOcrLanguage, true, out var parsedPcrLanguage))
+                if (Enum.TryParse<OcrLanguages>(imageOcrLanguage, true, out var parsedOcrLanguage))
                 {
-                    ocrLanguage = parsedPcrLanguage;
+                    ocrLanguage = parsedOcrLanguage;
                 }
             }
 

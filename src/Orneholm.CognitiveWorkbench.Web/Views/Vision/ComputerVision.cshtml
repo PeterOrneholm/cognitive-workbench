@@ -54,6 +54,12 @@
                                         <input type="text" required class="cwb-input-remember form-control" placeholder="en" asp-for="ComputerVisionAnalyzeRequest.ImageOcrLanguage" name="ImageOcrLanguage" />
                                     </div>
                                 </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label asp-for="ComputerVisionAnalyzeRequest.ImageRecognizeTextMode">Image Recognize Text Mode</label>
+                                        <input type="text" required class="cwb-input-remember form-control" placeholder="Printed" asp-for="ComputerVisionAnalyzeRequest.ImageRecognizeTextMode" name="ImageRecognizeTextMode" />
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="form-group">
@@ -281,8 +287,60 @@
             </section>
         }
 
+        @if (Model.IsAnalyzed && Model.ComputerVisionAnalyzeResponse?.RecognizeTextOperationResult != null)
+        {
+            <section class="cwb-result-computervision-analyze">
+                <h2 class="mt-5">Computer Vision - Recognize Text</h2>
+
+                <div class="row">
+                    <div class="col-md-7">
+                        <div class="card mb-3 cwb-result-image">
+                            <img src="@Model.ComputerVisionAnalyzeResponse.ImageInfo.Url" class="card-img-top" alt="@Model.ComputerVisionAnalyzeResponse.ImageInfo.Description" />
+                            <div class="cwb-image-boxes">
+                                <div class="cwb-image-boxes-ocr-lines">
+                                    @foreach (var line in Model.ComputerVisionAnalyzeResponse.RecognizeTextOperationResult.RecognitionResult.Lines)
+                                    {
+                                        <div class="cwb-image-box"
+                                                style="@line.BoundingBox.ToCss(Model.ComputerVisionAnalyzeResponse.ImageInfo.Width, Model.ComputerVisionAnalyzeResponse.ImageInfo.Height)">
+                                            <div class="cwb-image-box-info" title="@string.Join(" ", line.Words.Select(x => x.Text))">
+                                                <span class="cwb-image-box-type">Line</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="card mb-3 cwb-result-content">
+                            <div class="card-header">
+                                <ul class="nav nav-tabs card-header-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="list" href="#cwb-result-computervision-recognizetext-info">Info (Parsed)</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="list" href="#cwb-result-computervision-recognizetext-json">JSON (Raw)</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="cwb-result-computervision-recognizetext-info">
+                                        <partial name="_RecognizeTextOperationResult" model="@Model.ComputerVisionAnalyzeResponse.RecognizeTextOperationResult" />
+                                    </div>
+                                    <div class="tab-pane fade" id="cwb-result-computervision-recognizetext-json">
+                                        <partial name="_Json" model="@Model.ComputerVisionAnalyzeResponse.RecognizeTextOperationResult" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        }
+
         @section Scripts
-{
+        {
             <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
             <script>
                 (function () {

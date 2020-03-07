@@ -156,6 +156,17 @@ namespace Orneholm.CognitiveWorkbench.Web.Extensions
             return $"X: {box[0]}; Y: {box[1]}; W: {box[2]}; H: {box[3]}";
         }
 
+        public static string ToDescription(this IList<double> boundingBox)
+        {
+            // BoundingBox: Bounding box of a recognized region, line, or word, depending on the parent object.
+            // The eight integers represent the four points (x-coordinate, y-coordinate) of the detected rectangle
+            // from the left-top corner and clockwise.
+            var maxWidth = Math.Max(boundingBox[2] - boundingBox[0], boundingBox[6] - boundingBox[4]);
+            var maxHeight = Math.Max(boundingBox[7] - boundingBox[1], boundingBox[5] - boundingBox[3]);
+
+            return $"X: {boundingBox[0]}, Y: {boundingBox[1]}, MaxW: {maxWidth}, MaxH: {maxHeight}";
+        }
+
         public static string ToDescription(this FaceRectangle faceRectangle)
         {
             return $"X: {faceRectangle.Left}; Y: {faceRectangle.Top}; W: {faceRectangle.Width}; H: {faceRectangle.Height}";
@@ -183,6 +194,20 @@ namespace Orneholm.CognitiveWorkbench.Web.Extensions
                    $"top: {box[1].ToCssPercentageString(imageHeight)}; " +
                    $"width: {box[2].ToCssPercentageString(imageWidth)}; " +
                    $"height: {box[3].ToCssPercentageString(imageHeight)};";
+        }
+
+        public static string ToCss(this IList<double> boundingBox, int imageWidth, int imageHeight)
+        {
+            // BoundingBox: Bounding box of a recognized region, line, or word, depending on the parent object.
+            // The eight integers represent the four points (x-coordinate, y-coordinate) of the detected rectangle
+            // from the left-top corner and clockwise.
+            var maxWidth = Math.Max(boundingBox[2] - boundingBox[0], boundingBox[6] - boundingBox[4]);
+            var maxHeight = Math.Max(boundingBox[7] - boundingBox[1], boundingBox[5] - boundingBox[3]);
+
+            return $"left: {boundingBox[0].ToCssPercentageString(imageWidth)}; " +
+                   $"top: {boundingBox[1].ToCssPercentageString(imageHeight)}; " +
+                   $"width: {maxWidth.ToCssPercentageString(imageWidth)}; " +
+                   $"height: {maxHeight.ToCssPercentageString(imageHeight)};";
         }
 
         public static string ToCss(this FaceRectangle boundingRect, int imageWidth, int imageHeight)
