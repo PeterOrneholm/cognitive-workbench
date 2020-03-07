@@ -70,7 +70,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
 
                 AnalysisResult = imageAnalysis.Result,
                 OcrResult = recognizedPrintedText.Result,
-                RecognizeTextOperationResult = recognizedText.Result,
+                RecognizeTextOperationResult = recognizedText?.Result,
                 AreaOfInterestResult = areaOfInterest.Result
             };
         }
@@ -116,15 +116,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
                 i++;
             }
 
-            // Process result
-            if (result.Status == TextOperationStatusCodes.Succeeded)
-            {
-                return result;
-            }
-            else
-            {
-                return null;
-            }
+            return result;
         }
 
         private static TextRecognitionMode GetTextRecognitionMode(string recognizeTextMode, TextRecognitionMode defaultMode)
