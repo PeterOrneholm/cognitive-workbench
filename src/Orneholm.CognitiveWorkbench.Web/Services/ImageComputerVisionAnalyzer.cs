@@ -25,6 +25,17 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
             VisualFeatureTypes.Brands
         };
 
+        private static readonly List<VisualFeatureTypes> AnalyzeVisualFeatureLimitedTypes = new List<VisualFeatureTypes>
+        {
+            VisualFeatureTypes.ImageType,
+            VisualFeatureTypes.Faces,
+            VisualFeatureTypes.Adult,
+            VisualFeatureTypes.Categories,
+            VisualFeatureTypes.Color,
+            VisualFeatureTypes.Tags,
+            VisualFeatureTypes.Description
+        };
+
         private static readonly List<Details> AnalyzeDetails = new List<Details>
         {
             Details.Celebrities,
@@ -79,19 +90,17 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
 
         private async Task<ImageAnalysis> ComputerVisionAnalyzeImage(string url, AnalysisLanguage analysisLanguage)
         {
-            switch (analysisLanguage)
+            var visualFeatures = AnalyzeVisualFeatureTypes;
+
+            // API does not support some visual features if analysis is not in English
+            if (!AnalysisLanguage.en.Equals(analysisLanguage))
             {
-                case AnalysisLanguage.en:
-                    break;
-                default:
-                    AnalyzeVisualFeatureTypes.Remove(VisualFeatureTypes.Brands);
-                    AnalyzeVisualFeatureTypes.Remove(VisualFeatureTypes.Objects);
-                    break;
+                visualFeatures = AnalyzeVisualFeatureLimitedTypes;
             }
 
             return await _computerVisionClient.AnalyzeImageAsync(
                 url: url,
-                visualFeatures: AnalyzeVisualFeatureTypes,
+                visualFeatures: visualFeatures,
                 details: AnalyzeDetails,
                 language: analysisLanguage.ToString()
             );
