@@ -5,7 +5,7 @@
         <h2>Vision - Face</h2>
 
         <p>
-            Identify and analyze content within images. Objects, faces, landmarks, celebrities etc.
+            Detect faces within images. Face landmarks, emotion, etc.
         </p>
 
         <form method="post">
@@ -29,10 +29,14 @@
                                         The image must be presented in JPEG, PNG, GIF, or BMP
                                     </li>
                                     <li>
-                                        The file size of the image must be less than 4 megabytes (MB)
+                                        The allowed image file size is from 1 KB to 6 MB
                                     </li>
                                     <li>
-                                        The dimensions of the image must be greater than 50 x 50 pixels
+                                        The minimum detectable face size is 36x36 pixels in an image no larger than 1920x1080 pixels.<br />
+                                        Images with dimensions higher than 1920x1080 pixels will need a proportionally larger minimum face size.
+                                    </li>
+                                    <li>
+                                        Up to 100 faces can be returned for an image. Faces are ranked by face rectangle size from large to small.
                                     </li>
                                 </ul>
                             </p>
@@ -40,6 +44,16 @@
                             <p class="mb-3">
                                 <strong>Note:</strong> You need to provide your own keys for Azure Cognitive Services - Face under the tab <em>Settings</em>.
                             </p>
+
+                            <div class="form-row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label asp-for="FaceAnalyzeRequest.DetectionModel">Detection model</label>
+                                        <select asp-for="FaceAnalyzeRequest.DetectionModel" asp-items="Html.GetEnumSelectList<FaceDetectionModel>()" required class="cwb-input-remember form-control" name="DetectionModel">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="form-group">
                                 <label asp-for=FaceAnalyzeRequest.ImageUrl>Image URL</label>
@@ -84,9 +98,12 @@
                                 <div class="cwb-image-boxes-faces-full">
                                     @foreach (var face in Model.FaceAnalyzeResponse.FaceResult)
                                     {
-                                        <div class="cwb-image-box"
-                                             style="@face.FaceRectangle.ToCss(Model.FaceAnalyzeResponse.ImageInfo.Width, Model.FaceAnalyzeResponse.ImageInfo.Height)">
-                                            <div class="cwb-image-box-info" title="@face.FaceAttributes.Age years old">
+                                    <div class="cwb-image-box"
+                                         style="@face.FaceRectangle.ToCss(Model.FaceAnalyzeResponse.ImageInfo.Width, Model.FaceAnalyzeResponse.ImageInfo.Height)">
+
+                                        @if (face.FaceAttributes != null)
+                                        {
+                                            <div class="cwb-image-box-info" title="@face.FaceAttributes?.Age years old">
                                                 <span class="cwb-image-box-type">Face</span>
                                                 <span class="cwb-image-box-description">@face.FaceAttributes.Emotion.ToEmotion()</span>
                                             </div>
@@ -150,7 +167,16 @@
                                                     </tbody>
                                                 </table>
                                             </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="cwb-image-box-info">
+                                                <span class="cwb-image-box-type">Face</span>
+                                            </div>
+                                        }
 
+                                        @if (face.FaceLandmarks != null)
+                                        {
                                             <div class="cwb-image-box-landmarks">
                                                 @foreach (var landmark in face.FaceLandmarks.ToFaceLandmarks())
                                                 {
@@ -159,7 +185,8 @@
                                                          style="@landmark.Value.ToRelativeCss(face.FaceRectangle, Model.FaceAnalyzeResponse.ImageInfo.Width, Model.FaceAnalyzeResponse.ImageInfo.Height)"></div>
                                                 }
                                             </div>
-                                        </div>
+                                        }
+                                    </div>
                                     }
                                 </div>
                             </div>
