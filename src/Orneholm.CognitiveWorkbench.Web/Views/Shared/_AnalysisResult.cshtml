@@ -179,76 +179,83 @@
     }
 </div>
 
-<div class="my-5">
-    <h4>Brands</h4>
+@if (Model.Brands != null)
+{
+    <div class="my-5">
+        <h4>Brands</h4>
 
-    <table class="table table-striped table-hover">
-        <thead class="thead-dark">
-            <tr>
-                <th>Name</th>
-                <th>Rectangle</th>
-                <th>Confidence</th>
-            </tr>
-        </thead>
-        <tbody class="cwb-image-boxes-table" data-cwb-for=".cwb-image-boxes-brands">
-            @foreach (var brand in Model.Brands.OrderByDescending(x => x.Confidence))
-            {
+        <table class="table table-striped table-hover">
+            <thead class="thead-dark">
                 <tr>
-                    <th>@brand.Name</th>
-                    <td>@brand.Rectangle.ToDescription()</td>
-                    <td>@brand.Confidence.ToDescriptivePercentage()</td>
+                    <th>Name</th>
+                    <th>Rectangle</th>
+                    <th>Confidence</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody class="cwb-image-boxes-table" data-cwb-for=".cwb-image-boxes-brands">
+                @foreach (var brand in Model.Brands?.OrderByDescending(x => x.Confidence))
+                {
+                    <tr>
+                        <th>@brand.Name</th>
+                        <td>@brand.Rectangle.ToDescription()</td>
+                        <td>@brand.Confidence.ToDescriptivePercentage()</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
 
-    @if (!Model.Brands.Any())
-    {
-        <p class="p-2">
-            No brands available.
-        </p>
-    }
-</div>
+        @if (!Model.Brands.Any())
+        {
+            <p class="p-2">
+                No brands available.
+            </p>
+        }
+    </div>
+}
 
-<div class="my-5">
-    <h4>Objects</h4>
 
-    <table class="table table-striped table-hover">
-        <thead class="thead-dark">
-            <tr>
-                <th>Name</th>
-                <th>Rectangle</th>
-                <th>Confidence</th>
-                <th>Parent(s)</th>
-            </tr>
-        </thead>
-        <tbody class="cwb-image-boxes-table" data-cwb-for=".cwb-image-boxes-objects">
-            @foreach (var obj in Model.Objects.OrderByDescending(x => x.Confidence))
-            {
+@if (Model.Objects != null)
+{
+    <div class="my-5">
+        <h4>Objects</h4>
+
+        <table class="table table-striped table-hover">
+            <thead class="thead-dark">
                 <tr>
-                    <th>@obj.ObjectProperty.ToCapitalized()</th>
-                    <td>@obj.Rectangle.ToDescription()</td>
-                    <td>@obj.Confidence.ToDescriptivePercentage()</td>
-                    <td>
-                        <ol class="pl-1">
-                            @foreach (var parent in obj.Parent.ToFlatList())
-                            {
-                                <li>@parent.ObjectProperty: @parent.Confidence.ToDescriptivePercentage()</li>
-                            }
-                        </ol>
-                    </td>
+                    <th>Name</th>
+                    <th>Rectangle</th>
+                    <th>Confidence</th>
+                    <th>Parent(s)</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody class="cwb-image-boxes-table" data-cwb-for=".cwb-image-boxes-objects">
+                @foreach (var obj in Model.Objects.OrderByDescending(x => x.Confidence))
+                {
+                    <tr>
+                        <th>@obj.ObjectProperty.ToCapitalized()</th>
+                        <td>@obj.Rectangle.ToDescription()</td>
+                        <td>@obj.Confidence.ToDescriptivePercentage()</td>
+                        <td>
+                            <ol class="pl-1">
+                                @foreach (var parent in obj.Parent.ToFlatList())
+                                {
+                                    <li>@parent.ObjectProperty: @parent.Confidence.ToDescriptivePercentage()</li>
+                                }
+                            </ol>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
 
-    @if (!Model.Objects.Any())
-    {
-        <p class="p-2">
-            No objects available.
-        </p>
-    }
-</div>
+        @if (!Model.Objects.Any())
+        {
+            <p class="p-2">
+                No objects available.
+            </p>
+        }
+    </div>
+}
 
 <div class="my-5">
     <h4>Faces</h4>
