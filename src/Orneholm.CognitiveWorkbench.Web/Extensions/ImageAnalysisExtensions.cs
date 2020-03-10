@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
+using Orneholm.CognitiveWorkbench.Web.Models;
 using FaceRectangle = Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models.FaceRectangle;
 
 namespace Orneholm.CognitiveWorkbench.Web.Extensions
@@ -156,6 +157,15 @@ namespace Orneholm.CognitiveWorkbench.Web.Extensions
             return $"X: {box[0]}; Y: {box[1]}; W: {box[2]}; H: {box[3]}";
         }
 
+        public static string ToDescription(this IList<double> boundingBox)
+        {
+            // BoundingBox: Bounding box of a recognized region, line, or word, depending on the parent object.
+            // The eight integers represent the four points (x-coordinate, y-coordinate) of the detected rectangle
+            // from the left-top corner and clockwise.
+            var bb = new RecognizeTextRotatedBoundingBox(boundingBox);
+            return $"MinX: {bb.MinLeft()}, MinY: {bb.MinTop()}, MaxW: {bb.MaxWidth()}, MaxH: {bb.MaxHeight()}";
+        }
+
         public static string ToDescription(this FaceRectangle faceRectangle)
         {
             return $"X: {faceRectangle.Left}; Y: {faceRectangle.Top}; W: {faceRectangle.Width}; H: {faceRectangle.Height}";
@@ -183,6 +193,18 @@ namespace Orneholm.CognitiveWorkbench.Web.Extensions
                    $"top: {box[1].ToCssPercentageString(imageHeight)}; " +
                    $"width: {box[2].ToCssPercentageString(imageWidth)}; " +
                    $"height: {box[3].ToCssPercentageString(imageHeight)};";
+        }
+
+        public static string ToCss(this IList<double> boundingBox, int imageWidth, int imageHeight)
+        {
+            // BoundingBox: Bounding box of a recognized region, line, or word, depending on the parent object.
+            // The eight integers represent the four points (x-coordinate, y-coordinate) of the detected rectangle
+            // from the left-top corner and clockwise.
+            var bb = new RecognizeTextRotatedBoundingBox(boundingBox);
+            return $"left: {bb.MinLeft().ToCssPercentageString(imageWidth)}; " +
+                   $"top: {bb.MinTop().ToCssPercentageString(imageHeight)}; " +
+                   $"width: {bb.MaxWidth().ToCssPercentageString(imageWidth)}; " +
+                   $"height: {bb.MaxHeight().ToCssPercentageString(imageHeight)};";
         }
 
         public static string ToCss(this FaceRectangle boundingRect, int imageWidth, int imageHeight)

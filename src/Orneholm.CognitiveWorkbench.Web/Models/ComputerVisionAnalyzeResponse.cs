@@ -13,6 +13,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Models
 
         public ImageAnalysis AnalysisResult { get; set; } = new ImageAnalysis();
         public OcrResult OcrResult { get; set; } = new OcrResult();
+        public TextOperationResult RecognizeTextOperationResult { get; set; } = new TextOperationResult();
         public AreaOfInterestResult AreaOfInterestResult { get; set; } = new AreaOfInterestResult();
 
         public List<DetectedFace> FaceResult { get; set; } = new List<DetectedFace>();
