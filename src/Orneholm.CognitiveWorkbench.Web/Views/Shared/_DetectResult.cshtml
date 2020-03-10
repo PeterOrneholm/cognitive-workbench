@@ -16,8 +16,8 @@
             @foreach (var face in Model.FaceResult)
             {
                 <tr>
-                    <th>@face.FaceAttributes.Age</th>
-                    <th>@face.FaceAttributes.Smile</th>
+                    <th>@face.FaceAttributes?.Age</th>
+                    <th>@face.FaceAttributes?.Smile</th>
                     <th>@face.FaceRectangle.ToDescription()</th>
                 </tr>
             }

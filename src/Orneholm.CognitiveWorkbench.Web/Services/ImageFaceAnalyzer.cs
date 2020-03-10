@@ -42,10 +42,10 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
             };
         }
 
-        public async Task<FaceAnalyzeResponse> Analyze(string url)
+        public async Task<FaceAnalyzeResponse> Analyze(string url, FaceDetectionModel detectionModel)
         {
             // Face
-            var face = FaceDetect(url);
+            var face = FaceDetect(url, detectionModel);
             var imageInfo = GetImageInfo(url);
 
             // Combine
@@ -59,21 +59,33 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
             };
         }
 
-        private Task<IList<DetectedFace>> FaceDetect(string url)
+        private Task<IList<DetectedFace>> FaceDetect(string url, FaceDetectionModel detectionModel)
         {
+            var returnFaceLandmarks = true;
+            var returnFaceAttributes = FaceAttributes;
+
+            if (FaceDetectionModel.detection_02.Equals(detectionModel))
+            {
+                returnFaceLandmarks = false;
+                returnFaceAttributes = new List<FaceAttributeType>();
+            }
+
             return _faceClient.Face.DetectWithUrlAsync(
                 url,
-                false,
-                true,
-                FaceAttributes,
-                null,
-                true
+                returnFaceId: false,
+                returnFaceLandmarks: returnFaceLandmarks,
+                returnFaceAttributes: returnFaceAttributes,
+                recognitionModel: null,
+                returnRecognitionModel: true,
+                detectionModel: detectionModel.ToString()
             );
         }
 
         private async Task<ImageInfo> GetImageInfo(string url)
         {
             var httpClient = _httpClientFactory.CreateClient();
+            httpClient.DefaultRequestHeaders.Add("User-Agent", "CognitiveWorkbench"); // Allow to GET some images returning error when no user-agent is set
+
             var stream = await httpClient.GetStreamAsync(url);
             using var image = Image.FromStream(stream);
 
