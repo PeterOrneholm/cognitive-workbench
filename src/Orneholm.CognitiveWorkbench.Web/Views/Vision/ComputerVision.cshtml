@@ -297,7 +297,7 @@
                         <div class="card mb-3 cwb-result-image">
                             <img src="@Model.ComputerVisionAnalyzeResponse.ImageInfo.Url" class="card-img-top" alt="@Model.ComputerVisionAnalyzeResponse.ImageInfo.Description" />
                             <div class="cwb-image-boxes">
-                                <div class="cwb-image-boxes-ocr-lines">
+                                <div class="cwb-image-boxes-recognizetext-lines">
                                     @foreach (var line in Model.ComputerVisionAnalyzeResponse.RecognizeTextOperationResult.RecognitionResult.Lines)
                                     {
                                         <div class="cwb-image-box"

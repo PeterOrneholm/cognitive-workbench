@@ -70,7 +70,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
 
                 AnalysisResult = imageAnalysis.Result,
                 OcrResult = recognizedPrintedText.Result,
-                RecognizeTextOperationResult = recognizedText?.Result,
+                RecognizeTextOperationResult = recognizedText.Result,
                 AreaOfInterestResult = areaOfInterest.Result
             };
         }
@@ -102,18 +102,18 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
             var result = await _computerVisionClient.GetTextOperationResultAsync(operationId);
 
             // Wait for the operation to complete
-            var i = 1;
+            var iteration = 1;
             var waitDurationInMs = 500;
             var maxWaitTimeInMs = 30000;
             var maxTries = maxWaitTimeInMs / waitDurationInMs;
 
             while ((result.Status == TextOperationStatusCodes.Running || result.Status == TextOperationStatusCodes.NotStarted)
-                && i <= maxTries)
+                && iteration <= maxTries)
             {
                 await Task.Delay(waitDurationInMs);
 
                 result = await _computerVisionClient.GetTextOperationResultAsync(operationId);
-                i++;
+                iteration++;
             }
 
             return result;
