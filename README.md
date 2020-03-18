@@ -4,9 +4,48 @@
 [![Live demo](https://img.shields.io/static/v1?label=Demo&message=Try%20out%20the%20live%20demo&color=#17547a)](https://cognitive-workbench.azurewebsites.net/)
 [![Twitter Follow](https://img.shields.io/badge/Twitter-@PeterOrneholm-blue.svg?logo=twitter)](https://twitter.com/PeterOrneholm)
 
-A site to learn about and demo the capabilities of Azure Cognitive Services. Main focus is on Vision, but more areas might be covered in the future.
+Cognitive Workbench is a site to learn about and demo the capabilities of Azure Cognitive Services. The site aims to be a complement to already existing demos, samples and sites to make it easier to try out the capabilities, visulize results and explain how the services works.
 
-Feel free to contribute.
+The sites is targeted towards people familiar with Microsoft Azure and Cognitive Services and will require you to create resources in Azure and bring your own keys.
+
+As of today, the site covers these services and API:s:
+
+## Vision
+
+* Computer Vision
+    * AnalyzeImage (ImageType, Faces, Adult, Categories, Color, Tags, Description, Objects, Brands)
+    * AreaOfInterest
+    * RecognizeText
+    * RecognizePrintedText
+    * BatchReadFile
+* Face
+    * Detect (Age, Gender, HeadPose, Smile, FacialHair, Glasses, Emotion, Hair, Makeup, Occlusion, Accessories, Blur, Exposure, Noise)
+
+# Samples
+
+## Computer Vision
+
+### Input
+
+![Input](docs/images/CognitiveWorkbench_Sample_Input.PNG)
+
+### Analyze
+
+![Car](docs/images/CognitiveWorkbench_Sample_VisionCar.PNG)
+
+### OCR
+
+![Input](docs/images/CognitiveWorkbench_Sample_OCR.PNG)
+
+## Face
+
+![Face](docs/images/CognitiveWorkbench_Sample_Face.PNG)
+
+# Contributions
+
+Feel free to contribute. A few ideas of improvements are available as GitHub issues.
+
+Thanks to [@NicoRobPro](https://twitter.com/NicoRobPro) for some great additions to this site.
 
 # Third party sources
 
