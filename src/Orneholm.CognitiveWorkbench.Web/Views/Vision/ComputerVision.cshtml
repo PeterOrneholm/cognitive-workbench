@@ -440,19 +440,21 @@
                         let boxesTableBodies = document.querySelectorAll('.cwb-image-boxes-table');
                         boxesTableBodies.forEach(function (tbody) {
                             let target = document.querySelector(tbody.dataset.cwbFor);
-                            let targetBoxes = target.childNodes;
+                            if(target) {
+                                let targetBoxes = target.childNodes;
 
-                            for (var i = 0; i < tbody.childNodes.length; i++) {
-                                let sourceRow = tbody.childNodes[i];
-                                let targetBox = targetBoxes[i];
+                                for (var i = 0; i < tbody.childNodes.length; i++) {
+                                    let sourceRow = tbody.childNodes[i];
+                                    let targetBox = targetBoxes[i];
 
-                                sourceRow.addEventListener('mouseover', function () {
-                                    targetBox.classList.toggle('active', true);
-                                });
+                                    sourceRow.addEventListener('mouseover', function () {
+                                        targetBox.classList.toggle('active', true);
+                                    });
 
-                                sourceRow.addEventListener('mouseout', function () {
-                                    targetBox.classList.toggle('active', false);
-                                });
+                                    sourceRow.addEventListener('mouseout', function () {
+                                        targetBox.classList.toggle('active', false);
+                                    });
+                                }
                             }
                         });
                     });
