@@ -219,7 +219,7 @@
         }
 
         @section Scripts
-{
+        {
             <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
             <script>
                 (function () {
@@ -242,6 +242,16 @@
                             field.value = persistedValues.get(field.id);
                             field.addEventListener('change', persist);
                             field.addEventListener('keydown', persist);
+                        });
+
+                        var selectFields = document.querySelectorAll('select.cwb-input-remember');
+                        selectFields.forEach(function (field) {
+                            function persist() {
+                                persistedValues.set(field.id, field.value);
+                            }
+
+                            field.value = persistedValues.get(field.id);
+                            field.addEventListener('change', persist);
                         });
                     });
                 }());

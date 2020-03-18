@@ -432,6 +432,16 @@
                             field.addEventListener('change', persist);
                             field.addEventListener('keydown', persist);
                         });
+
+                        var selectFields = document.querySelectorAll('select.cwb-input-remember');
+                        selectFields.forEach(function (field) {
+                            function persist() {
+                                persistedValues.set(field.id, field.value);
+                            }
+
+                            field.value = persistedValues.get(field.id);
+                            field.addEventListener('change', persist);
+                        });
                     });
                 }());
 

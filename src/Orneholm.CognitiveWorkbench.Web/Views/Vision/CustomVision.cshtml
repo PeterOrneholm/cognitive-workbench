@@ -61,7 +61,7 @@
                                 </div>
                                 <div class="col">
                                     <div class="form-group">
-                                        <label asp-for="CustomVisionAnalyzeRequest.IterationPublishedName">Image Recognize Text Mode</label>
+                                        <label asp-for="CustomVisionAnalyzeRequest.IterationPublishedName">Published iteration name</label>
                                         <input type="text" required class="cwb-input-remember form-control" placeholder="IterationX" asp-for="CustomVisionAnalyzeRequest.IterationPublishedName" name="IterationPublishedName" />
                                     </div>
                                 </div>
@@ -195,6 +195,16 @@
                             field.value = persistedValues.get(field.id);
                             field.addEventListener('change', persist);
                             field.addEventListener('keydown', persist);
+                        });
+
+                        var selectFields = document.querySelectorAll('select.cwb-input-remember');
+                        selectFields.forEach(function (field) {
+                            function persist() {
+                                persistedValues.set(field.id, field.value);
+                            }
+
+                            field.value = persistedValues.get(field.id);
+                            field.addEventListener('change', persist);
                         });
                     });
                 }());
