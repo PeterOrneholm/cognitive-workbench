@@ -10,12 +10,12 @@ namespace Orneholm.CognitiveWorkbench.Web.Models
             {
                 IsAnalyzed = false,
 
-                CustomVisionAnalyzeRequest = new CustomVisionAnalyzeRequest(),
+                CustomVisionAnalyzeRequest = new CustomVisionRequest(),
                 CustomVisionAnalyzeResponse = null
             };
         }
 
-        public static CustomVisionViewModel Analyzed(CustomVisionAnalyzeRequest customVisionAnalyzeRequest, CustomVisionAnalyzeResponse customVisionAnalyzeResponse)
+        public static CustomVisionViewModel Analyzed(CustomVisionRequest customVisionAnalyzeRequest, CustomVisionResponse customVisionAnalyzeResponse)
         {
             return new CustomVisionViewModel
             {
@@ -28,7 +28,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Models
 
         public bool IsAnalyzed { get; internal set; }
 
-        public CustomVisionAnalyzeRequest CustomVisionAnalyzeRequest { get; internal set; } = new CustomVisionAnalyzeRequest();
-        public CustomVisionAnalyzeResponse CustomVisionAnalyzeResponse { get; internal set; }
+        public CustomVisionRequest CustomVisionAnalyzeRequest { get; internal set; } = new CustomVisionRequest();
+        public CustomVisionResponse CustomVisionAnalyzeResponse { get; internal set; }
     }
 }

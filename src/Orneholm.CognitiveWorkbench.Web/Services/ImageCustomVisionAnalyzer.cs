@@ -23,7 +23,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
             };
         }
 
-        public async Task<CustomVisionAnalyzeResponse> Analyze(string url, Guid projectId, string iterationPublishedName, CustomVisionProjectType projectType)
+        public async Task<CustomVisionResponse> Analyze(string url, Guid projectId, string iterationPublishedName, CustomVisionProjectType projectType)
         {
             // Custom vision
             var imageAnalysis = CustomVisionAnalyzeImage(url, projectId, iterationPublishedName, projectType);
@@ -32,7 +32,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
             // Combine
             await Task.WhenAll(imageAnalysis, imageInfo);
 
-            return new CustomVisionAnalyzeResponse
+            return new CustomVisionResponse
             {
                 ImageInfo = imageInfo.Result,
                 Predictions = imageAnalysis.Result.Predictions.ToList()

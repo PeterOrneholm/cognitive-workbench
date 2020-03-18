@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Orneholm.CognitiveWorkbench.Web.Models
 {
-    public class CustomVisionAnalyzeRequest
+    public class CustomVisionRequest
     {
         public string CustomVisionPredictionKey { get; set; } = string.Empty;
         public string CustomVisionEndpoint { get; set; } = string.Empty;

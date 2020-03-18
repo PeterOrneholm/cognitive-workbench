@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
+using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using Orneholm.CognitiveWorkbench.Web.Models;
 
@@ -174,6 +175,11 @@ namespace Orneholm.CognitiveWorkbench.Web.Extensions
             return $"X: {boundingRect.X}; Y: {boundingRect.Y}; W: {boundingRect.W}; H: {boundingRect.H}";
         }
 
+        public static string ToDescription(this BoundingBox boundingBox, int imageWidth, int imageHeight)
+        {
+            return $"X: {(int)(boundingBox.Left * imageWidth)}; Y: {(int)(boundingBox.Top * imageHeight)}; W: {(int)(boundingBox.Width * imageWidth)}; H: {(int)(boundingBox.Height * imageHeight)}";
+        }
+
         public static string ToCss(this Microsoft.Azure.CognitiveServices.Vision.Face.Models.FaceRectangle faceRectangle, int imageWidth, int imageHeight)
         {
             return $"left: {faceRectangle.Left.ToCssPercentageString(imageWidth)}; " +
@@ -217,6 +223,14 @@ namespace Orneholm.CognitiveWorkbench.Web.Extensions
                    $"top: {boundingRect.Y.ToCssPercentageString(imageHeight)}; " +
                    $"width: {boundingRect.W.ToCssPercentageString(imageWidth)}; " +
                    $"height: {boundingRect.H.ToCssPercentageString(imageHeight)};";
+        }
+
+        public static string ToCss(this BoundingBox boundingRect)
+        {
+            return $"left: {boundingRect.Left.ToCssPercentageString()}; " +
+                   $"top: {boundingRect.Top.ToCssPercentageString()}; " +
+                   $"width: {boundingRect.Width.ToCssPercentageString()}; " +
+                   $"height: {boundingRect.Height.ToCssPercentageString()};";
         }
 
         private static int[] ParseBox(this string boundingBox)

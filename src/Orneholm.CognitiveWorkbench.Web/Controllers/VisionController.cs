@@ -62,7 +62,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
         }
 
         [HttpPost("/vision/custom-vision")]
-        public async Task<ActionResult<CustomVisionViewModel>> CustomVision([FromForm]CustomVisionAnalyzeRequest request)
+        public async Task<ActionResult<CustomVisionViewModel>> CustomVision([FromForm]CustomVisionRequest request)
         {
             if (string.IsNullOrWhiteSpace(request.CustomVisionPredictionKey))
             {
