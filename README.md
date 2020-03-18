@@ -27,19 +27,19 @@ As of today, the site covers these services and API:s:
 
 ### Input
 
-![Input](docs/images/CognitiveWorkbench_Sample_Input.png)
+![Input](docs/images/CognitiveWorkbench_Sample_Input.PNG)
 
 ### Analyze
 
-![Car](docs/images/CognitiveWorkbench_Sample_VisionCar.png)
+![Car](docs/images/CognitiveWorkbench_Sample_VisionCar.PNG)
 
 ### OCR
 
-![Input](docs/images/CognitiveWorkbench_Sample_OCR.png)
+![Input](docs/images/CognitiveWorkbench_Sample_OCR.PNG)
 
 ## Face
 
-![Face](docs/images/CognitiveWorkbench_Sample_Face.png)
+![Face](docs/images/CognitiveWorkbench_Sample_Face.PNG)
 
 # Contributions
 
