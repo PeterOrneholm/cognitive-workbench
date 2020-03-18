@@ -177,11 +177,11 @@
             <script>
                 (function () {
                     var persistedValues = {
-                        get: function (key) {
-                            return localStorage.getItem('cwb.persisted.' + key) || '';
+                        get: function (key, defaultValue) {
+                            return localStorage.getItem('cwb.persisted.' + key) || defaultValue;
                         },
-                        set: function (key, value) {
-                            localStorage.setItem('cwb.persisted.' + key, value || '');
+                        set: function (key, value, defaultValue) {
+                            localStorage.setItem('cwb.persisted.' + key, value || defaultValue);
                         }
                     };
 
@@ -189,10 +189,10 @@
                         var fields = document.querySelectorAll('input.cwb-input-remember');
                         fields.forEach(function (field) {
                             function persist() {
-                                persistedValues.set(field.id, field.value);
+                                persistedValues.set(field.id, field.value, '');
                             }
 
-                            field.value = persistedValues.get(field.id);
+                            field.value = persistedValues.get(field.id, '');
                             field.addEventListener('change', persist);
                             field.addEventListener('keydown', persist);
                         });
@@ -200,10 +200,10 @@
                         var selectFields = document.querySelectorAll('select.cwb-input-remember');
                         selectFields.forEach(function (field) {
                             function persist() {
-                                persistedValues.set(field.id, field.value);
+                                persistedValues.set(field.id, field.value, 0);
                             }
 
-                            field.value = persistedValues.get(field.id);
+                            field.value = persistedValues.get(field.id, 0);
                             field.addEventListener('change', persist);
                         });
                     });
