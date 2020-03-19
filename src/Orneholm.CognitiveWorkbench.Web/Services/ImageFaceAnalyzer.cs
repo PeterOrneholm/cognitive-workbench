@@ -42,10 +42,10 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
             };
         }
 
-        public async Task<FaceAnalyzeResponse> Analyze(string url, FaceDetectionModel detectionModel)
+        public async Task<FaceAnalyzeResponse> Analyze(string url, FaceDetectionModel detectionModel, bool enableIdentification, FaceIdentificationGroupType identificationGroupType, string identificationGroupId)
         {
             // Face
-            var face = FaceDetect(url, detectionModel);
+            var face = FaceDetect(url, detectionModel, enableIdentification, identificationGroupType, identificationGroupId);
             var imageInfo = GetImageInfo(url);
 
             // Combine
@@ -54,12 +54,11 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
             return new FaceAnalyzeResponse
             {
                 ImageInfo = imageInfo.Result,
-
                 FaceResult = face.Result.ToList()
             };
         }
 
-        private Task<IList<DetectedFace>> FaceDetect(string url, FaceDetectionModel detectionModel)
+        private Task<IList<DetectedFace>> FaceDetect(string url, FaceDetectionModel detectionModel, bool enableIdentification, FaceIdentificationGroupType identificationGroupType, string identificationGroupId)
         {
             var returnFaceLandmarks = true;
             var returnFaceAttributes = FaceAttributes;

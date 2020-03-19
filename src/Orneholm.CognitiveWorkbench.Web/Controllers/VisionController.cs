@@ -83,7 +83,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
             Track("Vision_Face");
 
             var imageAnalyzer = new ImageFaceAnalyzer(request.FaceSubscriptionKey, request.FaceEndpoint, _httpClientFactory);
-            var analyzeResult = await imageAnalyzer.Analyze(request.ImageUrl, request.DetectionModel);
+            var analyzeResult = await imageAnalyzer.Analyze(request.ImageUrl, request.DetectionModel, request.EnableIdentification, request.IdentificationGroupType, request.IdentificationGroupId);
 
             return View(FaceViewModel.Analyzed(request, analyzeResult));
         }

@@ -13,16 +13,16 @@
                 <div class="card-header">
                     <ul class="nav nav-tabs card-header-tabs">
                         <li class="nav-item">
-                            <a class="nav-link active" data-toggle="list" href="#cwb-form-computervision-image">Image</a>
+                            <a class="nav-link active" data-toggle="list" href="#cwb-form-face-image">Image</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-toggle="list" href="#cwb-form-computervision-settings">Settings</a>
+                            <a class="nav-link" data-toggle="list" href="#cwb-form-face-settings">Settings</a>
                         </li>
                     </ul>
                 </div>
                 <div class="card-body">
                     <div class="tab-content">
-                        <div class="tab-pane fade show active" id="cwb-form-computervision-image">
+                        <div class="tab-pane fade show active" id="cwb-form-face-image">
                             <p class="mb-3">
                                 <ul class="list-unstyled text-small">
                                     <li>
@@ -49,9 +49,32 @@
                                 <div class="col">
                                     <div class="form-group">
                                         <label asp-for="FaceAnalyzeRequest.DetectionModel">Detection model</label>
-                                        <select asp-for="FaceAnalyzeRequest.DetectionModel" asp-items="Html.GetEnumSelectList<FaceDetectionModel>()" required class="cwb-input-remember form-control" name="DetectionModel">
+                                        <select required class="cwb-input-remember form-control" asp-for="FaceAnalyzeRequest.DetectionModel" asp-items="Html.GetEnumSelectList<FaceDetectionModel>()" name="DetectionModel">
                                         </select>
                                     </div>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-3">
+                                    <label asp-for="FaceAnalyzeRequest.EnableIdentification">Enable identification</label>
+                                    <input type="checkbox" class="cwb-input-remember form-control" asp-for="FaceAnalyzeRequest.EnableIdentification" name="EnableIdentification" />
+                                </div>
+                                <div class="form-group col" id="cwb-form-face-image-recognition-model">
+                                    <label asp-for="FaceAnalyzeRequest.RecognitionModel">Recognition model</label>
+                                    <select required class="cwb-input-remember form-control cwb-face-identification-setting" asp-for="FaceAnalyzeRequest.RecognitionModel" asp-items="Html.GetEnumSelectList<FaceRecognitionModel>()" name="RecognitionModel">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-3" id="cwb-form-face-image-identification-type">
+                                    <label asp-for="FaceAnalyzeRequest.IdentificationGroupType">Identification group type</label>
+                                    <select required class="cwb-input-remember form-control cwb-face-identification-setting" asp-for="FaceAnalyzeRequest.IdentificationGroupType" asp-items="Html.GetEnumSelectList<FaceIdentificationGroupType>()" name="IdentificationGroupType">
+                                    </select>
+                                </div>
+                                <div class="form-group col" id="cwb-form-face-image-identification-groupid">
+                                    <label asp-for="FaceAnalyzeRequest.IdentificationGroupId">Identification Group Id</label>
+                                    <input type="text" required class="cwb-input-remember form-control cwb-face-identification-setting" placeholder="groupName" asp-for="FaceAnalyzeRequest.IdentificationGroupId" name="IdentificationGroupId" />
                                 </div>
                             </div>
 
@@ -62,7 +85,7 @@
 
                             <button type="submit" class="btn btn-primary">Analyze</button>
                         </div>
-                        <div class="tab-pane fade" id="cwb-form-computervision-settings">
+                        <div class="tab-pane fade" id="cwb-form-face-settings">
                             <p>
                                 This site requires you to set up your own resource(s) for Azure Cognitive Services. Create a resource for Computer Vision using the <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/cognitive-services-apis-create-account?tabs=multiservice%2Cwindows">Azure portal</a> or <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/cognitive-services-apis-create-account-cli?tabs=windows">Azure CLI</a> on your local machine.
                             </p>
@@ -87,7 +110,7 @@
     <div class="container-fluid">
         @if (Model.IsAnalyzed && Model.FaceAnalyzeResponse?.FaceResult != null)
         {
-            <section class="cwb-result-computervision-analyze">
+            <section class="cwb-result-face-analyze">
                 <h2 class="mt-5">Face - Detect</h2>
 
                 <div class="row">
@@ -221,29 +244,45 @@
         }
 
         @section Scripts
-{
+        {
             <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
             <script>
                 (function () {
                     var persistedValues = {
-                        get: function (key) {
-                            return localStorage.getItem('cwb.persisted.' + key) || '';
+                        get: function (key, defaultValue) {
+                            return localStorage.getItem('cwb.persisted.' + key) || defaultValue;
                         },
-                        set: function (key, value) {
-                            localStorage.setItem('cwb.persisted.' + key, value || '');
+                        set: function (key, value, defaultValue) {
+                            localStorage.setItem('cwb.persisted.' + key, value || defaultValue);
                         }
                     };
 
                     document.addEventListener('DOMContentLoaded', function () {
                         var fields = document.querySelectorAll('input.cwb-input-remember');
                         fields.forEach(function (field) {
-                            function persist() {
-                                persistedValues.set(field.id, field.value);
+                            if (field.type === 'checkbox') {
+                                function persist() {
+                                    persistedValues.set(field.id, field.checked, 'false');
+                                }
+                                field.checked = (persistedValues.get(field.id, 'false') === 'true');
+                                field.addEventListener('change', persist);
+                            } else {
+                                function persist() {
+                                    persistedValues.set(field.id, field.value, '');
+                                }
+                                field.value = persistedValues.get(field.id, '');
+                                field.addEventListener('change', persist);
+                                field.addEventListener('keydown', persist);
                             }
+                        });
 
-                            field.value = persistedValues.get(field.id);
+                        var selectFields = document.querySelectorAll('select.cwb-input-remember');
+                        selectFields.forEach(function (field) {
+                            function persist() {
+                                persistedValues.set(field.id, field.value, 0);
+                            }
+                            field.value = persistedValues.get(field.id, 0);
                             field.addEventListener('change', persist);
-                            field.addEventListener('keydown', persist);
                         });
                     });
                 }());
@@ -267,6 +306,41 @@
                                     targetBox.classList.toggle('active', false);
                                 });
                             }
+                        });
+                    });
+                }());
+
+                (function () {
+                    document.addEventListener('DOMContentLoaded', function () {
+                        function updateIdentificationFields(checkboxIsChecked) {
+                            var recognitionModel = document.getElementById('cwb-form-face-image-recognition-model');
+                            var identificationType = document.getElementById('cwb-form-face-image-identification-type');
+                            var identificationGroupId = document.getElementById('cwb-form-face-image-identification-groupid');
+
+                            if (checkboxIsChecked) {
+                                recognitionModel.style.display = 'block';
+                                identificationType.style.display = 'block';
+                                identificationGroupId.style.display = 'block';
+                            } else {
+                                recognitionModel.style.display = 'none';
+                                identificationType.style.display = 'none';
+                                identificationGroupId.style.display = 'none';
+                            }
+
+                            var identificationSettingInputs = document.querySelectorAll('.cwb-face-identification-setting');
+                            identificationSettingInputs.forEach(function (field) {
+                                field.required = checkboxIsChecked;
+                            });
+                        }
+
+                        var identificationCheckbox = document.getElementById('FaceAnalyzeRequest_EnableIdentification');
+
+                        // Init
+                        updateIdentificationFields(identificationCheckbox.checked);
+
+                        // On change
+                        identificationCheckbox.addEventListener('change', function () {
+                            updateIdentificationFields(identificationCheckbox.checked);
                         });
                     });
                 }());
