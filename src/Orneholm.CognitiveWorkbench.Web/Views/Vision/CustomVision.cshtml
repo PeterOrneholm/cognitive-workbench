@@ -42,7 +42,7 @@
                             </p>
 
                             <p class="mb-3">
-                                <strong>Note:</strong> You need to provide your own keys for Azure Cognitive Services - Computer Vision under the tab <em>Settings</em>.
+                                <strong>Note:</strong> You need to provide your own keys for Azure Cognitive Services - Custom Vision (prediction) under the tab <em>Settings</em>.
                             </p>
 
                             <div class="form-row">
@@ -76,7 +76,7 @@
                         </div>
                         <div class="tab-pane fade" id="cwb-form-customvision-settings">
                             <p>
-                                This site requires you to set up your own resource(s) for Azure Cognitive Services. Create a resource for Computer Vision using the <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/cognitive-services-apis-create-account?tabs=multiservice%2Cwindows">Azure portal</a> or <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/cognitive-services-apis-create-account-cli?tabs=windows">Azure CLI</a> on your local machine.
+                                This site requires you to set up your own resource(s) for Azure Cognitive Services. Create a resource for Custom Vision using the <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/custom-vision-service/getting-started-build-a-classifier#create-custom-vision-resources-in-the-azure-portal">Azure portal</a> or <a href="https://docs.microsoft.com/en-us/cli/azure/cognitiveservices/account?view=azure-cli-latest#az-cognitiveservices-account-create">Azure CLI</a> on your local machine.
                             </p>
 
                             <div class="form-row">
@@ -121,9 +121,6 @@
                                                 <div class="cwb-image-box-metadata">
                                                     <table class="cwb-image-box-metadata-table">
                                                         <tbody>
-                                                            <tr class="cwb-image-box-metadata-table-header">
-                                                                <th colspan="2">Misc</th>
-                                                            </tr>
                                                             <tr>
                                                                 <th>Probability</th>
                                                                 <td>@obj.Probability.ToDescriptivePercentage()</td>
