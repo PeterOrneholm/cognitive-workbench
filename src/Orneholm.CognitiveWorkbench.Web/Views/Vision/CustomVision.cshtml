@@ -1,0 +1,236 @@
+@using Orneholm.CognitiveWorkbench.Web.Extensions
+@using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models
+@model CustomVisionViewModel
+<main role="main" class="pb-3">
+    <div class="container">
+        <h2>Vision - Custom Vision</h2>
+
+        <p>
+            Process classification of images or object detection based on your own tags.
+        </p>
+
+        <form method="post">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="list" href="#cwb-form-customvision-image">Image</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="list" href="#cwb-form-customvision-settings">Settings</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="cwb-form-customvision-image">
+                            <p class="mb-3">
+                                <ul class="list-unstyled text-small">
+                                    <li>
+                                        The image must be presented in JPEG, PNG, GIF, or BMP
+                                    </li>
+                                    <li>
+                                        The file size of the image must be less than 4 megabytes (MB)
+                                    </li>
+                                    <li>
+                                        The dimensions of the image must be greater than 256 pixels for both height and width (otherwise, they will be upscaled)
+                                    </li>
+                                    <li>
+                                        See service documentation for limits and quotas on <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/Custom-Vision-Service/limits-and-quotas">docs.microsoft.com</a>
+                                    </li>
+                                </ul>
+                            </p>
+
+                            <p class="mb-3">
+                                <strong>Note:</strong> You need to provide your own keys for Azure Cognitive Services - Custom Vision (prediction) under the tab <em>Settings</em>.
+                            </p>
+
+                            <div class="form-row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label asp-for="CustomVisionAnalyzeRequest.ProjectType">Project type</label>
+                                        <select asp-for="CustomVisionAnalyzeRequest.ProjectType" asp-items="Html.GetEnumSelectList<CustomVisionProjectType>()" required class="cwb-input-remember form-control" name="ProjectType">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label asp-for="CustomVisionAnalyzeRequest.ProjectId">Project ID (Guid)</label>
+                                        <input type="text" required class="cwb-input-remember form-control" placeholder="00000000-0000-0000-0000-000000000000" asp-for="CustomVisionAnalyzeRequest.ProjectId" name="ProjectId" />
+                                   </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label asp-for="CustomVisionAnalyzeRequest.IterationPublishedName">Published iteration name</label>
+                                        <input type="text" required class="cwb-input-remember form-control" placeholder="IterationX" asp-for="CustomVisionAnalyzeRequest.IterationPublishedName" name="IterationPublishedName" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="CustomVisionAnalyzeRequest.ImageUrl">Image URL</label>
+                                <input type="url" required class="cwb-input-remember form-control" placeholder="https://example.org/url-to/image.jpg" asp-for="CustomVisionAnalyzeRequest.ImageUrl" name="ImageUrl" />
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Analyze</button>
+                        </div>
+                        <div class="tab-pane fade" id="cwb-form-customvision-settings">
+                            <p>
+                                This site requires you to set up your own resource(s) for Azure Cognitive Services. Create a resource for Custom Vision using the <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/custom-vision-service/getting-started-build-a-classifier#create-custom-vision-resources-in-the-azure-portal">Azure portal</a> or <a href="https://docs.microsoft.com/en-us/cli/azure/cognitiveservices/account?view=azure-cli-latest#az-cognitiveservices-account-create">Azure CLI</a> on your local machine.
+                            </p>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label asp-for="CustomVisionAnalyzeRequest.CustomVisionPredictionKey">Custom Vision - Prediction Key</label>
+                                    <input type="password" required class="cwb-input-remember form-control" placeholder="zq8lp6z7cqtew6h4c0bxy0r5cqx3in36" asp-for="CustomVisionAnalyzeRequest.CustomVisionPredictionKey" name="CustomVisionPredictionKey" />
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label asp-for="CustomVisionAnalyzeRequest.CustomVisionEndpoint">Custom Vision - Prediction endpoint</label>
+                                    <input type="url" required class="cwb-input-remember form-control" placeholder="https://[CUSTOMVISION-PREDICTION-RESOURCENAME].cognitiveservices.azure.com" asp-for="CustomVisionAnalyzeRequest.CustomVisionEndpoint" name="CustomVisionEndpoint" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="container-fluid">
+        @if (Model.IsAnalyzed && Model.CustomVisionAnalyzeResponse?.Predictions != null)
+        {
+            <section class="cwb-result-customvision-analyze">
+                <h2 class="mt-5">Custom Vision Result</h2>
+
+                <div class="row">
+                    <div class="col-md-7">
+                        <div class="card mb-3 cwb-result-image">
+                            <img src="@Model.CustomVisionAnalyzeResponse.ImageInfo.Url" class="card-img-top" alt="@Model.CustomVisionAnalyzeResponse.ImageInfo.Description" />
+                            @if (Model.CustomVisionAnalyzeRequest.ProjectType == CustomVisionProjectType.Object_Detection)
+                            {
+                                <div class="cwb-image-boxes">
+                                    <div class="cwb-image-boxes-predictions-full">
+                                        @foreach (var obj in Model.CustomVisionAnalyzeResponse.Predictions.OrderByDescending(x => x.Probability))
+                                        {
+                                            <div class="cwb-image-box" style="@obj.BoundingBox.ToCss()">
+                                                <div class="cwb-image-box-info" title="@obj.Probability.ToDescriptivePercentage()">
+                                                    <span class="cwb-image-box-type">Object</span>
+                                                    <span class="cwb-image-box-description">@obj.TagName</span>
+                                                </div>
+
+                                                <div class="cwb-image-box-metadata">
+                                                    <table class="cwb-image-box-metadata-table">
+                                                        <tbody>
+                                                            <tr>
+                                                                <th>Probability</th>
+                                                                <td>@obj.Probability.ToDescriptivePercentage()</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th>Tag Name</th>
+                                                                <td>@obj.TagName</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                            </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="card mb-3 cwb-result-content">
+                            <div class="card-header">
+                                <ul class="nav nav-tabs card-header-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="list" href="#cwb-result-customvision-analyze-info">Info (Parsed)</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="list" href="#cwb-result-customvision-analyze-json">JSON (Raw)</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="cwb-result-customvision-analyze-info">
+                                        <partial name="_CustomVisionResult" model="@Model" />
+                                    </div>
+                                    
+                                    <div class="tab-pane fade" id="cwb-result-customvision-analyze-json">
+                                        <partial name="_Json" model="@Model.CustomVisionAnalyzeResponse.Predictions" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        }
+
+        @section Scripts
+        {
+            <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+            <script>
+                (function () {
+                    var persistedValues = {
+                        get: function (key, defaultValue) {
+                            return localStorage.getItem('cwb.persisted.' + key) || defaultValue;
+                        },
+                        set: function (key, value, defaultValue) {
+                            localStorage.setItem('cwb.persisted.' + key, value || defaultValue);
+                        }
+                    };
+
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var fields = document.querySelectorAll('input.cwb-input-remember');
+                        fields.forEach(function (field) {
+                            function persist() {
+                                persistedValues.set(field.id, field.value, '');
+                            }
+
+                            field.value = persistedValues.get(field.id, '');
+                            field.addEventListener('change', persist);
+                            field.addEventListener('keydown', persist);
+                        });
+
+                        var selectFields = document.querySelectorAll('select.cwb-input-remember');
+                        selectFields.forEach(function (field) {
+                            function persist() {
+                                persistedValues.set(field.id, field.value, 0);
+                            }
+
+                            field.value = persistedValues.get(field.id, 0);
+                            field.addEventListener('change', persist);
+                        });
+                    });
+                }());
+
+                (function () {
+                    document.addEventListener('DOMContentLoaded', function () {
+                        let boxesTableBodies = document.querySelectorAll('.cwb-image-boxes-table');
+                        boxesTableBodies.forEach(function (tbody) {
+                            let target = document.querySelector(tbody.dataset.cwbFor);
+                            if(target) {
+                                let targetBoxes = target.childNodes;
+
+                                for (var i = 0; i < tbody.childNodes.length; i++) {
+                                    let sourceRow = tbody.childNodes[i];
+                                    let targetBox = targetBoxes[i];
+
+                                    sourceRow.addEventListener('mouseover', function () {
+                                        targetBox.classList.toggle('active', true);
+                                    });
+
+                                    sourceRow.addEventListener('mouseout', function () {
+                                        targetBox.classList.toggle('active', false);
+                                    });
+                                }
+                            }
+                        });
+                    });
+                }());
+            </script>
+        }
+    </div>
+</main>
