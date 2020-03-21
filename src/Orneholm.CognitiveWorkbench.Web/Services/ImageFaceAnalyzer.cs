@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -46,7 +45,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
         {
             // Face
             var face = FaceDetect(url, detectionModel);
-            var imageInfo = GetImageInfo(url);
+            var imageInfo = ImageInfoProcessor.GetImageInfo(url, _httpClientFactory);
 
             // Combine
             await Task.WhenAll(face, imageInfo);
@@ -79,25 +78,6 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
                 returnRecognitionModel: true,
                 detectionModel: detectionModel.ToString()
             );
-        }
-
-        private async Task<ImageInfo> GetImageInfo(string url)
-        {
-            var httpClient = _httpClientFactory.CreateClient();
-            httpClient.DefaultRequestHeaders.Add("User-Agent", "CognitiveWorkbench"); // Allow to GET some images returning error when no user-agent is set
-
-            var stream = await httpClient.GetStreamAsync(url);
-            using var image = Image.FromStream(stream);
-
-            return new ImageInfo
-            {
-                Url = url,
-
-                Width = image.Width,
-                Height = image.Height,
-
-                Description = $"Image from {url}"
-            };
         }
     }
 }
