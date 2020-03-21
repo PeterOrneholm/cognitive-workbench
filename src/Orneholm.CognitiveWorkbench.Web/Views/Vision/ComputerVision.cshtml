@@ -85,7 +85,7 @@
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label asp-for="ComputerVisionAnalyzeRequest.ComputerVisionEndpoint">Computer Vision - Endpoint</label>
-                                    <input type="text" required class="cwb-input-remember form-control" placeholder="https://[COMPUTERVISION-RESOURCENAME].cognitiveservices.azure.com/" asp-for="ComputerVisionAnalyzeRequest.ComputerVisionEndpoint" name="ComputerVisionEndpoint" />
+                                    <input type="url" required class="cwb-input-remember form-control" placeholder="https://[COMPUTERVISION-RESOURCENAME].cognitiveservices.azure.com/" asp-for="ComputerVisionAnalyzeRequest.ComputerVisionEndpoint" name="ComputerVisionEndpoint" />
                                 </div>
                             </div>
                         </div>
@@ -413,11 +413,11 @@
             <script>
                 (function () {
                     var persistedValues = {
-                        get: function (key) {
-                            return localStorage.getItem('cwb.persisted.' + key) || '';
+                        get: function (key, defaultValue) {
+                            return localStorage.getItem('cwb.persisted.' + key) || defaultValue;
                         },
-                        set: function (key, value) {
-                            localStorage.setItem('cwb.persisted.' + key, value || '');
+                        set: function (key, value, defaultValue) {
+                            localStorage.setItem('cwb.persisted.' + key, value || defaultValue);
                         }
                     };
 
@@ -425,12 +425,22 @@
                         var fields = document.querySelectorAll('input.cwb-input-remember');
                         fields.forEach(function (field) {
                             function persist() {
-                                persistedValues.set(field.id, field.value);
+                                persistedValues.set(field.id, field.value, '');
                             }
 
-                            field.value = persistedValues.get(field.id);
+                            field.value = persistedValues.get(field.id, '');
                             field.addEventListener('change', persist);
                             field.addEventListener('keydown', persist);
+                        });
+
+                        var selectFields = document.querySelectorAll('select.cwb-input-remember');
+                        selectFields.forEach(function (field) {
+                            function persist() {
+                                persistedValues.set(field.id, field.value, 0);
+                            }
+
+                            field.value = persistedValues.get(field.id, 0);
+                            field.addEventListener('change', persist);
                         });
                     });
                 }());

@@ -97,7 +97,7 @@
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label asp-for="FaceAnalyzeRequest.FaceEndpoint">Face - Endpoint</label>
-                                    <input type="text" required class="cwb-input-remember form-control" placeholder="https://[FACE-RESOURCENAME].cognitiveservices.azure.com/" asp-for="FaceAnalyzeRequest.FaceEndpoint" name="FaceEndpoint" />
+                                    <input type="url" required class="cwb-input-remember form-control" placeholder="https://[FACE-RESOURCENAME].cognitiveservices.azure.com/" asp-for="FaceAnalyzeRequest.FaceEndpoint" name="FaceEndpoint" />
                                 </div>
                             </div>
                         </div>
@@ -121,9 +121,7 @@
                                 <div class="cwb-image-boxes-faces-full">
                                     @foreach (var face in Model.FaceAnalyzeResponse.FaceResult)
                                     {
-                                    <div class="cwb-image-box"
-                                         style="@face.FaceRectangle.ToCss(Model.FaceAnalyzeResponse.ImageInfo.Width, Model.FaceAnalyzeResponse.ImageInfo.Height)">
-
+                                    <div class="cwb-image-box" style="@face.FaceRectangle.ToCss(Model.FaceAnalyzeResponse.ImageInfo.Width, Model.FaceAnalyzeResponse.ImageInfo.Height)">
                                         @if (face.FaceAttributes != null)
                                         {
                                             <div class="cwb-image-box-info" title="@face.FaceAttributes?.Age years old">
@@ -230,7 +228,7 @@
                             <div class="card-body">
                                 <div class="tab-content">
                                     <div class="tab-pane fade show active" id="cwb-result-face-detect-info">
-                                        <partial name="_DetectResult" model="@Model.FaceAnalyzeResponse" />
+                                        <partial name="_FaceDetectResult" model="@Model.FaceAnalyzeResponse" />
                                     </div>
                                     <div class="tab-pane fade" id="cwb-result-face-detect-json">
                                         <partial name="_Json" model="@Model.FaceAnalyzeResponse.FaceResult" />

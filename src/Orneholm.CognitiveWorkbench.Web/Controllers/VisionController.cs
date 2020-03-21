@@ -55,6 +55,47 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
             return View(ComputerVisionViewModel.Analyzed(request, analyzeResult));
         }
 
+        [HttpGet("/vision/custom-vision")]
+        public IActionResult CustomVision()
+        {
+            return View(CustomVisionViewModel.NotAnalyzed());
+        }
+
+        [HttpPost("/vision/custom-vision")]
+        public async Task<ActionResult<CustomVisionViewModel>> CustomVision([FromForm]CustomVisionRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.CustomVisionPredictionKey))
+            {
+                throw new ArgumentException("Missing or invalid CustomVisionPredictionKey", nameof(request.CustomVisionPredictionKey));
+            }
+
+            if (string.IsNullOrWhiteSpace(request.CustomVisionEndpoint))
+            {
+                throw new ArgumentException("Missing or invalid CustomVisionEndpoint", nameof(request.CustomVisionEndpoint));
+            }
+
+            if (string.IsNullOrWhiteSpace(request.ImageUrl))
+            {
+                throw new ArgumentException("Missing or invalid ImageUrl", nameof(request.ImageUrl));
+            }
+
+            if (request.ProjectId == null || Guid.Empty.Equals(request.ProjectId))
+            {
+                throw new ArgumentException("Missing or invalid ProjectId", nameof(request.ProjectId));
+            }
+
+            if (string.IsNullOrWhiteSpace(request.IterationPublishedName))
+            {
+                throw new ArgumentException("Missing or invalid IterationPublishedName", nameof(request.IterationPublishedName));
+            }
+
+            Track("Vision_CustomVision");
+
+            var imageAnalyzer = new ImageCustomVisionAnalyzer(request.CustomVisionPredictionKey, request.CustomVisionEndpoint, _httpClientFactory);
+            var analyzeResult = await imageAnalyzer.Analyze(request.ImageUrl, request.ProjectId, request.IterationPublishedName, request.ProjectType);
+
+            return View(CustomVisionViewModel.Analyzed(request, analyzeResult));
+        }
 
         [HttpGet("/vision/face")]
         public IActionResult Face()
