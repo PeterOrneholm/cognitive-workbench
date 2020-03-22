@@ -14,6 +14,6 @@ namespace Orneholm.CognitiveWorkbench.Web.Models
     {
         public IdentifyCandidate IdentifyCandidate { get; set; }
 
-        public Person Person { get; set; }
+        public string PersonName { get; set; }
     }
 }

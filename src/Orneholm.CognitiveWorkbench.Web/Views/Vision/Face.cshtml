@@ -114,7 +114,7 @@
         @if (Model.IsAnalyzed && Model.FaceAnalyzeResponse?.FaceResult != null)
         {
             <section class="cwb-result-face-analyze">
-                <h2 class="mt-5">Face - Detect</h2>
+                <h2 class="mt-5">Face - Detect@(Model.FaceAnalyzeRequest.EnableIdentification ? " and Identify" : "")</h2>
 
                 <div class="row">
                     <div class="col-md-7">
@@ -188,6 +188,20 @@
                                                                 </tr>
                                                             }
                                                         }
+                                                        @if (face.IdentificationCandidates != null && face.IdentificationCandidates.Any())
+                                                        {
+                                                            <tr class="cwb-image-box-metadata-table-header">
+                                                                <th colspan="2">Identification</th>
+                                                            </tr>
+
+                                                            @foreach (var identification in face.IdentificationCandidates)
+                                                            {
+                                                                <tr>
+                                                                    <th>@identification.PersonName</th>
+                                                                    <td>@identification.IdentifyCandidate.Confidence.ToPercentage()</td>
+                                                                </tr>
+                                                            }
+                                                        }
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -204,6 +218,20 @@
                                                         <tr class="cwb-image-box-metadata-table-header">
                                                             <th colspan="2">No attributes info</th>
                                                         </tr>
+                                                        @if (face.IdentificationCandidates != null && face.IdentificationCandidates.Any())
+                                                        {
+                                                            <tr class="cwb-image-box-metadata-table-header">
+                                                                <th colspan="2">Identification</th>
+                                                            </tr>
+
+                                                            @foreach (var identification in face.IdentificationCandidates)
+                                                            {
+                                                                <tr>
+                                                                    <th>@identification.PersonName</th>
+                                                                    <td>@identification.IdentifyCandidate.Confidence.ToPercentage()</td>
+                                                                </tr>
+                                                            }
+                                                        }
                                                     </tbody>
                                                 </table>
                                             </div>

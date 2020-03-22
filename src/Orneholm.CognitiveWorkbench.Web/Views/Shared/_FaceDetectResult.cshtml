@@ -9,17 +9,19 @@
             <tr>
                 <th>Age</th>
                 <th>Smile</th>
+                <th>Identification</th>
                 <th>Rectangle</th>
             </tr>
         </thead>
         <tbody class="cwb-image-boxes-table" data-cwb-for=".cwb-image-boxes-faces-full">
             @foreach (var face in Model.FaceResult)
             {
-                <tr>
-                    <th>@face.DetectedFace.FaceAttributes?.Age</th>
-                    <th>@face.DetectedFace.FaceAttributes?.Smile</th>
-                    <th>@face.DetectedFace.FaceRectangle.ToDescription()</th>
-                </tr>
+            <tr>
+                <th>@(face.DetectedFace.FaceAttributes?.Age?.ToString() ?? "-")</th>
+                <th>@(face.DetectedFace.FaceAttributes?.Smile?.ToString() ?? "-")</th>
+                <th>@(face.IdentificationCandidates != null ? face.IdentificationCandidates.Count.ToString() : "-")</th>
+                <th>@face.DetectedFace.FaceRectangle.ToDescription()</th>
+            </tr>
             }
         </tbody>
     </table>

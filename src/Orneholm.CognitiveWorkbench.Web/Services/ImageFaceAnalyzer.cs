@@ -199,7 +199,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
                             new IdentificationCandidate
                             {
                                 IdentifyCandidate = c,
-                                Person = identificationGroupPersons.SingleOrDefault(p => p.PersonId == c.PersonId)
+                                PersonName = identificationGroupPersons.SingleOrDefault(p => p.PersonId == c.PersonId)?.Name
                             }).ToList()
             });
         }
