@@ -38,6 +38,9 @@
                                     <li>
                                         Up to 100 faces can be returned for an image. Faces are ranked by face rectangle size from large to small.
                                     </li>
+                                    <li>
+                                        If you want to process identification, ensure that 'Recognition model' match the recognition model of your Person group / Large person group.
+                                    </li>
                                 </ul>
                             </p>
 
@@ -121,12 +124,12 @@
                                 <div class="cwb-image-boxes-faces-full">
                                     @foreach (var face in Model.FaceAnalyzeResponse.FaceResult)
                                     {
-                                    <div class="cwb-image-box" style="@face.FaceRectangle.ToCss(Model.FaceAnalyzeResponse.ImageInfo.Width, Model.FaceAnalyzeResponse.ImageInfo.Height)">
-                                        @if (face.FaceAttributes != null)
+                                    <div class="cwb-image-box" style="@face.DetectedFace.FaceRectangle.ToCss(Model.FaceAnalyzeResponse.ImageInfo.Width, Model.FaceAnalyzeResponse.ImageInfo.Height)">
+                                        @if (face.DetectedFace.FaceAttributes != null)
                                         {
-                                            <div class="cwb-image-box-info" title="@face.FaceAttributes?.Age years old">
+                                            <div class="cwb-image-box-info" title="@face.DetectedFace.FaceAttributes?.Age years old">
                                                 <span class="cwb-image-box-type">Face</span>
-                                                <span class="cwb-image-box-description">@face.FaceAttributes.Emotion.ToEmotion()</span>
+                                                <span class="cwb-image-box-description">@face.DetectedFace.FaceAttributes.Emotion.ToEmotion()</span>
                                             </div>
 
                                             <div class="cwb-image-box-metadata">
@@ -135,7 +138,7 @@
                                                         <tr class="cwb-image-box-metadata-table-header">
                                                             <th colspan="2">Emotions</th>
                                                         </tr>
-                                                        @foreach (var emotion in face.FaceAttributes.Emotion.ToEmotions())
+                                                        @foreach (var emotion in face.DetectedFace.FaceAttributes.Emotion.ToEmotions())
                                                         {
                                                             <tr>
                                                                 <th>@emotion.Key</th>
@@ -148,36 +151,36 @@
                                                         </tr>
                                                         <tr>
                                                             <th>Age</th>
-                                                            <td>@face.FaceAttributes.Age</td>
+                                                            <td>@face.DetectedFace.FaceAttributes.Age</td>
                                                         </tr>
                                                         <tr>
                                                             <th>Smile</th>
-                                                            <td>@face.FaceAttributes.Smile?.ToPercentage()</td>
+                                                            <td>@face.DetectedFace.FaceAttributes.Smile?.ToPercentage()</td>
                                                         </tr>
                                                         <tr>
                                                             <th>Beard</th>
-                                                            <td>@face.FaceAttributes.FacialHair.Beard.ToPercentage()</td>
+                                                            <td>@face.DetectedFace.FaceAttributes.FacialHair.Beard.ToPercentage()</td>
                                                         </tr>
                                                         <tr>
                                                             <th>Moustache</th>
-                                                            <td>@face.FaceAttributes.FacialHair.Moustache.ToPercentage()</td>
+                                                            <td>@face.DetectedFace.FaceAttributes.FacialHair.Moustache.ToPercentage()</td>
                                                         </tr>
 
                                                         <tr>
                                                             <th>Eye makeup</th>
-                                                            <td>@face.FaceAttributes.Makeup.EyeMakeup</td>
+                                                            <td>@face.DetectedFace.FaceAttributes.Makeup.EyeMakeup</td>
                                                         </tr>
                                                         <tr>
                                                             <th>Lip makeup</th>
-                                                            <td>@face.FaceAttributes.Makeup.LipMakeup</td>
+                                                            <td>@face.DetectedFace.FaceAttributes.Makeup.LipMakeup</td>
                                                         </tr>
-                                                        @if (face.FaceAttributes.Accessories.Any())
+                                                        @if (face.DetectedFace.FaceAttributes.Accessories.Any())
                                                         {
                                                             <tr class="cwb-image-box-metadata-table-header">
                                                                 <th colspan="2">Accessories</th>
                                                             </tr>
 
-                                                            @foreach (var accessory in face.FaceAttributes.Accessories)
+                                                            @foreach (var accessory in face.DetectedFace.FaceAttributes.Accessories)
                                                             {
                                                                 <tr>
                                                                     <th>@accessory.Type</th>
@@ -194,16 +197,26 @@
                                             <div class="cwb-image-box-info">
                                                 <span class="cwb-image-box-type">Face</span>
                                             </div>
+
+                                            <div class="cwb-image-box-metadata">
+                                                <table class="cwb-image-box-metadata-table">
+                                                    <tbody>
+                                                        <tr class="cwb-image-box-metadata-table-header">
+                                                            <th colspan="2">No attributes info</th>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         }
 
-                                        @if (face.FaceLandmarks != null)
+                                        @if (face.DetectedFace.FaceLandmarks != null)
                                         {
                                             <div class="cwb-image-box-landmarks">
-                                                @foreach (var landmark in face.FaceLandmarks.ToFaceLandmarks())
+                                                @foreach (var landmark in face.DetectedFace.FaceLandmarks.ToFaceLandmarks())
                                                 {
                                                     <div class="cwb-image-box-landmarks-landmark"
                                                          title="@landmark.Key"
-                                                         style="@landmark.Value.ToRelativeCss(face.FaceRectangle, Model.FaceAnalyzeResponse.ImageInfo.Width, Model.FaceAnalyzeResponse.ImageInfo.Height)"></div>
+                                                         style="@landmark.Value.ToRelativeCss(face.DetectedFace.FaceRectangle, Model.FaceAnalyzeResponse.ImageInfo.Width, Model.FaceAnalyzeResponse.ImageInfo.Height)"></div>
                                                 }
                                             </div>
                                         }

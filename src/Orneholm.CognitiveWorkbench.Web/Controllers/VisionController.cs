@@ -121,10 +121,15 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
                 throw new ArgumentException("Missing or invalid ImageUrl", nameof(request.ImageUrl));
             }
 
+            if (request.EnableIdentification && string.IsNullOrWhiteSpace(request.IdentificationGroupId))
+            {
+                throw new ArgumentException("Missing or invalid IdentificationGroupId", nameof(request.IdentificationGroupId));
+            }
+
             Track("Vision_Face");
 
             var imageAnalyzer = new ImageFaceAnalyzer(request.FaceSubscriptionKey, request.FaceEndpoint, _httpClientFactory);
-            var analyzeResult = await imageAnalyzer.Analyze(request.ImageUrl, request.DetectionModel, request.EnableIdentification, request.IdentificationGroupType, request.IdentificationGroupId);
+            var analyzeResult = await imageAnalyzer.Analyze(request.ImageUrl, request.DetectionModel, request.EnableIdentification, request.RecognitionModel, request.IdentificationGroupType, request.IdentificationGroupId);
 
             return View(FaceViewModel.Analyzed(request, analyzeResult));
         }
