@@ -58,26 +58,31 @@
                                 </div>
                             </div>
 
-                            <div class="form-row">
-                                <div class="form-group col-md-3">
-                                    <label asp-for="FaceAnalyzeRequest.EnableIdentification">Enable identification</label>
-                                    <input type="checkbox" class="cwb-input-remember form-control" asp-for="FaceAnalyzeRequest.EnableIdentification" name="EnableIdentification" />
-                                </div>
-                                <div class="form-group col" id="cwb-form-face-image-recognition-model">
-                                    <label asp-for="FaceAnalyzeRequest.RecognitionModel">Recognition model</label>
-                                    <select required class="cwb-input-remember form-control cwb-face-identification-setting" asp-for="FaceAnalyzeRequest.RecognitionModel" asp-items="Html.GetEnumSelectList<FaceRecognitionModel>()" name="RecognitionModel">
-                                    </select>
+                            <div class="my-3">
+                                <label>Identification</label>
+
+                                <div class="form-check pl-0">
+                                    <input type="checkbox" class="cwb-input-remember" asp-for="FaceAnalyzeRequest.EnableIdentification" name="EnableIdentification" />
+                                    <label class="form-check-label" asp-for="FaceAnalyzeRequest.EnableIdentification">
+                                        Enable identification
+                                    </label>
                                 </div>
                             </div>
-                            <div class="form-row">
+
+                            <div class="form-row" id="cwb-face-identification-form">
+                                <div class="form-group col-md-3" id="cwb-form-face-image-identification-groupid">
+                                    <label asp-for="FaceAnalyzeRequest.IdentificationGroupId">Identification Group Id</label>
+                                    <input type="text" required class="cwb-input-remember form-control cwb-face-identification-setting" placeholder="groupName" asp-for="FaceAnalyzeRequest.IdentificationGroupId" name="IdentificationGroupId" />
+                                </div>
                                 <div class="form-group col-md-3" id="cwb-form-face-image-identification-type">
                                     <label asp-for="FaceAnalyzeRequest.IdentificationGroupType">Identification group type</label>
                                     <select required class="cwb-input-remember form-control cwb-face-identification-setting" asp-for="FaceAnalyzeRequest.IdentificationGroupType" asp-items="Html.GetEnumSelectList<FaceIdentificationGroupType>()" name="IdentificationGroupType">
                                     </select>
                                 </div>
-                                <div class="form-group col" id="cwb-form-face-image-identification-groupid">
-                                    <label asp-for="FaceAnalyzeRequest.IdentificationGroupId">Identification Group Id</label>
-                                    <input type="text" required class="cwb-input-remember form-control cwb-face-identification-setting" placeholder="groupName" asp-for="FaceAnalyzeRequest.IdentificationGroupId" name="IdentificationGroupId" />
+                                <div class="form-group col-md-6" id="cwb-form-face-image-recognition-model">
+                                    <label asp-for="FaceAnalyzeRequest.RecognitionModel">Recognition model</label>
+                                    <select required class="cwb-input-remember form-control cwb-face-identification-setting" asp-for="FaceAnalyzeRequest.RecognitionModel" asp-items="Html.GetEnumSelectList<FaceRecognitionModel>()" name="RecognitionModel">
+                                    </select>
                                 </div>
                             </div>
 
@@ -352,19 +357,9 @@
                 (function () {
                     document.addEventListener('DOMContentLoaded', function () {
                         function updateIdentificationFields(checkboxIsChecked) {
-                            var recognitionModel = document.getElementById('cwb-form-face-image-recognition-model');
-                            var identificationType = document.getElementById('cwb-form-face-image-identification-type');
-                            var identificationGroupId = document.getElementById('cwb-form-face-image-identification-groupid');
+                            var faceIdentificationForm = document.getElementById('cwb-face-identification-form');
 
-                            if (checkboxIsChecked) {
-                                recognitionModel.style.display = 'block';
-                                identificationType.style.display = 'block';
-                                identificationGroupId.style.display = 'block';
-                            } else {
-                                recognitionModel.style.display = 'none';
-                                identificationType.style.display = 'none';
-                                identificationGroupId.style.display = 'none';
-                            }
+                            faceIdentificationForm.style.display = checkboxIsChecked ? "flex" : "none";
 
                             var identificationSettingInputs = document.querySelectorAll('.cwb-face-identification-setting');
                             identificationSettingInputs.forEach(function (field) {
