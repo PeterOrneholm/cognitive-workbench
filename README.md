@@ -44,7 +44,7 @@ As of today, the site covers these services and API:s:
 
 ### RecognizeText
 
-![OCR](docs/images/CognitiveWorkbench_Sample_RecognizeText.PNG)
+![OCR](docs/images/CognitiveWorkbench_Sample_RecognizeText.png)
 
 ## Face
 
