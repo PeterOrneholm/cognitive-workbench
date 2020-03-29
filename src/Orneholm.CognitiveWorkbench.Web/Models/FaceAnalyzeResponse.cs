@@ -9,6 +9,6 @@ namespace Orneholm.CognitiveWorkbench.Web.Models
 
         public List<FaceAttributeType> FaceAttributes { get; set; } = new List<FaceAttributeType>();
 
-        public List<DetectedFace> FaceResult { get; set; } = new List<DetectedFace>();
+        public List<FaceAnalyzeItem> FaceResult { get; set; } = new List<FaceAnalyzeItem>();
     }
 }
