@@ -16,7 +16,7 @@
                             <a class="nav-link active" data-toggle="list" href="#cwb-form-face-image">Image</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-toggle="list" href="#cwb-form-face-settings">Settings</a>
+                            <a class="nav-link" data-toggle="list" href="#cwb-form-face-settings">Azure Settings</a>
                         </li>
                     </ul>
                 </div>
@@ -24,29 +24,10 @@
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="cwb-form-face-image">
                             <p class="mb-3">
-                                <ul class="list-unstyled text-small">
-                                    <li>
-                                        The image must be presented in JPEG, PNG, GIF, or BMP
-                                    </li>
-                                    <li>
-                                        The allowed image file size is from 1 KB to 6 MB
-                                    </li>
-                                    <li>
-                                        The minimum detectable face size is 36x36 pixels in an image no larger than 1920x1080 pixels.<br />
-                                        Images with dimensions higher than 1920x1080 pixels will need a proportionally larger minimum face size.
-                                    </li>
-                                    <li>
-                                        Up to 100 faces can be returned for an image. Faces are ranked by face rectangle size from large to small.
-                                    </li>
-                                    <li>
-                                        If you want to process identification, ensure that 'Recognition model' match the recognition model of your Person group / Large person group.
-                                    </li>
-                                </ul>
+                                <strong>Note:</strong> You need to provide your own keys for Azure Cognitive Services - Face under the tab <em>Azure Settings</em>.
                             </p>
 
-                            <p class="mb-3">
-                                <strong>Note:</strong> You need to provide your own keys for Azure Cognitive Services - Face under the tab <em>Settings</em>.
-                            </p>
+                            <h3>Analyze</h3>
 
                             <div class="form-row">
                                 <div class="col">
@@ -58,9 +39,9 @@
                                 </div>
                             </div>
 
-                            <div class="my-3">
-                                <label>Identification</label>
+                            <h3>Identification</h3>
 
+                            <div class="my-3">
                                 <div class="form-check pl-0">
                                     <input type="checkbox" class="cwb-input-remember" asp-for="FaceAnalyzeRequest.EnableIdentification" name="EnableIdentification" />
                                     <label class="form-check-label" asp-for="FaceAnalyzeRequest.EnableIdentification">
@@ -85,6 +66,29 @@
                                     </select>
                                 </div>
                             </div>
+
+                            <h3>Common</h3>
+
+                            <p class="mb-3">
+                                <ul class="list-unstyled small">
+                                    <li>
+                                        The image must be presented in JPEG, PNG, GIF, or BMP
+                                    </li>
+                                    <li>
+                                        The allowed image file size is from 1 KB to 6 MB
+                                    </li>
+                                    <li>
+                                        The minimum detectable face size is 36x36 pixels in an image no larger than 1920x1080 pixels.<br />
+                                        Images with dimensions higher than 1920x1080 pixels will need a proportionally larger minimum face size.
+                                    </li>
+                                    <li>
+                                        Up to 100 faces can be returned for an image. Faces are ranked by face rectangle size from large to small.
+                                    </li>
+                                    <li>
+                                        If you want to process identification, ensure that 'Recognition model' match the recognition model of your Person group / Large person group.
+                                    </li>
+                                </ul>
+                            </p>
 
                             <div class="form-group">
                                 <label asp-for=FaceAnalyzeRequest.ImageUrl>Image URL</label>

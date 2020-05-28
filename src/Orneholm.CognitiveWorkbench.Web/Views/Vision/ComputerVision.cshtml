@@ -17,7 +17,7 @@
                             <a class="nav-link active" data-toggle="list" href="#cwb-form-computervision-image">Image</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-toggle="list" href="#cwb-form-computervision-settings">Settings</a>
+                            <a class="nav-link" data-toggle="list" href="#cwb-form-computervision-settings">Azure Settings</a>
                         </li>
                     </ul>
                 </div>
@@ -25,22 +25,10 @@
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="cwb-form-computervision-image">
                             <p class="mb-3">
-                                <ul class="list-unstyled text-small">
-                                    <li>
-                                        The image must be presented in JPEG, PNG, GIF, or BMP
-                                    </li>
-                                    <li>
-                                        The file size of the image must be less than 4 megabytes (MB)
-                                    </li>
-                                    <li>
-                                        The dimensions of the image must be greater than 50 x 50 pixels
-                                    </li>
-                                </ul>
+                                <strong>Note:</strong> You need to provide your own keys for Azure Cognitive Services - Computer Vision under the tab <em>Azure Settings</em>.
                             </p>
 
-                            <p class="mb-3">
-                                <strong>Note:</strong> You need to provide your own keys for Azure Cognitive Services - Computer Vision under the tab <em>Settings</em>.
-                            </p>
+                            <h3>Analyze</h3>
 
                             <div class="form-row">
                                 <div class="col">
@@ -50,6 +38,11 @@
                                         </select>
                                     </div>
                                 </div>
+                            </div>
+
+                            <h3>OCR</h3>
+
+                            <div class="form-row">
                                 <div class="col">
                                     <div class="form-group">
                                         <label asp-for="ComputerVisionAnalyzeRequest.ImageOcrLanguage">Image OCR Language</label>
@@ -65,6 +58,22 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <h3>Common</h3>
+
+                            <p class="mb-3">
+                                <ul class="list-unstyled small">
+                                    <li>
+                                        The image must be presented in JPEG, PNG, GIF, or BMP
+                                    </li>
+                                    <li>
+                                        The file size of the image must be less than 4 megabytes (MB)
+                                    </li>
+                                    <li>
+                                        The dimensions of the image must be greater than 50 x 50 pixels
+                                    </li>
+                                </ul>
+                            </p>
 
                             <div class="form-group">
                                 <label asp-for="ComputerVisionAnalyzeRequest.ImageUrl">Image URL</label>
@@ -107,7 +116,7 @@
                             <img src="@Model.ComputerVisionAnalyzeResponse.ImageInfo.Url" class="card-img-top" alt="@Model.ComputerVisionAnalyzeResponse.ImageInfo.Description" />
                             <div class="cwb-image-boxes">
                                 @if (Model.ComputerVisionAnalyzeResponse.AnalysisResult.Brands != null
-                                  && Model.ComputerVisionAnalyzeResponse.AnalysisResult.Brands.Count > 0)
+                                && Model.ComputerVisionAnalyzeResponse.AnalysisResult.Brands.Count > 0)
                                 {
                                     <div class="cwb-image-boxes-brands">
                                         @foreach (var brand in Model.ComputerVisionAnalyzeResponse.AnalysisResult.Brands.OrderByDescending(x => x.Confidence))
@@ -124,7 +133,7 @@
                                 }
 
                                 @if (Model.ComputerVisionAnalyzeResponse.AnalysisResult.Objects != null
-                                   && Model.ComputerVisionAnalyzeResponse.AnalysisResult.Objects.Count > 0)
+                                 && Model.ComputerVisionAnalyzeResponse.AnalysisResult.Objects.Count > 0)
                                 {
                                     <div class="cwb-image-boxes-objects">
                                         @foreach (var obj in Model.ComputerVisionAnalyzeResponse.AnalysisResult.Objects.OrderByDescending(x => x.Confidence))
@@ -233,72 +242,6 @@
             </section>
         }
 
-        @if (Model.IsAnalyzed && Model.ComputerVisionAnalyzeResponse?.OcrResult != null)
-        {
-            <section class="cwb-result-computervision-analyze">
-                <h2 class="mt-5">Computer Vision - OCR</h2>
-
-                <div class="row">
-                    <div class="col-md-7">
-                        <div class="card mb-3 cwb-result-image">
-                            <img src="@Model.ComputerVisionAnalyzeResponse.ImageInfo.Url" class="card-img-top" alt="@Model.ComputerVisionAnalyzeResponse.ImageInfo.Description" />
-                            <div class="cwb-image-boxes">
-                                <div class="cwb-image-boxes-ocr-regions">
-                                    @foreach (var region in Model.ComputerVisionAnalyzeResponse.OcrResult.Regions)
-                                    {
-                                        <div class="cwb-image-box"
-                                             style="@region.BoundingBox.ToCss(Model.ComputerVisionAnalyzeResponse.ImageInfo.Width, Model.ComputerVisionAnalyzeResponse.ImageInfo.Height)">
-                                            <div class="cwb-image-box-info" title="@region.Lines.Count lines">
-                                                <span class="cwb-image-box-type">Region</span>
-                                            </div>
-                                        </div>
-                                    }
-                                </div>
-                                <div class="cwb-image-boxes-ocr-lines">
-                                    @foreach (var region in Model.ComputerVisionAnalyzeResponse.OcrResult.Regions)
-                                    {
-                                        foreach (var line in region.Lines)
-                                        {
-                                            <div class="cwb-image-box"
-                                                 style="@line.BoundingBox.ToCss(Model.ComputerVisionAnalyzeResponse.ImageInfo.Width, Model.ComputerVisionAnalyzeResponse.ImageInfo.Height)">
-                                                <div class="cwb-image-box-info" title="@string.Join(" ", line.Words.Select(x => x.Text))">
-                                                    <span class="cwb-image-box-type">Line</span>
-                                                </div>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-5">
-                        <div class="card mb-3 cwb-result-content">
-                            <div class="card-header">
-                                <ul class="nav nav-tabs card-header-tabs">
-                                    <li class="nav-item">
-                                        <a class="nav-link active" data-toggle="list" href="#cwb-result-computervision-ocr-info">Info (Parsed)</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" data-toggle="list" href="#cwb-result-computervision-ocr-json">JSON (Raw)</a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="card-body">
-                                <div class="tab-content">
-                                    <div class="tab-pane fade show active" id="cwb-result-computervision-ocr-info">
-                                        <partial name="_OcrResult" model="@Model.ComputerVisionAnalyzeResponse.OcrResult" />
-                                    </div>
-                                    <div class="tab-pane fade" id="cwb-result-computervision-ocr-json">
-                                        <partial name="_Json" model="@Model.ComputerVisionAnalyzeResponse.OcrResult" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        }
-
         @if (Model.IsAnalyzed && Model.ComputerVisionAnalyzeResponse?.RecognizeTextOperationResult != null)
         {
             <section class="cwb-result-computervision-analyze">
@@ -328,7 +271,10 @@
                             <div class="card-header">
                                 <ul class="nav nav-tabs card-header-tabs">
                                     <li class="nav-item">
-                                        <a class="nav-link active" data-toggle="list" href="#cwb-result-computervision-recognizetext-info">Info (Parsed)</a>
+                                        <a class="nav-link active" data-toggle="list" href="#cwb-result-computervision-recognizetext-text">Text (Combined)</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="list" href="#cwb-result-computervision-recognizetext-info">Info (Parsed)</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link" data-toggle="list" href="#cwb-result-computervision-recognizetext-json">JSON (Raw)</a>
@@ -337,7 +283,10 @@
                             </div>
                             <div class="card-body">
                                 <div class="tab-content">
-                                    <div class="tab-pane fade show active" id="cwb-result-computervision-recognizetext-info">
+                                    <div class="tab-pane fade show active" id="cwb-result-computervision-recognizetext-text">
+                                        <partial name="_CombinedTextResult" model="@Model.ComputerVisionAnalyzeResponse.RecognizeTextOperationResult.ToCombinedTexts()" />
+                                    </div>
+                                    <div class="tab-pane fade" id="cwb-result-computervision-recognizetext-info">
                                         <partial name="_RecognizeTextOperationResult" model="@Model.ComputerVisionAnalyzeResponse.RecognizeTextOperationResult" />
                                     </div>
                                     <div class="tab-pane fade" id="cwb-result-computervision-recognizetext-json">
@@ -383,7 +332,10 @@
                             <div class="card-header">
                                 <ul class="nav nav-tabs card-header-tabs">
                                     <li class="nav-item">
-                                        <a class="nav-link active" data-toggle="list" href="#cwb-result-computervision-batchread-info">Info (Parsed)</a>
+                                        <a class="nav-link active" data-toggle="list" href="#cwb-result-computervision-batchread-text">Text (Combined)</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="list" href="#cwb-result-computervision-batchread-info">Info (Parsed)</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link" data-toggle="list" href="#cwb-result-computervision-batchread-json">JSON (Raw)</a>
@@ -392,11 +344,87 @@
                             </div>
                             <div class="card-body">
                                 <div class="tab-content">
-                                    <div class="tab-pane fade show active" id="cwb-result-computervision-batchread-info">
+                                    <div class="tab-pane fade show active" id="cwb-result-computervision-batchread-text">
+                                        <partial name="_CombinedTextResult" model="@Model.ComputerVisionAnalyzeResponse.BatchReadResult.ToCombinedTexts()" />
+                                    </div>
+                                    <div class="tab-pane fade" id="cwb-result-computervision-batchread-info">
                                         <partial name="_BatchReadResult" model="@Model.ComputerVisionAnalyzeResponse.BatchReadResult" />
                                     </div>
                                     <div class="tab-pane fade" id="cwb-result-computervision-batchread-json">
                                         <partial name="_Json" model="@Model.ComputerVisionAnalyzeResponse.BatchReadResult" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        }
+
+
+        @if (Model.IsAnalyzed && Model.ComputerVisionAnalyzeResponse?.OcrResult != null)
+        {
+            <section class="cwb-result-computervision-analyze">
+                <h2 class="mt-5">Computer Vision - OCR</h2>
+
+                <div class="row">
+                    <div class="col-md-7">
+                        <div class="card mb-3 cwb-result-image">
+                            <img src="@Model.ComputerVisionAnalyzeResponse.ImageInfo.Url" class="card-img-top" alt="@Model.ComputerVisionAnalyzeResponse.ImageInfo.Description" />
+                            <div class="cwb-image-boxes">
+                                <div class="cwb-image-boxes-ocr-regions">
+                                    @foreach (var region in Model.ComputerVisionAnalyzeResponse.OcrResult.Regions)
+                                    {
+                                        <div class="cwb-image-box"
+                                             style="@region.BoundingBox.ToCss(Model.ComputerVisionAnalyzeResponse.ImageInfo.Width, Model.ComputerVisionAnalyzeResponse.ImageInfo.Height)">
+                                            <div class="cwb-image-box-info" title="@region.Lines.Count lines">
+                                                <span class="cwb-image-box-type">Region</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="cwb-image-boxes-ocr-lines">
+                                    @foreach (var region in Model.ComputerVisionAnalyzeResponse.OcrResult.Regions)
+                                    {
+                                        foreach (var line in region.Lines)
+                                        {
+                                            <div class="cwb-image-box"
+                                                 style="@line.BoundingBox.ToCss(Model.ComputerVisionAnalyzeResponse.ImageInfo.Width, Model.ComputerVisionAnalyzeResponse.ImageInfo.Height)">
+                                                <div class="cwb-image-box-info" title="@string.Join(" ", line.Words.Select(x => x.Text))">
+                                                    <span class="cwb-image-box-type">Line</span>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="card mb-3 cwb-result-content">
+                            <div class="card-header">
+                                <ul class="nav nav-tabs card-header-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="list" href="#cwb-result-computervision-ocr-text">Text (Combined)</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="list" href="#cwb-result-computervision-ocr-info">Info (Parsed)</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="list" href="#cwb-result-computervision-ocr-json">JSON (Raw)</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="cwb-result-computervision-ocr-text">
+                                        <partial name="_CombinedTextResult" model="@Model.ComputerVisionAnalyzeResponse.OcrResult.ToCombinedTexts()" />
+                                    </div>
+                                    <div class="tab-pane fade" id="cwb-result-computervision-ocr-info">
+                                        <partial name="_OcrResult" model="@Model.ComputerVisionAnalyzeResponse.OcrResult" />
+                                    </div>
+                                    <div class="tab-pane fade" id="cwb-result-computervision-ocr-json">
+                                        <partial name="_Json" model="@Model.ComputerVisionAnalyzeResponse.OcrResult" />
                                     </div>
                                 </div>
                             </div>
@@ -450,7 +478,7 @@
                         let boxesTableBodies = document.querySelectorAll('.cwb-image-boxes-table');
                         boxesTableBodies.forEach(function (tbody) {
                             let target = document.querySelector(tbody.dataset.cwbFor);
-                            if(target) {
+                            if (target) {
                                 let targetBoxes = target.childNodes;
 
                                 for (var i = 0; i < tbody.childNodes.length; i++) {

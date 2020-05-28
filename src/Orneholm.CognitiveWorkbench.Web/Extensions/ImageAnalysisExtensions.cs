@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
@@ -167,17 +168,26 @@ namespace Orneholm.CognitiveWorkbench.Web.Extensions
 
         public static string ToDescription(this Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models.FaceRectangle faceRectangle)
         {
-            return $"X: {faceRectangle.Left}; Y: {faceRectangle.Top}; W: {faceRectangle.Width}; H: {faceRectangle.Height}";
+            return $"X: {faceRectangle.Left}; " +
+                   $"Y: {faceRectangle.Top}; " +
+                   $"W: {faceRectangle.Width}; " +
+                   $"H: {faceRectangle.Height}";
         }
 
         public static string ToDescription(this BoundingRect boundingRect)
         {
-            return $"X: {boundingRect.X}; Y: {boundingRect.Y}; W: {boundingRect.W}; H: {boundingRect.H}";
+            return $"X: {boundingRect.X}; " +
+                   $"Y: {boundingRect.Y}; " +
+                   $"W: {boundingRect.W}; " +
+                   $"H: {boundingRect.H}";
         }
 
         public static string ToDescription(this BoundingBox boundingBox, int imageWidth, int imageHeight)
         {
-            return $"X: {(int)(boundingBox.Left * imageWidth)}; Y: {(int)(boundingBox.Top * imageHeight)}; W: {(int)(boundingBox.Width * imageWidth)}; H: {(int)(boundingBox.Height * imageHeight)}";
+            return $"X: {(int)(boundingBox.Left * imageWidth)}; " +
+                   $"Y: {(int)(boundingBox.Top * imageHeight)}; " +
+                   $"W: {(int)(boundingBox.Width * imageWidth)}; " +
+                   $"H: {(int)(boundingBox.Height * imageHeight)}";
         }
 
         public static string ToCss(this Microsoft.Azure.CognitiveServices.Vision.Face.Models.FaceRectangle faceRectangle, int imageWidth, int imageHeight)
@@ -293,6 +303,52 @@ namespace Orneholm.CognitiveWorkbench.Web.Extensions
             }
 
             return text.First().ToString().ToUpper() + text.Substring(1);
+        }
+
+        public static string ToCombinedTexts(this OcrResult ocrResult)
+        {
+            var combinedText = new StringBuilder();
+
+            foreach (var region in ocrResult.Regions)
+            {
+                foreach (var line in region.Lines)
+                {
+                    combinedText.AppendLine(string.Join(' ', line.Words.Select(x => x.Text)));
+                }
+
+                combinedText.AppendLine();
+            }
+
+            return combinedText.ToString();
+        }
+
+        public static string ToCombinedTexts(this TextOperationResult textOperationResult)
+        {
+            var combinedText = new StringBuilder();
+
+            foreach (var line in textOperationResult.RecognitionResult.Lines)
+            {
+                combinedText.AppendLine(string.Join(' ', line.Words.Select(x => x.Text)));
+            }
+
+            return combinedText.ToString();
+        }
+
+        public static string ToCombinedTexts(this ReadOperationResult readOperationResult)
+        {
+            var combinedText = new StringBuilder();
+
+            foreach (var region in readOperationResult.RecognitionResults)
+            {
+                foreach (var line in region.Lines)
+                {
+                    combinedText.AppendLine(string.Join(' ', line.Words.Select(x => x.Text)));
+                }
+
+                combinedText.AppendLine();
+            }
+
+            return combinedText.ToString();
         }
     }
 }
