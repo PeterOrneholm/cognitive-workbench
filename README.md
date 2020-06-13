@@ -8,7 +8,7 @@ Cognitive Workbench is a site to learn about and demo the capabilities of Azure 
 
 The sites is targeted towards people familiar with Microsoft Azure and Cognitive Services and will require you to create resources in Azure and bring your own keys.
 
-As of today, the site covers these services and API:s:
+As of today, the site covers these services and APIs:
 
 ## Vision
 
@@ -16,8 +16,9 @@ As of today, the site covers these services and API:s:
     * AnalyzeImage (ImageType, Faces, Adult, Categories, Color, Tags, Description, Objects, Brands)
     * AreaOfInterest
     * RecognizePrintedText
-    * RecognizeText
+    * RecognizeText (Will be [deprecated](https://docs.microsoft.com/en-us/azure/cognitive-services/computer-vision/concept-recognizing-text#recognize-text-api) in favor of Read operation)
     * BatchReadFile
+    * Read (API 3.0)
 * Face
     * Detect with detection_01 model (Age, Gender, HeadPose, Smile, FacialHair, Glasses, Emotion, Hair, Makeup, Occlusion, Accessories, Blur, Exposure, Noise)
     * Detect with detection_02 model
