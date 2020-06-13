@@ -1,6 +1,7 @@
 @using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models
 @using Orneholm.CognitiveWorkbench.Web.Extensions
 @using Orneholm.CognitiveWorkbench.Web.Models.ComputerVision
+@using Orneholm.CognitiveWorkbench.Web.Models.ComputerVision.ApiClient
 @model ComputerVisionViewModel
 <main role="main" class="pb-3">
     <div class="container">
@@ -30,7 +31,6 @@
                             </p>
 
                             <h3>Analyze</h3>
-
                             <div class="form-row">
                                 <div class="col">
                                     <div class="form-group">
@@ -41,16 +41,8 @@
                                 </div>
                             </div>
 
-                            <h3>OCR</h3>
-
+                            <h3>Recognize Text</h3>
                             <div class="form-row">
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label asp-for="ComputerVisionAnalyzeRequest.ImageOcrLanguage">Image OCR Language</label>
-                                        <select asp-for="ComputerVisionAnalyzeRequest.ImageOcrLanguage" asp-items="Html.GetEnumSelectList<OcrLanguages>()" required class="cwb-input-remember form-control" name="ImageOcrLanguage">
-                                        </select>
-                                    </div>
-                                </div>
                                 <div class="col">
                                     <div class="form-group">
                                         <label asp-for="ComputerVisionAnalyzeRequest.ImageRecognizeTextMode">Image Recognize Text Mode</label>
@@ -60,8 +52,30 @@
                                 </div>
                             </div>
 
-                            <h3>Common</h3>
+                            <h3>Read (API v3.0)</h3>
+                            <div class="form-row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label asp-for="ComputerVisionAnalyzeRequest.ImageReadV3Language">Image Read Language</label>
+                                        <select asp-for="ComputerVisionAnalyzeRequest.ImageReadV3Language" asp-items="Html.GetEnumSelectList<ReadV3Language>()" required class="cwb-input-remember form-control" name="ImageReadV3Language">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
 
+
+                            <h3>OCR</h3>
+                            <div class="form-row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label asp-for="ComputerVisionAnalyzeRequest.ImageOcrLanguage">Image OCR Language</label>
+                                        <select asp-for="ComputerVisionAnalyzeRequest.ImageOcrLanguage" asp-items="Html.GetEnumSelectList<OcrLanguages>()" required class="cwb-input-remember form-control" name="ImageOcrLanguage">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h3>Common</h3>
                             <p class="mb-3">
                                 <ul class="list-unstyled small">
                                     <li>
@@ -87,6 +101,13 @@
                             <p>
                                 This site requires you to set up your own resource(s) for Azure Cognitive Services. Create a resource for Computer Vision using the <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/cognitive-services-apis-create-account?tabs=multiservice%2Cwindows">Azure portal</a> or <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/cognitive-services-apis-create-account-cli?tabs=windows">Azure CLI</a> on your local machine.
                             </p>
+                            <p>
+                                Your endpoint can have the following format:
+                                <ul>
+                                    <li>https://[COMPUTERVISION-RESOURCENAME].cognitiveservices.azure.com/</li>
+                                    <li>https://[COMPUTERVISION-REGION].api.cognitive.microsoft.com/</li>
+                                </ul>
+                            </p>
 
                             <div class="form-row">
                                 <div class="form-group col-md-6">
@@ -109,7 +130,7 @@
         @if (Model.IsAnalyzed && Model.ComputerVisionAnalyzeResponse?.AnalysisResult != null)
         {
             <section class="cwb-result-computervision-analyze">
-                <h2 class="mt-5">Computer Vision - Analyze</h2>
+                <h2 class="mt-5">Analyze (using Nuget: API 2.1)</h2>
 
                 <div class="row">
                     <div class="col-md-7">
@@ -196,7 +217,7 @@
         @if (Model.IsAnalyzed && Model.ComputerVisionAnalyzeResponse?.AreaOfInterestResult != null)
         {
             <section class="cwb-result-computervision-analyze">
-                <h2 class="mt-5">Vision - Area of interest</h2>
+                <h2 class="mt-5">Area of interest (using Nuget: API 2.1)</h2>
 
                 <div class="row">
                     <div class="col-md-7">
@@ -246,7 +267,7 @@
         @if (Model.IsAnalyzed && Model.ComputerVisionAnalyzeResponse?.RecognizeTextOperationResult != null)
         {
             <section class="cwb-result-computervision-analyze">
-                <h2 class="mt-5">Computer Vision - Recognize Text</h2>
+                <h2 class="mt-5">Recognize Text (using Nuget: API 2.1 - Deprecated in API 3.0)</h2>
 
                 <div class="row">
                     <div class="col-md-7">
@@ -304,7 +325,7 @@
         @if (Model.IsAnalyzed && Model.ComputerVisionAnalyzeResponse?.BatchReadResult != null)
         {
             <section class="cwb-result-computervision-analyze">
-                <h2 class="mt-5">Computer Vision - Batch Read</h2>
+                <h2 class="mt-5">Batch Read (using Nuget: API 2.1 - Evolution to "Read" in API 3.0)</h2>
 
                 <div class="row">
                     <div class="col-md-7">
@@ -362,11 +383,71 @@
             </section>
         }
 
+        @if (Model.IsAnalyzed && Model.ComputerVisionAnalyzeResponse?.ReadV3Result?.AnalyzeResult?.ReadResults != null)
+        {
+            <section class="cwb-result-computervision-analyze">
+                <h2 class="mt-5">Read (using API 3.0)</h2>
+
+                <div class="row">
+                    <div class="col-md-7">
+                        <div class="card mb-3 cwb-result-image">
+                            <img src="@Model.ComputerVisionAnalyzeResponse.ImageInfo.Url" class="card-img-top" alt="@Model.ComputerVisionAnalyzeResponse.ImageInfo.Description" />
+                            <div class="cwb-image-boxes">
+                                <div class="cwb-image-boxes-readv3-lines">
+                                    @foreach (var result in Model.ComputerVisionAnalyzeResponse.ReadV3Result.AnalyzeResult.ReadResults)
+                                    {
+                                        foreach (var line in result.Lines)
+                                        {
+                                            <div class="cwb-image-box"
+                                                 style="@line.BoundingBox.ToCss(Model.ComputerVisionAnalyzeResponse.ImageInfo.Width, Model.ComputerVisionAnalyzeResponse.ImageInfo.Height)">
+                                                <div class="cwb-image-box-info" title="@string.Join(" ", line.Words.Select(x => x.Text))">
+                                                    <span class="cwb-image-box-type">Line</span>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="card mb-3 cwb-result-content">
+                            <div class="card-header">
+                                <ul class="nav nav-tabs card-header-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="list" href="#cwb-result-computervision-readv3-text">Text (Combined)</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="list" href="#cwb-result-computervision-readv3-info">Info (Parsed)</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="list" href="#cwb-result-computervision-readv3-json">JSON (Raw)</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="cwb-result-computervision-readv3-text">
+                                        <partial name="_CombinedTextResult" model="@Model.ComputerVisionAnalyzeResponse.ReadV3Result.ToCombinedTexts()" />
+                                    </div>
+                                    <div class="tab-pane fade" id="cwb-result-computervision-readv3-info">
+                                        <partial name="_ReadV3Result" model="@Model.ComputerVisionAnalyzeResponse.ReadV3Result" />
+                                    </div>
+                                    <div class="tab-pane fade" id="cwb-result-computervision-readv3-json">
+                                        <partial name="_Json" model="@Model.ComputerVisionAnalyzeResponse.ReadV3Result" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        }
 
         @if (Model.IsAnalyzed && Model.ComputerVisionAnalyzeResponse?.OcrResult != null)
         {
             <section class="cwb-result-computervision-analyze">
-                <h2 class="mt-5">Computer Vision - OCR</h2>
+                <h2 class="mt-5">OCR (using Nuget: API 2.1)</h2>
 
                 <div class="row">
                     <div class="col-md-7">

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
+using Orneholm.CognitiveWorkbench.Web.Models.ComputerVision.ApiClient;
 
 namespace Orneholm.CognitiveWorkbench.Web.Models.ComputerVision
 {
@@ -10,8 +11,9 @@ namespace Orneholm.CognitiveWorkbench.Web.Models.ComputerVision
 
         public string ImageUrl { get; set; } = string.Empty;
         public AnalysisLanguage ImageAnalysisLanguage { get; set; } = AnalysisLanguage.en;
-        public OcrLanguages ImageOcrLanguage { get; set; } = OcrLanguages.Unk;
         public TextRecognitionMode ImageRecognizeTextMode { get; set; } = TextRecognitionMode.Printed;
+        public ReadV3Language ImageReadV3Language { get; set; } = ReadV3Language.en;
+        public OcrLanguages ImageOcrLanguage { get; set; } = OcrLanguages.Unk;
     }
 
     public enum AnalysisLanguage
