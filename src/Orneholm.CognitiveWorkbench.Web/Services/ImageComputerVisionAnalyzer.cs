@@ -81,10 +81,11 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
                 AnalyzeDetails = AnalyzeDetails,
 
                 AnalysisResult = imageAnalysis.Result,
+                AreaOfInterestResult = areaOfInterest.Result,
+
                 OcrResult = recognizedPrintedText.Result,
                 RecognizeTextOperationResult = recognizedText.Result,
                 BatchReadResult = batchReadText.Result,
-                AreaOfInterestResult = areaOfInterest.Result
             };
         }
 

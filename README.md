@@ -15,11 +15,16 @@ As of today, the site covers these services and API:s:
 * Computer Vision
     * AnalyzeImage (ImageType, Faces, Adult, Categories, Color, Tags, Description, Objects, Brands)
     * AreaOfInterest
-    * RecognizeText
     * RecognizePrintedText
+    * RecognizeText
     * BatchReadFile
 * Face
-    * Detect (Age, Gender, HeadPose, Smile, FacialHair, Glasses, Emotion, Hair, Makeup, Occlusion, Accessories, Blur, Exposure, Noise)
+    * Detect with detection_01 model (Age, Gender, HeadPose, Smile, FacialHair, Glasses, Emotion, Hair, Makeup, Occlusion, Accessories, Blur, Exposure, Noise)
+    * Detect with detection_02 model
+    * Identify on PersonGroup or LargePersonGroup
+* Custom Vision
+    * ClassifyImage
+    * DetectImage (object detection)
 
 # Samples
 
@@ -35,11 +40,21 @@ As of today, the site covers these services and API:s:
 
 ### OCR
 
-![Input](docs/images/CognitiveWorkbench_Sample_OCR.PNG)
+![OCR](docs/images/CognitiveWorkbench_Sample_OCR.PNG)
+
+### RecognizeText
+
+![OCR](docs/images/CognitiveWorkbench_Sample_RecognizeText.png)
 
 ## Face
 
+### Detect
+
 ![Face](docs/images/CognitiveWorkbench_Sample_Face.PNG)
+
+### Identify
+
+![Face](docs/images/CognitiveWorkbench_Sample_Face_Identify.PNG)
 
 # Contributions
 

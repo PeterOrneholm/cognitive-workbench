@@ -329,6 +329,8 @@ ASALocalRun/
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
 
-
 # Simple secrets...
 /src/Shared/SecretKeys.cs
+
+# Mac Files
+*.DS_Store

@@ -25,23 +25,6 @@
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="cwb-form-customvision-image">
                             <p class="mb-3">
-                                <ul class="list-unstyled text-small">
-                                    <li>
-                                        The image must be presented in JPEG, PNG, GIF, or BMP
-                                    </li>
-                                    <li>
-                                        The file size of the image must be less than 4 megabytes (MB)
-                                    </li>
-                                    <li>
-                                        The dimensions of the image must be greater than 256 pixels for both height and width (otherwise, they will be upscaled)
-                                    </li>
-                                    <li>
-                                        See service documentation for limits and quotas on <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/Custom-Vision-Service/limits-and-quotas">docs.microsoft.com</a>
-                                    </li>
-                                </ul>
-                            </p>
-
-                            <p class="mb-3">
                                 <strong>Note:</strong> You need to provide your own keys for Azure Cognitive Services - Custom Vision (prediction) under the tab <em>Settings</em>.
                             </p>
 
@@ -57,7 +40,7 @@
                                     <div class="form-group">
                                         <label asp-for="CustomVisionAnalyzeRequest.ProjectId">Project ID (Guid)</label>
                                         <input type="text" required class="cwb-input-remember form-control" placeholder="00000000-0000-0000-0000-000000000000" asp-for="CustomVisionAnalyzeRequest.ProjectId" name="ProjectId" />
-                                   </div>
+                                    </div>
                                 </div>
                                 <div class="col">
                                     <div class="form-group">
@@ -66,6 +49,23 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <p class="mb-3">
+                                <ul class="list-unstyled text-small">
+                                    <li>
+                                        The image must be presented in JPEG, PNG, GIF, or BMP
+                                    </li>
+                                    <li>
+                                        The file size of the image must be less than 4 megabytes (MB)
+                                    </li>
+                                    <li>
+                                        The dimensions of the image must be greater than 256 pixels for both height and width (otherwise, they will be upscaled)
+                                    </li>
+                                    <li>
+                                        See service documentation for limits and quotas on <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/Custom-Vision-Service/limits-and-quotas">docs.microsoft.com</a>
+                                    </li>
+                                </ul>
+                            </p>
 
                             <div class="form-group">
                                 <label asp-for="CustomVisionAnalyzeRequest.ImageUrl">Image URL</label>
