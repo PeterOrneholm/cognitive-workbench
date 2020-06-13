@@ -1,4 +1,4 @@
-namespace Orneholm.CognitiveWorkbench.Web.Models
+namespace Orneholm.CognitiveWorkbench.Web.Models.Generic
 {
     public class RecognizeTextRotatedBoundingBoxPoint
     {

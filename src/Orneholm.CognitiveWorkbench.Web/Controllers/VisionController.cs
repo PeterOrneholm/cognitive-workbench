@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Orneholm.CognitiveWorkbench.Web.Models;
+using Orneholm.CognitiveWorkbench.Web.Models.ComputerVision;
+using Orneholm.CognitiveWorkbench.Web.Models.CustomVision;
+using Orneholm.CognitiveWorkbench.Web.Models.Face;
 using Orneholm.CognitiveWorkbench.Web.Services;
 
 namespace Orneholm.CognitiveWorkbench.Web.Controllers

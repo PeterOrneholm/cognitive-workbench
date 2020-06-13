@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 
-namespace Orneholm.CognitiveWorkbench.Web.Models
+namespace Orneholm.CognitiveWorkbench.Web.Models.ComputerVision
 {
     public class ComputerVisionAnalyzeRequest
     {

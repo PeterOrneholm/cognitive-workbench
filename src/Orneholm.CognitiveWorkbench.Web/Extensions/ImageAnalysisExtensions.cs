@@ -6,7 +6,8 @@ using System.Text;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
-using Orneholm.CognitiveWorkbench.Web.Models;
+using Orneholm.CognitiveWorkbench.Web.Models.ComputerVision;
+using Orneholm.CognitiveWorkbench.Web.Models.Generic;
 
 namespace Orneholm.CognitiveWorkbench.Web.Extensions
 {

@@ -1,4 +1,4 @@
-namespace Orneholm.CognitiveWorkbench.Web.Models
+namespace Orneholm.CognitiveWorkbench.Web.Models.Face
 {
     public class FaceViewModel
     {

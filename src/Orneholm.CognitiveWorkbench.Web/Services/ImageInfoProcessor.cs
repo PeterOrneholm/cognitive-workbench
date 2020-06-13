@@ -1,8 +1,7 @@
 using System.Drawing;
 using System.Net.Http;
 using System.Threading.Tasks;
-
-using Orneholm.CognitiveWorkbench.Web.Models;
+using Orneholm.CognitiveWorkbench.Web.Models.Generic;
 
 namespace Orneholm.CognitiveWorkbench.Web.Services
 {

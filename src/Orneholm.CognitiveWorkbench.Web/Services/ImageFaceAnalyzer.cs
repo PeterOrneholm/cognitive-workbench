@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Azure.CognitiveServices.Vision.Face;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
-using Orneholm.CognitiveWorkbench.Web.Models;
+using Orneholm.CognitiveWorkbench.Web.Models.Face;
 using ApiKeyServiceClientCredentials = Microsoft.Azure.CognitiveServices.Vision.ComputerVision.ApiKeyServiceClientCredentials;
 
 namespace Orneholm.CognitiveWorkbench.Web.Services

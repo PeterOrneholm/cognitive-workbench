@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models;
-using Orneholm.CognitiveWorkbench.Web.Models;
+using Orneholm.CognitiveWorkbench.Web.Models.CustomVision;
 
 namespace Orneholm.CognitiveWorkbench.Web.Services
 {

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Orneholm.CognitiveWorkbench.Web.Models
+namespace Orneholm.CognitiveWorkbench.Web.Models.Face
 {
     public class FaceAnalyzeRequest
     {
@@ -13,7 +13,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Models
         public FaceRecognitionModel RecognitionModel { get; set; } = FaceRecognitionModel.recognition_02;
         public FaceIdentificationGroupType IdentificationGroupType { get; set; } = FaceIdentificationGroupType.PersonGroup;
         public string IdentificationGroupId { get; set; } = string.Empty;
-    }
+   }
 
     public enum FaceDetectionModel
     {

@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 using Orneholm.CognitiveWorkbench.Web.Extensions;
-using Orneholm.CognitiveWorkbench.Web.Models;
+using Orneholm.CognitiveWorkbench.Web.Models.ComputerVision;
+using Orneholm.CognitiveWorkbench.Web.Models.Generic;
 using ApiKeyServiceClientCredentials = Microsoft.Azure.CognitiveServices.Vision.ComputerVision.ApiKeyServiceClientCredentials;
 
 namespace Orneholm.CognitiveWorkbench.Web.Services

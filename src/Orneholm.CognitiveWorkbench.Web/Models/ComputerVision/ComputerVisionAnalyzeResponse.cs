@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
+using Orneholm.CognitiveWorkbench.Web.Models.Generic;
 
-namespace Orneholm.CognitiveWorkbench.Web.Models
+namespace Orneholm.CognitiveWorkbench.Web.Models.ComputerVision
 {
     public class ComputerVisionAnalyzeResponse
     {
