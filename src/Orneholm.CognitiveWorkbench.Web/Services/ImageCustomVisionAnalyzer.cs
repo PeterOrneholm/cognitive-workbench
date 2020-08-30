@@ -16,9 +16,8 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
         public ImageCustomVisionAnalyzer(string customVisionPredictionKey, string customVisionEndpoint, IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
-            _customVisionPredictionClient = new CustomVisionPredictionClient()
+            _customVisionPredictionClient = new CustomVisionPredictionClient(new ApiKeyServiceClientCredentials(customVisionPredictionKey))
             {
-                ApiKey = customVisionPredictionKey,
                 Endpoint = customVisionEndpoint
             };
         }
