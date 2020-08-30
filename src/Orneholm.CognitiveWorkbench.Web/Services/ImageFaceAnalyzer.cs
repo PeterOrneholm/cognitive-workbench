@@ -12,7 +12,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
 {
     public class ImageFaceAnalyzer
     {
-        private static readonly List<FaceAttributeType> FaceAttributes = new List<FaceAttributeType>
+        private static readonly List<FaceAttributeType?> FaceAttributes = new List<FaceAttributeType?>
         {
             FaceAttributeType.Age,
             FaceAttributeType.Gender,
@@ -156,7 +156,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
             if (FaceDetectionModel.detection_02.Equals(detectionModel))
             {
                 returnFaceLandmarks = false;
-                returnFaceAttributes = new List<FaceAttributeType>();
+                returnFaceAttributes = new List<FaceAttributeType?>();
             }
 
             if (enableIdentification)
@@ -180,10 +180,10 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
         {
             // Call Identification operation
             var identificationResults = FaceIdentificationGroupType.PersonGroup.Equals(identificationGroupType)
-                ? await _faceClient.Face.IdentifyAsync(detectedFaces.Select(d => d.FaceId.Value).ToList(),
+                ? await _faceClient.Face.IdentifyAsync(detectedFaces.Select(d => d.FaceId).ToList(),
                     personGroupId: identificationGroupId,
                     largePersonGroupId: null)
-                : await _faceClient.Face.IdentifyAsync(detectedFaces.Select(d => d.FaceId.Value).ToList(),
+                : await _faceClient.Face.IdentifyAsync(detectedFaces.Select(d => d.FaceId).ToList(),
                     personGroupId: null,
                     largePersonGroupId: identificationGroupId);
 

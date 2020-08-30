@@ -52,7 +52,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
             Track("Vision_ComputerVision");
 
             var imageAnalyzer = new ImageComputerVisionAnalyzer(request.ComputerVisionSubscriptionKey, request.ComputerVisionEndpoint, _httpClientFactory);
-            var analyzeResult = await imageAnalyzer.Analyze(request.ImageUrl, request.ImageAnalysisLanguage, request.ImageOcrLanguage, request.ImageReadV3Language, request.ImageRecognizeTextMode);
+            var analyzeResult = await imageAnalyzer.Analyze(request.ImageUrl, request.ImageAnalysisLanguage, request.ImageOcrLanguage, request.ImageReadV3Language);
 
             return View(ComputerVisionViewModel.Analyzed(request, analyzeResult));
         }

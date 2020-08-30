@@ -11,7 +11,6 @@ namespace Orneholm.CognitiveWorkbench.Web.Models.ComputerVision
 
         public string ImageUrl { get; set; } = string.Empty;
         public AnalysisLanguage ImageAnalysisLanguage { get; set; } = AnalysisLanguage.en;
-        public TextRecognitionMode ImageRecognizeTextMode { get; set; } = TextRecognitionMode.Printed;
         public ReadV3Language ImageReadV3Language { get; set; } = ReadV3Language.en;
         public OcrLanguages ImageOcrLanguage { get; set; } = OcrLanguages.Unk;
     }

@@ -18,7 +18,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
 {
     public class ImageComputerVisionAnalyzer
     {
-        private static readonly List<VisualFeatureTypes> AnalyzeVisualFeatureTypes = new List<VisualFeatureTypes>
+        private static readonly List<VisualFeatureTypes?> AnalyzeVisualFeatureTypes = new List<VisualFeatureTypes?>
         {
             VisualFeatureTypes.ImageType,
             VisualFeatureTypes.Faces,
@@ -31,7 +31,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
             VisualFeatureTypes.Brands
         };
 
-        private static readonly List<VisualFeatureTypes> AnalyzeVisualFeatureLimitedTypes = new List<VisualFeatureTypes>
+        private static readonly List<VisualFeatureTypes?> AnalyzeVisualFeatureLimitedTypes = new List<VisualFeatureTypes?>
         {
             VisualFeatureTypes.ImageType,
             VisualFeatureTypes.Faces,
@@ -42,7 +42,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
             VisualFeatureTypes.Description
         };
 
-        private static readonly List<Details> AnalyzeDetails = new List<Details>
+        private static readonly List<Details?> AnalyzeDetails = new List<Details?>
         {
             Details.Celebrities,
             Details.Landmarks
@@ -62,7 +62,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
         }
 
         public async Task<ComputerVisionAnalyzeResponse> Analyze(string url, AnalysisLanguage analysisLanguage, 
-            OcrLanguages ocrLanguage, ComputerVisionApiClient.ReadV3Language readLanguage, TextRecognitionMode recognizeTextMode)
+            OcrLanguages ocrLanguage, ComputerVisionApiClient.ReadV3Language readLanguage)
         {
             // Setup
             _computerVisionClient = new ComputerVisionClient(new ApiKeyServiceClientCredentials(_subscriptionKey)) { Endpoint = _endpoint };
@@ -70,13 +70,11 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
             // Computer vision
             var imageAnalysis = ComputerVisionAnalyzeImage(url, analysisLanguage);
             var areaOfInterest = ComputerVisionGetAreaOfInterest(url);
-            var recognizedText = ComputerVisionRecognizedText(url, recognizeTextMode);
-            var batchReadText = ComputerVisionBatchRead(url);
             var readV3 = ComputerVisionReadV3(url, readLanguage);
             var recognizedPrintedText = ComputerVisionRecognizedPrintedText(url, ocrLanguage);
 
             // Combine
-            await Task.WhenAll(imageAnalysis, areaOfInterest, recognizedText, batchReadText, readV3, recognizedPrintedText);
+            await Task.WhenAll(imageAnalysis, areaOfInterest, readV3, recognizedPrintedText);
 
             return new ComputerVisionAnalyzeResponse
             {
@@ -96,8 +94,6 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
                 AreaOfInterestResult = areaOfInterest.Result,
 
                 OcrResult = recognizedPrintedText.Result,
-                RecognizeTextOperationResult = recognizedText.Result,
-                BatchReadResult = batchReadText.Result,
                 ReadV3Result = readV3.Result
             };
         }
@@ -123,62 +119,6 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
         private Task<AreaOfInterestResult> ComputerVisionGetAreaOfInterest(string url)
         {
             return _computerVisionClient.GetAreaOfInterestAsync(url);
-        }
-
-        private async Task<TextOperationResult> ComputerVisionRecognizedText(string url, TextRecognitionMode recognizeTextMode)
-        {
-            var recognizeTextHeaders = await _computerVisionClient.RecognizeTextAsync(url, recognizeTextMode);
-
-            // Retrieve the URI where the recognized text will be stored from the Operation-Location header
-            var operationLocation = recognizeTextHeaders.OperationLocation;
-            var operationId = operationLocation.Substring(operationLocation.Length - _computerVisionOperationIdLength);
-
-            var result = await _computerVisionClient.GetTextOperationResultAsync(operationId);
-
-            // Wait for the operation to complete
-            var iteration = 1;
-            var waitDurationInMs = 500;
-            var maxWaitTimeInMs = 30000;
-            var maxTries = maxWaitTimeInMs / waitDurationInMs;
-
-            while ((result.Status == TextOperationStatusCodes.Running || result.Status == TextOperationStatusCodes.NotStarted)
-                && iteration <= maxTries)
-            {
-                await Task.Delay(waitDurationInMs);
-
-                result = await _computerVisionClient.GetTextOperationResultAsync(operationId);
-                iteration++;
-            }
-
-            return result;
-        }
-
-        private async Task<ReadOperationResult> ComputerVisionBatchRead(string url)
-        {
-            var batchReadFileHeaders = await _computerVisionClient.BatchReadFileAsync(url);
-
-            // Retrieve the URI where the recognized text will be stored from the Operation-Location header
-            var operationLocation = batchReadFileHeaders.OperationLocation;
-            var operationId = operationLocation.Substring(operationLocation.Length - _computerVisionOperationIdLength);
-
-            var result = await _computerVisionClient.GetReadOperationResultAsync(operationId);
-
-            // Wait for the operation to complete
-            var iteration = 1;
-            var waitDurationInMs = 500;
-            var maxWaitTimeInMs = 30000;
-            var maxTries = maxWaitTimeInMs / waitDurationInMs;
-
-            while ((result.Status == TextOperationStatusCodes.Running || result.Status == TextOperationStatusCodes.NotStarted)
-                && iteration <= maxTries)
-            {
-                await Task.Delay(waitDurationInMs);
-
-                result = await _computerVisionClient.GetReadOperationResultAsync(operationId);
-                iteration++;
-            }
-
-            return result;
         }
 
         private async Task<ComputerVisionApiClient.ReadOperationResult> ComputerVisionReadV3(string url, ComputerVisionApiClient.ReadV3Language readLanguage)

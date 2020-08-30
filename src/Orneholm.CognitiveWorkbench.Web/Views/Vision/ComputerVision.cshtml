@@ -61,23 +61,19 @@
                                 </div>
                             </div>
 
-                            <h3>Read (API v3.0)</h3>
+                            <h3>Text recognition</h3>
                             <div class="form-row">
                                 <div class="col">
                                     <div class="form-group">
-                                        <label asp-for="ComputerVisionAnalyzeRequest.ImageReadV3Language">Image Read Language</label>
+                                        <label asp-for="ComputerVisionAnalyzeRequest.ImageReadV3Language">Image Read Language (Read operation)</label>
                                         <select asp-for="ComputerVisionAnalyzeRequest.ImageReadV3Language" asp-items="Html.GetEnumSelectList<ReadV3Language>()" required class="cwb-input-remember form-control" name="ImageReadV3Language">
                                         </select>
                                     </div>
                                 </div>
-                            </div>
-
-
-                            <h3>OCR</h3>
-                            <div class="form-row">
+                           
                                 <div class="col">
                                     <div class="form-group">
-                                        <label asp-for="ComputerVisionAnalyzeRequest.ImageOcrLanguage">Image OCR Language</label>
+                                        <label asp-for="ComputerVisionAnalyzeRequest.ImageOcrLanguage">Image OCR Language (OCR operation)</label>
                                         <select asp-for="ComputerVisionAnalyzeRequest.ImageOcrLanguage" asp-items="Html.GetEnumSelectList<OcrLanguages>()" required class="cwb-input-remember form-control" name="ImageOcrLanguage">
                                         </select>
                                     </div>
@@ -192,7 +188,7 @@
                             <div class="card-body">
                                 <div class="tab-content">
                                     <div class="tab-pane fade show active" id="cwb-result-computervision-analyze-info">
-                                        <partial name="_AnalysisResult" model="@Model.ComputerVisionAnalyzeResponse.AnalysisResult" />
+                                        <partial name="ComputerVision/_AnalysisResult" model="@Model.ComputerVisionAnalyzeResponse.AnalysisResult" />
                                     </div>
                                     <div class="tab-pane fade" id="cwb-result-computervision-analyze-json">
                                         <partial name="_Json" model="@Model.ComputerVisionAnalyzeResponse.AnalysisResult" />
@@ -244,7 +240,7 @@
                             <div class="card-body">
                                 <div class="tab-content">
                                     <div class="tab-pane fade show active" id="cwb-result-computervision-aoi-info">
-                                        <partial name="_AreaOfInterestResult" model="@Model.ComputerVisionAnalyzeResponse.AreaOfInterestResult" />
+                                        <partial name="ComputerVision/_AreaOfInterestResult" model="@Model.ComputerVisionAnalyzeResponse.AreaOfInterestResult" />
                                     </div>
                                     <div class="tab-pane fade" id="cwb-result-computervision-aoi-json">
                                         <partial name="_Json" model="@Model.ComputerVisionAnalyzeResponse.AreaOfInterestResult" />
@@ -302,10 +298,10 @@
                             <div class="card-body">
                                 <div class="tab-content">
                                     <div class="tab-pane fade show active" id="cwb-result-computervision-readv3-text">
-                                        <partial name="_CombinedTextResult" model="@Model.ComputerVisionAnalyzeResponse.ReadV3Result.ToCombinedTexts()" />
+                                        <partial name="ComputerVision/_CombinedTextResult" model="@Model.ComputerVisionAnalyzeResponse.ReadV3Result.ToCombinedTexts()" />
                                     </div>
                                     <div class="tab-pane fade" id="cwb-result-computervision-readv3-info">
-                                        <partial name="_ReadV3Result" model="@Model.ComputerVisionAnalyzeResponse.ReadV3Result" />
+                                        <partial name="ComputerVision/_ReadV3Result" model="@Model.ComputerVisionAnalyzeResponse.ReadV3Result" />
                                     </div>
                                     <div class="tab-pane fade" id="cwb-result-computervision-readv3-json">
                                         <partial name="_Json" model="@Model.ComputerVisionAnalyzeResponse.ReadV3Result" />
@@ -376,10 +372,10 @@
                             <div class="card-body">
                                 <div class="tab-content">
                                     <div class="tab-pane fade show active" id="cwb-result-computervision-ocr-text">
-                                        <partial name="_CombinedTextResult" model="@Model.ComputerVisionAnalyzeResponse.OcrResult.ToCombinedTexts()" />
+                                        <partial name="ComputerVision/_CombinedTextResult" model="@Model.ComputerVisionAnalyzeResponse.OcrResult.ToCombinedTexts()" />
                                     </div>
                                     <div class="tab-pane fade" id="cwb-result-computervision-ocr-info">
-                                        <partial name="_OcrResult" model="@Model.ComputerVisionAnalyzeResponse.OcrResult" />
+                                        <partial name="ComputerVision/_OcrResult" model="@Model.ComputerVisionAnalyzeResponse.OcrResult" />
                                     </div>
                                     <div class="tab-pane fade" id="cwb-result-computervision-ocr-json">
                                         <partial name="_Json" model="@Model.ComputerVisionAnalyzeResponse.OcrResult" />

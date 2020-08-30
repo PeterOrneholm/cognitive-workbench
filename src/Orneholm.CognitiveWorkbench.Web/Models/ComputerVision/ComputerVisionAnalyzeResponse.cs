@@ -10,13 +10,11 @@ namespace Orneholm.CognitiveWorkbench.Web.Models.ComputerVision
     {
         public ImageInfo ImageInfo { get; set; } = new ImageInfo();
 
-        public List<VisualFeatureTypes> AnalyzeVisualFeatureTypes { get; set; } = new List<VisualFeatureTypes>();
-        public List<Details> AnalyzeDetails { get; set; } = new List<Details>();
+        public List<VisualFeatureTypes?> AnalyzeVisualFeatureTypes { get; set; } = new List<VisualFeatureTypes?>();
+        public List<Details?> AnalyzeDetails { get; set; } = new List<Details?>();
 
         public ImageAnalysis AnalysisResult { get; set; } = new ImageAnalysis();
         public AreaOfInterestResult AreaOfInterestResult { get; set; } = new AreaOfInterestResult();
-        public TextOperationResult RecognizeTextOperationResult { get; set; } = new TextOperationResult();
-        public ReadOperationResult BatchReadResult { get; set; } = new ReadOperationResult();
         public ComputerVisionApiClient.ReadOperationResult ReadV3Result { get; set; } = new ComputerVisionApiClient.ReadOperationResult();
         public OcrResult OcrResult { get; set; } = new OcrResult();
         
