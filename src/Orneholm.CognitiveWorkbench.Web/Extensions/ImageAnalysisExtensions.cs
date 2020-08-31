@@ -6,7 +6,8 @@ using System.Text;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
-using Orneholm.CognitiveWorkbench.Web.Models;
+using ComputerVisionApiClient = Orneholm.CognitiveWorkbench.Web.Models.ComputerVision.ApiClient;
+using Orneholm.CognitiveWorkbench.Web.Models.Generic;
 
 namespace Orneholm.CognitiveWorkbench.Web.Extensions
 {
@@ -157,15 +158,6 @@ namespace Orneholm.CognitiveWorkbench.Web.Extensions
             return $"X: {box[0]}; Y: {box[1]}; W: {box[2]}; H: {box[3]}";
         }
 
-        public static string ToDescription(this IList<double> boundingBox)
-        {
-            // BoundingBox: Bounding box of a recognized region, line, or word, depending on the parent object.
-            // The eight integers represent the four points (x-coordinate, y-coordinate) of the detected rectangle
-            // from the left-top corner and clockwise.
-            var bb = new RecognizeTextRotatedBoundingBox(boundingBox);
-            return $"MinX: {bb.MinLeft()}, MinY: {bb.MinTop()}, MaxW: {bb.MaxWidth()}, MaxH: {bb.MaxHeight()}";
-        }
-
         public static string ToDescription(this Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models.FaceRectangle faceRectangle)
         {
             return $"X: {faceRectangle.Left}; " +
@@ -190,6 +182,15 @@ namespace Orneholm.CognitiveWorkbench.Web.Extensions
                    $"H: {(int)(boundingBox.Height * imageHeight)}";
         }
 
+        public static string ToDescription(this IList<int> boundingBox)
+        {
+            // BoundingBox: Bounding box of a recognized region, line, or word, depending on the parent object.
+            // The eight integers represent the four points (x-coordinate, y-coordinate) of the detected rectangle
+            // from the left-top corner and clockwise.
+            var bb = new RecognizeTextRotatedBoundingBox(boundingBox.Select(b => (double)b).ToList());
+            return $"MinX: {bb.MinLeft()}, MinY: {bb.MinTop()}, MaxW: {bb.MaxWidth()}, MaxH: {bb.MaxHeight()}";
+        }
+
         public static string ToCss(this Microsoft.Azure.CognitiveServices.Vision.Face.Models.FaceRectangle faceRectangle, int imageWidth, int imageHeight)
         {
             return $"left: {faceRectangle.Left.ToCssPercentageString(imageWidth)}; " +
@@ -205,18 +206,6 @@ namespace Orneholm.CognitiveWorkbench.Web.Extensions
                    $"top: {box[1].ToCssPercentageString(imageHeight)}; " +
                    $"width: {box[2].ToCssPercentageString(imageWidth)}; " +
                    $"height: {box[3].ToCssPercentageString(imageHeight)};";
-        }
-
-        public static string ToCss(this IList<double> boundingBox, int imageWidth, int imageHeight)
-        {
-            // BoundingBox: Bounding box of a recognized region, line, or word, depending on the parent object.
-            // The eight integers represent the four points (x-coordinate, y-coordinate) of the detected rectangle
-            // from the left-top corner and clockwise.
-            var bb = new RecognizeTextRotatedBoundingBox(boundingBox);
-            return $"left: {bb.MinLeft().ToCssPercentageString(imageWidth)}; " +
-                   $"top: {bb.MinTop().ToCssPercentageString(imageHeight)}; " +
-                   $"width: {bb.MaxWidth().ToCssPercentageString(imageWidth)}; " +
-                   $"height: {bb.MaxHeight().ToCssPercentageString(imageHeight)};";
         }
 
         public static string ToCss(this Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models.FaceRectangle boundingRect, int imageWidth, int imageHeight)
@@ -241,6 +230,15 @@ namespace Orneholm.CognitiveWorkbench.Web.Extensions
                    $"top: {boundingRect.Top.ToCssPercentageString()}; " +
                    $"width: {boundingRect.Width.ToCssPercentageString()}; " +
                    $"height: {boundingRect.Height.ToCssPercentageString()};";
+        }
+
+        public static string ToCss(this IList<int> boundingBox, int imageWidth, int imageHeight)
+        {
+            var bb = new RecognizeTextRotatedBoundingBox(boundingBox.Select(b => (double)b).ToList());
+            return $"left: {bb.MinLeft().ToCssPercentageString(imageWidth)}; " +
+                   $"top: {bb.MinTop().ToCssPercentageString(imageHeight)}; " +
+                   $"width: {bb.MaxWidth().ToCssPercentageString(imageWidth)}; " +
+                   $"height: {bb.MaxHeight().ToCssPercentageString(imageHeight)};";
         }
 
         private static int[] ParseBox(this string boundingBox)
@@ -322,25 +320,13 @@ namespace Orneholm.CognitiveWorkbench.Web.Extensions
             return combinedText.ToString();
         }
 
-        public static string ToCombinedTexts(this TextOperationResult textOperationResult)
+        public static string ToCombinedTexts(this ComputerVisionApiClient.ReadOperationResult readV3Result)
         {
             var combinedText = new StringBuilder();
 
-            foreach (var line in textOperationResult.RecognitionResult.Lines)
+            foreach (var readResult in readV3Result.AnalyzeResult.ReadResults)
             {
-                combinedText.AppendLine(string.Join(' ', line.Words.Select(x => x.Text)));
-            }
-
-            return combinedText.ToString();
-        }
-
-        public static string ToCombinedTexts(this ReadOperationResult readOperationResult)
-        {
-            var combinedText = new StringBuilder();
-
-            foreach (var region in readOperationResult.RecognitionResults)
-            {
-                foreach (var line in region.Lines)
+                foreach (var line in readResult.Lines)
                 {
                     combinedText.AppendLine(string.Join(' ', line.Words.Select(x => x.Text)));
                 }

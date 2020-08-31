@@ -1,18 +1,24 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
+using ComputerVisionApiClient = Orneholm.CognitiveWorkbench.Web.Models.ComputerVision.ApiClient;
+using Newtonsoft.Json;
 using Orneholm.CognitiveWorkbench.Web.Extensions;
-using Orneholm.CognitiveWorkbench.Web.Models;
+using Orneholm.CognitiveWorkbench.Web.Models.ComputerVision;
+using Orneholm.CognitiveWorkbench.Web.Models.Generic;
 using ApiKeyServiceClientCredentials = Microsoft.Azure.CognitiveServices.Vision.ComputerVision.ApiKeyServiceClientCredentials;
 
 namespace Orneholm.CognitiveWorkbench.Web.Services
 {
     public class ImageComputerVisionAnalyzer
     {
-        private static readonly List<VisualFeatureTypes> AnalyzeVisualFeatureTypes = new List<VisualFeatureTypes>
+        private static readonly List<VisualFeatureTypes?> AnalyzeVisualFeatureTypes = new List<VisualFeatureTypes?>
         {
             VisualFeatureTypes.ImageType,
             VisualFeatureTypes.Faces,
@@ -25,7 +31,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
             VisualFeatureTypes.Brands
         };
 
-        private static readonly List<VisualFeatureTypes> AnalyzeVisualFeatureLimitedTypes = new List<VisualFeatureTypes>
+        private static readonly List<VisualFeatureTypes?> AnalyzeVisualFeatureLimitedTypes = new List<VisualFeatureTypes?>
         {
             VisualFeatureTypes.ImageType,
             VisualFeatureTypes.Faces,
@@ -36,35 +42,39 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
             VisualFeatureTypes.Description
         };
 
-        private static readonly List<Details> AnalyzeDetails = new List<Details>
+        private static readonly List<Details?> AnalyzeDetails = new List<Details?>
         {
             Details.Celebrities,
             Details.Landmarks
         };
 
-        private readonly ComputerVisionClient _computerVisionClient;
-
+        private readonly string _endpoint;
+        private readonly string _subscriptionKey;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly int _computerVisionOperationIdLength = 36;
+        private ComputerVisionClient _computerVisionClient;
 
-        public ImageComputerVisionAnalyzer(string computerVisionSubscriptionKey, string computerVisionEndpoint)
+        public ImageComputerVisionAnalyzer(string computerVisionSubscriptionKey, string computerVisionEndpoint, IHttpClientFactory httpClientFactory)
         {
-            _computerVisionClient = new ComputerVisionClient(new ApiKeyServiceClientCredentials(computerVisionSubscriptionKey))
-            {
-                Endpoint = computerVisionEndpoint
-            };
+            _endpoint = computerVisionEndpoint;
+            _subscriptionKey = computerVisionSubscriptionKey;
+            _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<ComputerVisionAnalyzeResponse> Analyze(string url, AnalysisLanguage analysisLanguage, OcrLanguages ocrLanguage, TextRecognitionMode recognizeTextMode)
+        public async Task<ComputerVisionAnalyzeResponse> Analyze(string url, AnalysisLanguage analysisLanguage, 
+            OcrLanguages ocrLanguage, ComputerVisionApiClient.ReadV3Language readLanguage)
         {
+            // Setup
+            _computerVisionClient = new ComputerVisionClient(new ApiKeyServiceClientCredentials(_subscriptionKey)) { Endpoint = _endpoint };
+
             // Computer vision
             var imageAnalysis = ComputerVisionAnalyzeImage(url, analysisLanguage);
-            var recognizedPrintedText = ComputerVisionRecognizedPrintedText(url, ocrLanguage);
-            var recognizedText = ComputerVisionRecognizedText(url, recognizeTextMode);
-            var batchReadText = ComputerVisionBatchRead(url);
             var areaOfInterest = ComputerVisionGetAreaOfInterest(url);
+            var readV3 = ComputerVisionReadV3(url, readLanguage);
+            var recognizedPrintedText = ComputerVisionRecognizedPrintedText(url, ocrLanguage);
 
             // Combine
-            await Task.WhenAll(imageAnalysis, recognizedPrintedText, recognizedText, batchReadText, areaOfInterest);
+            await Task.WhenAll(imageAnalysis, areaOfInterest, readV3, recognizedPrintedText);
 
             return new ComputerVisionAnalyzeResponse
             {
@@ -84,8 +94,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
                 AreaOfInterestResult = areaOfInterest.Result,
 
                 OcrResult = recognizedPrintedText.Result,
-                RecognizeTextOperationResult = recognizedText.Result,
-                BatchReadResult = batchReadText.Result,
+                ReadV3Result = readV3.Result
             };
         }
 
@@ -112,62 +121,74 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
             return _computerVisionClient.GetAreaOfInterestAsync(url);
         }
 
-        private async Task<TextOperationResult> ComputerVisionRecognizedText(string url, TextRecognitionMode recognizeTextMode)
+        private async Task<ComputerVisionApiClient.ReadOperationResult> ComputerVisionReadV3(string url, ComputerVisionApiClient.ReadV3Language readLanguage)
         {
-            var recognizeTextHeaders = await _computerVisionClient.RecognizeTextAsync(url, recognizeTextMode);
+            var requestOperationEndpoint = "/vision/v3.0/read/analyze";
+            var resultOperationEndpoint = "/vision/v3.0/read/analyzeResults/";
 
-            // Retrieve the URI where the recognized text will be stored from the Operation-Location header
-            var operationLocation = recognizeTextHeaders.OperationLocation;
+            // Request headers
+            var httpClient = _httpClientFactory.CreateClient();
+            httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
+
+            // Read request
+            var readRequestUrl = QueryHelpers.AddQueryString(new UriBuilder($"{_endpoint}{requestOperationEndpoint}").ToString(), "language", readLanguage.ToString());
+            var requestContent = new ComputerVisionApiClient.ReadOperationRequest() { Url = url };
+            var content = new StringContent(JsonConvert.SerializeObject(requestContent), Encoding.UTF8, "application/json");
+            
+            var response = await httpClient.PostAsync(readRequestUrl, content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"ComputerVisionReadV3 - Read request failed - Reponse code: {response.StatusCode} - Response message: '{await response.Content.ReadAsStringAsync()}'");
+            }
+
+            // Retrieve the URI where the result will be stored from the Operation-Location header
+            if (!response.Headers.TryGetValues("Operation-Location", out IEnumerable<string> operationLocationValues))
+            {
+                throw new Exception($"ComputerVisionReadV3 - Read request failed - No 'operation-location' provided");
+            }
+            
+            var operationLocation = operationLocationValues.First();
             var operationId = operationLocation.Substring(operationLocation.Length - _computerVisionOperationIdLength);
-
-            var result = await _computerVisionClient.GetTextOperationResultAsync(operationId);
+            var readResultBuilder = new UriBuilder($"{_endpoint}{resultOperationEndpoint}{operationId}");
+            var readResultUrl = readResultBuilder.ToString();
+            
+            var result = await GetReadOperationResultAsync(readResultUrl, httpClient);
 
             // Wait for the operation to complete
-            var iteration = 1;
-            var waitDurationInMs = 500;
+            int i = 1;
+            int waitDurationInMs = 500;
             var maxWaitTimeInMs = 30000;
-            var maxTries = maxWaitTimeInMs / waitDurationInMs;
+            int maxTries = maxWaitTimeInMs / waitDurationInMs;
 
-            while ((result.Status == TextOperationStatusCodes.Running || result.Status == TextOperationStatusCodes.NotStarted)
-                && iteration <= maxTries)
+            while ((result.Status == ComputerVisionApiClient.ReadOperationStatus.Running || result.Status == ComputerVisionApiClient.ReadOperationStatus.NotStarted)
+                && i <= maxTries)
             {
+                Console.WriteLine($"ComputerVisionReadV3 - Server status: {0}, try {1}, waiting {2} milliseconds...", result.Status, i, waitDurationInMs);
                 await Task.Delay(waitDurationInMs);
 
-                result = await _computerVisionClient.GetTextOperationResultAsync(operationId);
-                iteration++;
+                result = await GetReadOperationResultAsync(readResultUrl, httpClient);
+                i++;
             }
 
             return result;
         }
 
-        private async Task<ReadOperationResult> ComputerVisionBatchRead(string url)
+        private async Task<ComputerVisionApiClient.ReadOperationResult> GetReadOperationResultAsync(string url, HttpClient httpClient)
         {
-            var batchReadFileHeaders = await _computerVisionClient.BatchReadFileAsync(url);
+            var response = await httpClient.GetAsync(url);
 
-            // Retrieve the URI where the recognized text will be stored from the Operation-Location header
-            var operationLocation = batchReadFileHeaders.OperationLocation;
-            var operationId = operationLocation.Substring(operationLocation.Length - _computerVisionOperationIdLength);
-
-            var result = await _computerVisionClient.GetReadOperationResultAsync(operationId);
-
-            // Wait for the operation to complete
-            var iteration = 1;
-            var waitDurationInMs = 500;
-            var maxWaitTimeInMs = 30000;
-            var maxTries = maxWaitTimeInMs / waitDurationInMs;
-
-            while ((result.Status == TextOperationStatusCodes.Running || result.Status == TextOperationStatusCodes.NotStarted)
-                && iteration <= maxTries)
+            if (!response.IsSuccessStatusCode)
             {
-                await Task.Delay(waitDurationInMs);
-
-                result = await _computerVisionClient.GetReadOperationResultAsync(operationId);
-                iteration++;
+                throw new Exception($"ComputerVisionReadV3 - Read request failed - Reponse code: {response.StatusCode} - Response message: '{await response.Content.ReadAsStringAsync()}'");
             }
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<ComputerVisionApiClient.ReadOperationResult>(responseContent);
 
             return result;
         }
-
+    
         private async Task<OcrResult> ComputerVisionRecognizedPrintedText(string url, OcrLanguages ocrLanguage)
         {
             return await _computerVisionClient.RecognizePrintedTextAsync(true, url, ocrLanguage);

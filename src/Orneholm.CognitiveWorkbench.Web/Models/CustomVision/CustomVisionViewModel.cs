@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http.Connections;
 
-namespace Orneholm.CognitiveWorkbench.Web.Models
+namespace Orneholm.CognitiveWorkbench.Web.Models.CustomVision
 {
     public class CustomVisionViewModel
     {

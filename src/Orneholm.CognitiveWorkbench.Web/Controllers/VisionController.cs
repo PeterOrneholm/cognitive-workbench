@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Orneholm.CognitiveWorkbench.Web.Models;
+using Orneholm.CognitiveWorkbench.Web.Models.ComputerVision;
+using Orneholm.CognitiveWorkbench.Web.Models.CustomVision;
+using Orneholm.CognitiveWorkbench.Web.Models.Face;
 using Orneholm.CognitiveWorkbench.Web.Services;
 
 namespace Orneholm.CognitiveWorkbench.Web.Controllers
@@ -49,8 +51,8 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
 
             Track("Vision_ComputerVision");
 
-            var imageAnalyzer = new ImageComputerVisionAnalyzer(request.ComputerVisionSubscriptionKey, request.ComputerVisionEndpoint);
-            var analyzeResult = await imageAnalyzer.Analyze(request.ImageUrl, request.ImageAnalysisLanguage, request.ImageOcrLanguage, request.ImageRecognizeTextMode);
+            var imageAnalyzer = new ImageComputerVisionAnalyzer(request.ComputerVisionSubscriptionKey, request.ComputerVisionEndpoint, _httpClientFactory);
+            var analyzeResult = await imageAnalyzer.Analyze(request.ImageUrl, request.ImageAnalysisLanguage, request.ImageOcrLanguage, request.ImageReadV3Language);
 
             return View(ComputerVisionViewModel.Analyzed(request, analyzeResult));
         }

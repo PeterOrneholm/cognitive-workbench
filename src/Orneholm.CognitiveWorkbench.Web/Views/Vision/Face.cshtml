@@ -1,4 +1,5 @@
 @using Orneholm.CognitiveWorkbench.Web.Extensions
+@using Orneholm.CognitiveWorkbench.Web.Models.Face
 @model FaceViewModel
 <main role="main" class="pb-3">
     <div class="container">
@@ -26,49 +27,8 @@
                             <p class="mb-3">
                                 <strong>Note:</strong> You need to provide your own keys for Azure Cognitive Services - Face under the tab <em>Azure Settings</em>.
                             </p>
-
-                            <h3>Analyze</h3>
-
-                            <div class="form-row">
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label asp-for="FaceAnalyzeRequest.DetectionModel">Detection model</label>
-                                        <select required class="cwb-input-remember form-control" asp-for="FaceAnalyzeRequest.DetectionModel" asp-items="Html.GetEnumSelectList<FaceDetectionModel>()" name="DetectionModel">
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <h3>Identification</h3>
-
-                            <div class="my-3">
-                                <div class="form-check pl-0">
-                                    <input type="checkbox" class="cwb-input-remember" asp-for="FaceAnalyzeRequest.EnableIdentification" name="EnableIdentification" />
-                                    <label class="form-check-label" asp-for="FaceAnalyzeRequest.EnableIdentification">
-                                        Enable identification
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="form-row" id="cwb-face-identification-form">
-                                <div class="form-group col-md-3" id="cwb-form-face-image-identification-groupid">
-                                    <label asp-for="FaceAnalyzeRequest.IdentificationGroupId">Identification Group Id</label>
-                                    <input type="text" required class="cwb-input-remember form-control cwb-face-identification-setting" placeholder="groupName" asp-for="FaceAnalyzeRequest.IdentificationGroupId" name="IdentificationGroupId" />
-                                </div>
-                                <div class="form-group col-md-3" id="cwb-form-face-image-identification-type">
-                                    <label asp-for="FaceAnalyzeRequest.IdentificationGroupType">Identification group type</label>
-                                    <select required class="cwb-input-remember form-control cwb-face-identification-setting" asp-for="FaceAnalyzeRequest.IdentificationGroupType" asp-items="Html.GetEnumSelectList<FaceIdentificationGroupType>()" name="IdentificationGroupType">
-                                    </select>
-                                </div>
-                                <div class="form-group col-md-6" id="cwb-form-face-image-recognition-model">
-                                    <label asp-for="FaceAnalyzeRequest.RecognitionModel">Recognition model</label>
-                                    <select required class="cwb-input-remember form-control cwb-face-identification-setting" asp-for="FaceAnalyzeRequest.RecognitionModel" asp-items="Html.GetEnumSelectList<FaceRecognitionModel>()" name="RecognitionModel">
-                                    </select>
-                                </div>
-                            </div>
-
+                            
                             <h3>Common</h3>
-
                             <p class="mb-3">
                                 <ul class="list-unstyled small">
                                     <li>
@@ -95,11 +55,49 @@
                                 <input type="url" required class="cwb-input-remember form-control" placeholder="https://example.org/url-to/image.jpg" asp-for="FaceAnalyzeRequest.ImageUrl" name="ImageUrl" />
                             </div>
 
+                            <h3>Analyze</h3>
+                            <div class="form-row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label asp-for="FaceAnalyzeRequest.DetectionModel">Detection model</label>
+                                        <select required class="cwb-input-remember form-control" asp-for="FaceAnalyzeRequest.DetectionModel" asp-items="Html.GetEnumSelectList<FaceDetectionModel>()" name="DetectionModel">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h3>Identification</h3>
+                            <div class="my-3">
+                                <div class="form-check pl-0">
+                                    <input type="checkbox" class="cwb-input-remember" asp-for="FaceAnalyzeRequest.EnableIdentification" name="EnableIdentification" />
+                                    <label class="form-check-label" asp-for="FaceAnalyzeRequest.EnableIdentification">
+                                        Enable identification
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-row" id="cwb-face-identification-form">
+                                <div class="form-group col-md-3" id="cwb-form-face-image-identification-groupid">
+                                    <label asp-for="FaceAnalyzeRequest.IdentificationGroupId">Identification Group Id</label>
+                                    <input type="text" required class="cwb-input-remember form-control cwb-face-identification-setting" placeholder="groupName" asp-for="FaceAnalyzeRequest.IdentificationGroupId" name="IdentificationGroupId" />
+                                </div>
+                                <div class="form-group col-md-3" id="cwb-form-face-image-identification-type">
+                                    <label asp-for="FaceAnalyzeRequest.IdentificationGroupType">Identification group type</label>
+                                    <select required class="cwb-input-remember form-control cwb-face-identification-setting" asp-for="FaceAnalyzeRequest.IdentificationGroupType" asp-items="Html.GetEnumSelectList<FaceIdentificationGroupType>()" name="IdentificationGroupType">
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6" id="cwb-form-face-image-recognition-model">
+                                    <label asp-for="FaceAnalyzeRequest.RecognitionModel">Recognition model</label>
+                                    <select required class="cwb-input-remember form-control cwb-face-identification-setting" asp-for="FaceAnalyzeRequest.RecognitionModel" asp-items="Html.GetEnumSelectList<FaceRecognitionModel>()" name="RecognitionModel">
+                                    </select>
+                                </div>
+                            </div>
+
                             <button type="submit" class="btn btn-primary">Analyze</button>
                         </div>
                         <div class="tab-pane fade" id="cwb-form-face-settings">
                             <p>
-                                This site requires you to set up your own resource(s) for Azure Cognitive Services. Create a resource for Computer Vision using the <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/cognitive-services-apis-create-account?tabs=multiservice%2Cwindows">Azure portal</a> or <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/cognitive-services-apis-create-account-cli?tabs=windows">Azure CLI</a> on your local machine.
+                                This site requires you to set up your own resource(s) for Azure Cognitive Services. Create a resource for Face using the <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/cognitive-services-apis-create-account?tabs=multiservice%2Cwindows">Azure portal</a> or <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/cognitive-services-apis-create-account-cli?tabs=windows">Azure CLI</a> on your local machine.
                             </p>
 
                             <div class="form-row">
@@ -278,7 +276,7 @@
                             <div class="card-body">
                                 <div class="tab-content">
                                     <div class="tab-pane fade show active" id="cwb-result-face-detect-info">
-                                        <partial name="_FaceDetectResult" model="@Model.FaceAnalyzeResponse" />
+                                        <partial name="Face/_FaceDetectResult" model="@Model.FaceAnalyzeResponse" />
                                     </div>
                                     <div class="tab-pane fade" id="cwb-result-face-detect-json">
                                         <partial name="_Json" model="@Model.FaceAnalyzeResponse.FaceResult" />

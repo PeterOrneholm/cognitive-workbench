@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
+using Orneholm.CognitiveWorkbench.Web.Models.Generic;
 
-namespace Orneholm.CognitiveWorkbench.Web.Models
+namespace Orneholm.CognitiveWorkbench.Web.Models.Face
 {
     public class FaceAnalyzeResponse
     {

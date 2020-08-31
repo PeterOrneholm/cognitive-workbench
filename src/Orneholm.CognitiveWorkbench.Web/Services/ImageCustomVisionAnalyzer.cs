@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models;
-using Orneholm.CognitiveWorkbench.Web.Models;
+using Orneholm.CognitiveWorkbench.Web.Models.CustomVision;
 
 namespace Orneholm.CognitiveWorkbench.Web.Services
 {
@@ -16,9 +16,8 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
         public ImageCustomVisionAnalyzer(string customVisionPredictionKey, string customVisionEndpoint, IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
-            _customVisionPredictionClient = new CustomVisionPredictionClient()
+            _customVisionPredictionClient = new CustomVisionPredictionClient(new ApiKeyServiceClientCredentials(customVisionPredictionKey))
             {
-                ApiKey = customVisionPredictionKey,
                 Endpoint = customVisionEndpoint
             };
         }
