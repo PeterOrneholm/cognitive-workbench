@@ -98,14 +98,17 @@ body {
             margin-left: 10px;
         }
 
-.cwb-result-image {
+.cwb-result-image, .cwb-result-text {
     position: relative;
     position: sticky;
     top: 70px;
 }
 
-/* Image boxes */
+.cwb-result-text {
+    white-space: pre-wrap;
+}
 
+/* Image boxes */
 .cwb-image-boxes {
 }
 
