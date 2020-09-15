@@ -1,0 +1,264 @@
+@model Orneholm.CognitiveWorkbench.Web.Models.TextAnalytics.TextAnalyticsViewModel
+<main role="main" class="pb-3">
+    <div class="container">
+        <h2>Language - Text Analytics</h2>
+
+        <p>
+            An AI service that uncovers insights such as sentiment, entities, and key phrases in unstructured text.
+        </p>
+
+        <form method="post">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="list" href="#cwb-form-language-text">Text</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="list" href="#cwb-form-language-settings">Azure Settings</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="cwb-form-language-text">
+                            <p class="mb-3">
+                                <strong>Note:</strong> You need to provide your own keys for Azure Cognitive Services - Text Analytics under the tab <em>Azure Settings</em>.
+                            </p>
+
+                            <div class="form-group">
+                                <label asp-for="TextAnalyticsAnalyzeRequest.Text">Text</label>
+                                <textarea class="cwb-input-remember form-control" placeholder="Text" id="exampleFormControlTextarea1" rows="10" asp-for="TextAnalyticsAnalyzeRequest.Text" name="Text"></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Analyze</button>
+                        </div>
+                        <div class="tab-pane fade" id="cwb-form-language-settings">
+                            <p>
+                                This site requires you to set up your own resource(s) for Azure Cognitive Services. Create a resource for Text Analytics using the <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/cognitive-services-apis-create-account?tabs=multiservice%2Cwindows">Azure portal</a> or <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/cognitive-services-apis-create-account-cli?tabs=windows">Azure CLI</a> on your local machine.
+                            </p>
+                            <p>
+                                Your endpoint can have the following format:
+                                <ul>
+                                    <li>https://[TEXTANALYTICS-REGION].api.cognitive.microsoft.com/</li>
+                                </ul>
+                            </p>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label asp-for="TextAnalyticsAnalyzeRequest.TextAnalyticsSubscriptionKey">Text Analytics - Subscription Key</label>
+                                    <input type="password" required class="cwb-input-remember form-control" placeholder="zq8lp6z7cqtew6h4c0bxy0r5cqx3in36" asp-for="TextAnalyticsAnalyzeRequest.TextAnalyticsSubscriptionKey" name="TextAnalyticsSubscriptionKey" />
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label asp-for="TextAnalyticsAnalyzeRequest.TextAnalyticsEndpoint">Text Analytics - Endpoint</label>
+                                    <input type="url" required class="cwb-input-remember form-control" placeholder="https://[TEXTANALYTICS-REGION].api.cognitive.microsoft.com/" asp-for="TextAnalyticsAnalyzeRequest.TextAnalyticsEndpoint" name="TextAnalyticsEndpoint" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="container-fluid">
+        @if (Model.IsAnalyzed && Model.TextAnalyticsAnalyzeResponse?.DetectedLanguage != null)
+        {
+            <section class="cwb-result-computervision-analyze">
+                <h2 class="mt-5">Summary</h2>
+
+                <div class="row">
+                    <div class="col-md-7">
+                        <div class="card mb-3 cwb-result-text">
+                            <div class="card-body">@Model.TextAnalyticsAnalyzeRequest.Text</div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="card mb-3 cwb-result-content">
+                            <div class="card-header">
+                                <ul class="nav nav-tabs card-header-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="list" href="#cwb-result-textanalytics-summary-info">Info (Parsed)</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="list" href="#cwb-result-textanalytics-summary-json">JSON (Raw)</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="cwb-result-textanalytics-summary-info">
+                                        <partial name="TextAnalytics/_Summary" model="@Model.TextAnalyticsAnalyzeResponse" />
+                                    </div>
+                                    <div class="tab-pane fade" id="cwb-result-textanalytics-summary-json">
+                                        <partial name="_Json" model="@Model.TextAnalyticsAnalyzeResponse" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        }
+
+        @if (Model.IsAnalyzed && Model.TextAnalyticsAnalyzeResponse?.DetectedLanguage != null)
+        {
+            <section class="cwb-result-computervision-analyze">
+                <h2 class="mt-5">Detect Language</h2>
+
+                <div class="row">
+                    <div class="col-md-7">
+                        <div class="card mb-3 cwb-result-text">
+                            <div class="card-body">@Model.TextAnalyticsAnalyzeRequest.Text</div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="card mb-3 cwb-result-content">
+                            <div class="card-header">
+                                <ul class="nav nav-tabs card-header-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="list" href="#cwb-result-textanalytics-detectlanguage-info">Info (Parsed)</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="list" href="#cwb-result-textanalytics-detectlanguage-json">JSON (Raw)</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="cwb-result-textanalytics-detectlanguage-info">
+                                        <partial name="TextAnalytics/_DetectLanguageResult" model="@Model.TextAnalyticsAnalyzeResponse.DetectedLanguage" />
+                                    </div>
+                                    <div class="tab-pane fade" id="cwb-result-textanalytics-detectlanguage-json">
+                                        <partial name="_Json" model="@Model.TextAnalyticsAnalyzeResponse.DetectedLanguage" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        }
+
+        @if (Model.IsAnalyzed && Model.TextAnalyticsAnalyzeResponse?.Entities != null)
+        {
+            <section class="cwb-result-computervision-analyze">
+                <h2 class="mt-5">Enteties</h2>
+
+                <div class="row">
+                    <div class="col-md-7">
+                        <div class="card mb-3 cwb-result-text">
+                            <div class="card-body">@Model.TextAnalyticsAnalyzeRequest.Text</div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="card mb-3 cwb-result-content">
+                            <div class="card-header">
+                                <ul class="nav nav-tabs card-header-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="list" href="#cwb-result-textanalytics-enteties-info">Info (Parsed)</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="list" href="#cwb-result-textanalytics-enteties-json">JSON (Raw)</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="cwb-result-textanalytics-enteties-info">
+                                        <partial name="TextAnalytics/_EntitiesResult" model="@Model.TextAnalyticsAnalyzeResponse.Entities" />
+                                    </div>
+                                    <div class="tab-pane fade" id="cwb-result-textanalytics-enteties-json">
+                                        <partial name="_Json" model="@Model.TextAnalyticsAnalyzeResponse.Entities" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        }
+
+        @if (Model.IsAnalyzed && Model.TextAnalyticsAnalyzeResponse?.KeyPhrases != null)
+        {
+            <section class="cwb-result-computervision-analyze">
+                <h2 class="mt-5">Key Phrases</h2>
+
+                <div class="row">
+                    <div class="col-md-7">
+                        <div class="card mb-3 cwb-result-text">
+                            <div class="card-body">@Model.TextAnalyticsAnalyzeRequest.Text</div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="card mb-3 cwb-result-content">
+                            <div class="card-header">
+                                <ul class="nav nav-tabs card-header-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="list" href="#cwb-result-textanalytics-keyphrases-info">Info (Parsed)</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="list" href="#cwb-result-textanalytics-keyphrases-json">JSON (Raw)</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="cwb-result-textanalytics-keyphrases-info">
+                                        <partial name="TextAnalytics/_KeyPhrasesResult" model="@Model.TextAnalyticsAnalyzeResponse.KeyPhrases" />
+                                    </div>
+                                    <div class="tab-pane fade" id="cwb-result-textanalytics-keyphrases-json">
+                                        <partial name="_Json" model="@Model.TextAnalyticsAnalyzeResponse.KeyPhrases" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        }
+
+
+        @section Scripts
+        {
+            <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+            <script>
+                (function () {
+                    var persistedValues = {
+                        get: function (key, defaultValue) {
+                            return localStorage.getItem('cwb.persisted.' + key) || defaultValue;
+                        },
+                        set: function (key, value, defaultValue) {
+                            localStorage.setItem('cwb.persisted.' + key, value || defaultValue);
+                        }
+                    };
+
+                    document.addEventListener('DOMContentLoaded',
+                        function () {
+                            var fields = document.querySelectorAll('input.cwb-input-remember');
+                            fields.forEach(function (field) {
+                                function persist() {
+                                    persistedValues.set(field.id, field.value, '');
+                                }
+
+                                field.value = persistedValues.get(field.id, '');
+                                field.addEventListener('change', persist);
+                                field.addEventListener('keydown', persist);
+                            });
+
+                            var selectFields = document.querySelectorAll('select.cwb-input-remember');
+                            selectFields.forEach(function (field) {
+                                function persist() {
+                                    persistedValues.set(field.id, field.value, 0);
+                                }
+
+                                field.value = persistedValues.get(field.id, 0);
+                                field.addEventListener('change', persist);
+                            });
+                        });
+                }());
+            </script>
+        }
+
+    </div>
+</main>

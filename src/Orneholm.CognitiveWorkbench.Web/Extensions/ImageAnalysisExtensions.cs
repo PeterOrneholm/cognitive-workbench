@@ -267,6 +267,11 @@ namespace Orneholm.CognitiveWorkbench.Web.Extensions
             return $"{(value * 100).ToString(CultureInfo.GetCultureInfo("en-US"))}%";
         }
 
+        public static string ToDescriptivePercentage(this double? score)
+        {
+            return score != null ? score.Value.ToDescriptivePercentage() : "-";
+        }
+
         public static string ToDescriptivePercentage(this double score)
         {
             return $"{score:P} ({TruncateDecimal(score, 5)})";
