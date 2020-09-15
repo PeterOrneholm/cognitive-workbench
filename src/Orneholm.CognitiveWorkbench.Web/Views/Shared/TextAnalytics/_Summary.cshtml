@@ -2,33 +2,23 @@
 @model Orneholm.CognitiveWorkbench.Web.Models.TextAnalytics.TextAnalyticsAnalyzeResponse
 
 <div class="mb-5">
-    <h4>Detected Languages</h4>
+    <h4>Overview</h4>
 
+    @{
+        var language = @Model.DetectedLanguage.DetectedLanguages.FirstOrDefault();
+    }
     <table class="table table-striped table-hover">
-        <thead class="thead-dark">
-            <tr>
-                <th>Name</th>
-                <th>Score</th>
-            </tr>
-        </thead>
         <tbody>
-            @foreach (var detectedLanguage in Model.DetectedLanguage.DetectedLanguages)
-            {
-                <tr>
-                    <th>@detectedLanguage.Name</th>
-                    <td>@detectedLanguage.Score.ToDescriptivePercentage()</td>
-                </tr>
-            }
+            <tr>
+                <th>Language</th>
+                <th>@language?.Name - @language?.Score.ToDescriptivePercentage()</th>
+            </tr>
+            <tr>
+                <th>Sentiment</th>
+                <th>@Model.Sentiment.Score.ToDescriptivePercentage()</th>
+            </tr>
         </tbody>
     </table>
-
-
-    @if (!Model.DetectedLanguage.DetectedLanguages.Any())
-    {
-        <p class="p-2">
-            No detected languages.
-        </p>
-    }
 </div>
 
 
