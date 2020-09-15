@@ -1,0 +1,92 @@
+@using Orneholm.CognitiveWorkbench.Web.Extensions
+@model Orneholm.CognitiveWorkbench.Web.Models.TextAnalytics.TextAnalyticsAnalyzeResponse
+
+<div class="mb-5">
+    <h4>Detected Languages</h4>
+
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Name</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var detectedLanguage in Model.DetectedLanguage.DetectedLanguages)
+            {
+                <tr>
+                    <th>@detectedLanguage.Name</th>
+                    <td>@detectedLanguage.Score.ToDescriptivePercentage()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+    @if (!Model.DetectedLanguage.DetectedLanguages.Any())
+    {
+        <p class="p-2">
+            No detected languages.
+        </p>
+    }
+</div>
+
+
+<div class="mb-5">
+    <h4>Entities</h4>
+
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Subtype</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var entity in Model.Entities.Entities)
+            {
+                <tr>
+                    <th>@entity.Name</th>
+                    <td>@entity.Type</td>
+                    <td>@entity.SubType</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (!Model.Entities.Entities.Any())
+    {
+        <p class="p-2">
+            No entities available.
+        </p>
+    }
+</div>
+
+
+<div class="mb-5">
+    <h4>Key Phrases</h4>
+
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Key Phrase</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var keyPhrase in Model.KeyPhrases.KeyPhrases)
+            {
+                <tr>
+                    <th>@keyPhrase</th>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (!Model.KeyPhrases.KeyPhrases.Any())
+    {
+        <p class="p-2">
+            No key phrases available.
+        </p>
+    }
+</div>

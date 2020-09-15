@@ -65,6 +65,45 @@
         @if (Model.IsAnalyzed && Model.TextAnalyticsAnalyzeResponse?.DetectedLanguage != null)
         {
             <section class="cwb-result-computervision-analyze">
+                <h2 class="mt-5">Summary</h2>
+
+                <div class="row">
+                    <div class="col-md-7">
+                        <div class="card mb-3 cwb-result-text">
+                            <div class="card-body">@Model.TextAnalyticsAnalyzeRequest.Text</div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="card mb-3 cwb-result-content">
+                            <div class="card-header">
+                                <ul class="nav nav-tabs card-header-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="list" href="#cwb-result-textanalytics-summary-info">Info (Parsed)</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="list" href="#cwb-result-textanalytics-summary-json">JSON (Raw)</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="cwb-result-textanalytics-summary-info">
+                                        <partial name="TextAnalytics/_Summary" model="@Model.TextAnalyticsAnalyzeResponse" />
+                                    </div>
+                                    <div class="tab-pane fade" id="cwb-result-textanalytics-summary-json">
+                                        <partial name="_Json" model="@Model.TextAnalyticsAnalyzeResponse" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        }
+
+        @if (Model.IsAnalyzed && Model.TextAnalyticsAnalyzeResponse?.DetectedLanguage != null)
+        {
+            <section class="cwb-result-computervision-analyze">
                 <h2 class="mt-5">Detect Language</h2>
 
                 <div class="row">
@@ -101,6 +140,83 @@
             </section>
         }
 
+        @if (Model.IsAnalyzed && Model.TextAnalyticsAnalyzeResponse?.Entities != null)
+        {
+            <section class="cwb-result-computervision-analyze">
+                <h2 class="mt-5">Enteties</h2>
+
+                <div class="row">
+                    <div class="col-md-7">
+                        <div class="card mb-3 cwb-result-text">
+                            <div class="card-body">@Model.TextAnalyticsAnalyzeRequest.Text</div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="card mb-3 cwb-result-content">
+                            <div class="card-header">
+                                <ul class="nav nav-tabs card-header-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="list" href="#cwb-result-textanalytics-enteties-info">Info (Parsed)</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="list" href="#cwb-result-textanalytics-enteties-json">JSON (Raw)</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="cwb-result-textanalytics-enteties-info">
+                                        <partial name="TextAnalytics/_EntitiesResult" model="@Model.TextAnalyticsAnalyzeResponse.Entities" />
+                                    </div>
+                                    <div class="tab-pane fade" id="cwb-result-textanalytics-enteties-json">
+                                        <partial name="_Json" model="@Model.TextAnalyticsAnalyzeResponse.Entities" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        }
+
+        @if (Model.IsAnalyzed && Model.TextAnalyticsAnalyzeResponse?.KeyPhrases != null)
+        {
+            <section class="cwb-result-computervision-analyze">
+                <h2 class="mt-5">Key Phrases</h2>
+
+                <div class="row">
+                    <div class="col-md-7">
+                        <div class="card mb-3 cwb-result-text">
+                            <div class="card-body">@Model.TextAnalyticsAnalyzeRequest.Text</div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="card mb-3 cwb-result-content">
+                            <div class="card-header">
+                                <ul class="nav nav-tabs card-header-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="list" href="#cwb-result-textanalytics-keyphrases-info">Info (Parsed)</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="list" href="#cwb-result-textanalytics-keyphrases-json">JSON (Raw)</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="cwb-result-textanalytics-keyphrases-info">
+                                        <partial name="TextAnalytics/_KeyPhrasesResult" model="@Model.TextAnalyticsAnalyzeResponse.KeyPhrases" />
+                                    </div>
+                                    <div class="tab-pane fade" id="cwb-result-textanalytics-keyphrases-json">
+                                        <partial name="_Json" model="@Model.TextAnalyticsAnalyzeResponse.KeyPhrases" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        }
 
 
         @section Scripts
@@ -117,30 +233,32 @@
                         }
                     };
 
-                    document.addEventListener('DOMContentLoaded', function () {
-                        var fields = document.querySelectorAll('input.cwb-input-remember');
-                        fields.forEach(function (field) {
-                            function persist() {
-                                persistedValues.set(field.id, field.value, '');
-                            }
+                    document.addEventListener('DOMContentLoaded',
+                        function () {
+                            var fields = document.querySelectorAll('input.cwb-input-remember');
+                            fields.forEach(function (field) {
+                                function persist() {
+                                    persistedValues.set(field.id, field.value, '');
+                                }
 
-                            field.value = persistedValues.get(field.id, '');
-                            field.addEventListener('change', persist);
-                            field.addEventListener('keydown', persist);
+                                field.value = persistedValues.get(field.id, '');
+                                field.addEventListener('change', persist);
+                                field.addEventListener('keydown', persist);
+                            });
+
+                            var selectFields = document.querySelectorAll('select.cwb-input-remember');
+                            selectFields.forEach(function (field) {
+                                function persist() {
+                                    persistedValues.set(field.id, field.value, 0);
+                                }
+
+                                field.value = persistedValues.get(field.id, 0);
+                                field.addEventListener('change', persist);
+                            });
                         });
-
-                        var selectFields = document.querySelectorAll('select.cwb-input-remember');
-                        selectFields.forEach(function (field) {
-                            function persist() {
-                                persistedValues.set(field.id, field.value, 0);
-                            }
-
-                            field.value = persistedValues.get(field.id, 0);
-                            field.addEventListener('change', persist);
-                        });
-                    });
                 }());
             </script>
         }
+
     </div>
 </main>

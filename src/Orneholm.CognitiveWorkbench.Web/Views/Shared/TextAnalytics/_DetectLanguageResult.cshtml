@@ -2,13 +2,13 @@
 @model Microsoft.Azure.CognitiveServices.Language.TextAnalytics.Models.LanguageResult
 
 <div class="mb-5">
-    <h4>Detected languages</h4>
+    <h4>Detected Languages</h4>
 
     <table class="table table-striped table-hover">
         <thead class="thead-dark">
             <tr>
-                <th>ISO6391</th>
                 <th>Name</th>
+                <th>ISO6391</th>
                 <th>Score</th>
             </tr>
         </thead>
@@ -16,11 +16,18 @@
             @foreach (var detectedLanguage in Model.DetectedLanguages)
             {
                 <tr>
-                    <th>@detectedLanguage.Iso6391Name</th>
-                    <td>@detectedLanguage.Name</td>
+                    <th>@detectedLanguage.Name</th>
+                    <td>@detectedLanguage.Iso6391Name</td>
                     <td>@detectedLanguage.Score.ToDescriptivePercentage()</td>
                 </tr>
             }
         </tbody>
     </table>
+
+    @if (!Model.DetectedLanguages.Any())
+    {
+        <p class="p-2">
+            No detected languages.
+        </p>
+    }
 </div>
