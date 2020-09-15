@@ -3,8 +3,10 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Microsoft.Azure.CognitiveServices.Language.TextAnalytics;
 using Microsoft.Rest;
+
 using Orneholm.CognitiveWorkbench.Web.Models.TextAnalytics;
 
 namespace Orneholm.CognitiveWorkbench.Web.Services
@@ -28,24 +30,25 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
                 Endpoint = _endpoint
             };
 
-            var detectedLanguage = await client.DetectLanguageAsync(text, languageHint, true);
+            var detectedLanguageResult = await client.DetectLanguageAsync(text, languageHint, true);
             if (string.IsNullOrWhiteSpace(languageHint))
             {
-                languageHint = detectedLanguage.DetectedLanguages.FirstOrDefault()?.Iso6391Name ?? "";
+                languageHint = detectedLanguageResult.DetectedLanguages.FirstOrDefault()?.Iso6391Name ?? "";
             }
 
-            var entities = client.EntitiesAsync(text, languageHint, true);
-            var keyPhrases = client.KeyPhrasesAsync(text, languageHint, true);
-            var sentiment = client.SentimentAsync(text, languageHint, true);
+            var entitiesResult = client.EntitiesAsync(text, languageHint, true);
+            var keyPhrasesResult = client.KeyPhrasesAsync(text, languageHint, true);
+            var sentimentResult = client.SentimentAsync(text, languageHint, true);
 
-            await Task.WhenAll(entities, keyPhrases, sentiment);
+            await Task.WhenAll(entitiesResult, keyPhrasesResult, sentimentResult);
 
             return new TextAnalyticsAnalyzeResponse
             {
-                DetectedLanguage = detectedLanguage,
-                Entities = entities.Result,
-                KeyPhrases = keyPhrases.Result,
-                Sentiment = sentiment.Result
+                DetectedLanguage = detectedLanguageResult,
+                KeyPhrases = keyPhrasesResult.Result,
+                Sentiment = sentimentResult.Result,
+
+                Entities = entitiesResult.Result
             };
         }
 
