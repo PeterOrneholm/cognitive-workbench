@@ -27,6 +27,14 @@ As of today, the site covers these services and APIs:
     * ClassifyImage
     * DetectImage (object detection)
 
+# Language
+
+* Text Analytics
+    * Detect languages
+    * Entities
+    * Keyphrase
+    * Sentiment
+
 # Samples
 
 ## Computer Vision
