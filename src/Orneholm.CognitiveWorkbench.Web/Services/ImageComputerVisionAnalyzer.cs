@@ -1,19 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
 using ApiKeyServiceClientCredentials = Microsoft.Azure.CognitiveServices.Vision.ComputerVision.ApiKeyServiceClientCredentials;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Orneholm.CognitiveWorkbench.Web.Extensions;
-using ComputerVisionApiClient = Orneholm.CognitiveWorkbench.Web.Models.ComputerVision.ApiClient;
 using Orneholm.CognitiveWorkbench.Web.Models.ComputerVision;
 using Orneholm.CognitiveWorkbench.Web.Models.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Orneholm.CognitiveWorkbench.Web.Services
 {
@@ -62,71 +61,166 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<ComputerVisionAnalyzeResponse> Analyze(string url, AnalysisLanguage analysisLanguage, 
-            OcrLanguages ocrLanguage, ComputerVisionApiClient.ReadV3Language readLanguage)
+        public async Task<ComputerVisionAnalyzeResponse> Analyze(string imageUrl, IFormFile file,
+            AnalysisLanguage analysisLanguage, OcrLanguages ocrLanguage, ReadLanguage readLanguage)
         {
             // Setup
             _computerVisionClient = new ComputerVisionClient(new ApiKeyServiceClientCredentials(_subscriptionKey)) { Endpoint = _endpoint };
 
             // Computer vision
-            var imageAnalysis = ComputerVisionAnalyzeImage(url, analysisLanguage);
-            var areaOfInterest = ComputerVisionGetAreaOfInterest(url);
-            var readV3 = ComputerVisionReadV3(url, readLanguage);
-            var recognizedPrintedText = ComputerVisionRecognizedPrintedText(url, ocrLanguage);
-
-            // Combine
-            var task = Task.WhenAll(imageAnalysis, areaOfInterest, readV3, recognizedPrintedText);
-
-            try
+            if (!string.IsNullOrWhiteSpace(imageUrl))
             {
-                await task;
+                var imageAnalysis = ComputerVisionAnalyzeImageByUrl(imageUrl, analysisLanguage);
+                var areaOfInterest = ComputerVisionGetAreaOfInterestByUrl(imageUrl);
+                var read = ComputerVisionReadByUrl(imageUrl, readLanguage);
+                var recognizedPrintedText = ComputerVisionRecognizedPrintedTextByUrl(imageUrl, ocrLanguage);
 
-                return new ComputerVisionAnalyzeResponse
+                // Combine
+                var task = Task.WhenAll(imageAnalysis, areaOfInterest, read, recognizedPrintedText);
+
+                try
                 {
-                    ImageInfo = new ImageInfo
-                    {
-                        Url = url,
-                        Description = imageAnalysis.Result.Description?.Captions?.FirstOrDefault()?.Text.ToSentence(),
+                    await task;
 
-                        Width = imageAnalysis.Result.Metadata.Width,
-                        Height = imageAnalysis.Result.Metadata.Height
-                    },
-
-                    AnalyzeVisualFeatureTypes = AnalyzeVisualFeatureTypes,
-                    AnalyzeDetails = AnalyzeDetails,
-
-                    AnalysisResult = imageAnalysis.Result,
-                    AreaOfInterestResult = areaOfInterest.Result,
-
-                    OcrResult = recognizedPrintedText.Result,
-                    ReadV3Result = readV3.Result
-                };
-            }
-            catch (ComputerVisionErrorException ex)
-            {
-                var exceptionMessage = ex.Response.Content;
-                var parsedJson = JToken.Parse(exceptionMessage);
-
-                if (ex.Response.StatusCode == System.Net.HttpStatusCode.BadRequest)
-                {
                     return new ComputerVisionAnalyzeResponse
                     {
-                        ApiRequestErrorMessage = $"Bad request thrown by the underlying API from Microsoft:",
-                        ApiRequestErrorContent = parsedJson.ToString(Formatting.Indented)
+                        ImageInfo = new ImageInfo
+                        {
+                            Src = imageUrl,
+                            Description = imageAnalysis.Result.Description?.Captions?.FirstOrDefault()?.Text.ToSentence(),
+
+                            Width = imageAnalysis.Result.Metadata.Width,
+                            Height = imageAnalysis.Result.Metadata.Height
+                        },
+
+                        AnalyzeVisualFeatureTypes = AnalyzeVisualFeatureTypes,
+                        AnalyzeDetails = AnalyzeDetails,
+
+                        AnalysisResult = imageAnalysis.Result,
+                        AreaOfInterestResult = areaOfInterest.Result,
+
+                        OcrResult = recognizedPrintedText.Result,
+                        ReadResult = read.Result
                     };
                 }
-                else
+                catch (ComputerVisionErrorException ex)
                 {
-                    return new ComputerVisionAnalyzeResponse
+                    var exceptionMessage = ex.Response.Content;
+                    var parsedJson = JToken.Parse(exceptionMessage);
+
+                    if (ex.Response.StatusCode == System.Net.HttpStatusCode.BadRequest)
                     {
-                        OtherErrorMessage = $"Error thrown by the underlying API from Microsoft:",
-                        OtherErrorContent = parsedJson.ToString(Formatting.Indented)
-                    };
+                        return new ComputerVisionAnalyzeResponse
+                        {
+                            ApiRequestErrorMessage = $"Bad request thrown by the underlying API from Microsoft:",
+                            ApiRequestErrorContent = parsedJson.ToString(Formatting.Indented)
+                        };
+                    }
+                    else
+                    {
+                        return new ComputerVisionAnalyzeResponse
+                        {
+                            OtherErrorMessage = $"Error thrown by the underlying API from Microsoft:",
+                            OtherErrorContent = parsedJson.ToString(Formatting.Indented)
+                        };
+                    }
+                }
+            }
+            else
+            {
+                using (var analyzeStream = new MemoryStream())
+                using (var areaOfInterestStream = new MemoryStream())
+                using (var readStream = new MemoryStream())
+                using (var ocrStream = new MemoryStream())
+                using (var outputStream = new MemoryStream())
+                {
+                    // Get initial value
+                    await file.CopyToAsync(analyzeStream);
+                    
+                    // Duplicate for parallel access to the streams
+                    analyzeStream.Seek(0, SeekOrigin.Begin);
+                    await analyzeStream.CopyToAsync(areaOfInterestStream);
+                    
+                    analyzeStream.Seek(0, SeekOrigin.Begin);
+                    await analyzeStream.CopyToAsync(readStream);
+
+                    analyzeStream.Seek(0, SeekOrigin.Begin);
+                    await analyzeStream.CopyToAsync(ocrStream);
+
+                    analyzeStream.Seek(0, SeekOrigin.Begin);
+                    await analyzeStream.CopyToAsync(outputStream);
+
+                    // Reset the stream for consumption
+                    analyzeStream.Seek(0, SeekOrigin.Begin);
+                    areaOfInterestStream.Seek(0, SeekOrigin.Begin);
+                    readStream.Seek(0, SeekOrigin.Begin);
+                    ocrStream.Seek(0, SeekOrigin.Begin);
+                    outputStream.Seek(0, SeekOrigin.Begin);
+
+                    var imageAnalysis = ComputerVisionAnalyzeImageByStream(analyzeStream, analysisLanguage);
+                    var areaOfInterest = ComputerVisionGetAreaOfInterestByStream(areaOfInterestStream);
+                    var read = ComputerVisionReadByStream(readStream, readLanguage);
+                    var recognizedPrintedText = ComputerVisionRecognizedPrintedTextByStream(ocrStream, ocrLanguage);
+
+                    // Combine
+                    var task = Task.WhenAll(imageAnalysis, areaOfInterest, read, recognizedPrintedText);
+
+                    try
+                    {
+                        await task;
+                        
+                        // Get image for display
+                        var fileBytes = outputStream.ToArray();
+                        var imageData = $"data:{file.ContentType};base64,{Convert.ToBase64String(fileBytes)}";
+
+                        return new ComputerVisionAnalyzeResponse
+                        {
+                            ImageInfo = new ImageInfo
+                            {
+                                Src = imageData,
+                                Description = imageAnalysis.Result.Description?.Captions?.FirstOrDefault()?.Text.ToSentence(),
+
+                                Width = imageAnalysis.Result.Metadata.Width,
+                                Height = imageAnalysis.Result.Metadata.Height
+                            },
+
+                            AnalyzeVisualFeatureTypes = AnalyzeVisualFeatureTypes,
+                            AnalyzeDetails = AnalyzeDetails,
+
+                            AnalysisResult = imageAnalysis.Result,
+                            AreaOfInterestResult = areaOfInterest.Result,
+
+                            OcrResult = recognizedPrintedText.Result,
+                            ReadResult = read.Result
+                        };
+                    }
+                    catch (ComputerVisionErrorException ex)
+                    {
+                        var exceptionMessage = ex.Response.Content;
+                        var parsedJson = JToken.Parse(exceptionMessage);
+
+                        if (ex.Response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                        {
+                            return new ComputerVisionAnalyzeResponse
+                            {
+                                ApiRequestErrorMessage = $"Bad request thrown by the underlying API from Microsoft:",
+                                ApiRequestErrorContent = parsedJson.ToString(Formatting.Indented)
+                            };
+                        }
+                        else
+                        {
+                            return new ComputerVisionAnalyzeResponse
+                            {
+                                OtherErrorMessage = $"Error thrown by the underlying API from Microsoft:",
+                                OtherErrorContent = parsedJson.ToString(Formatting.Indented)
+                            };
+                        }
+                    }
                 }
             }
         }
 
-        private async Task<ImageAnalysis> ComputerVisionAnalyzeImage(string url, AnalysisLanguage analysisLanguage)
+        private async Task<ImageAnalysis> ComputerVisionAnalyzeImageByUrl(string imageUrl, AnalysisLanguage analysisLanguage)
         {
             var visualFeatures = AnalyzeVisualFeatureTypes;
 
@@ -137,51 +231,57 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
             }
 
             return await _computerVisionClient.AnalyzeImageAsync(
-                url: url,
+                url: imageUrl,
                 visualFeatures: visualFeatures,
                 details: AnalyzeDetails,
                 language: analysisLanguage.ToString()
             );
         }
 
-        private Task<AreaOfInterestResult> ComputerVisionGetAreaOfInterest(string url)
+        private async Task<ImageAnalysis> ComputerVisionAnalyzeImageByStream(Stream imageStream, AnalysisLanguage analysisLanguage)
         {
-            return _computerVisionClient.GetAreaOfInterestAsync(url);
+            var visualFeatures = AnalyzeVisualFeatureTypes;
+
+            // API does not support some visual features if analysis is not in English
+            if (!AnalysisLanguage.en.Equals(analysisLanguage))
+            {
+                visualFeatures = AnalyzeVisualFeatureLimitedTypes;
+            }
+
+            return await _computerVisionClient.AnalyzeImageInStreamAsync(
+                image: imageStream,
+                visualFeatures: visualFeatures,
+                details: AnalyzeDetails,
+                language: analysisLanguage.ToString()
+            );
         }
 
-        private async Task<ComputerVisionApiClient.ReadOperationResult> ComputerVisionReadV3(string url, ComputerVisionApiClient.ReadV3Language readLanguage)
+        private Task<AreaOfInterestResult> ComputerVisionGetAreaOfInterestByUrl(string imageUrl)
         {
-            var requestOperationEndpoint = "/vision/v3.0/read/analyze";
-            var resultOperationEndpoint = "/vision/v3.0/read/analyzeResults/";
+            return _computerVisionClient.GetAreaOfInterestAsync(imageUrl);
+        }
 
-            // Request headers
-            var httpClient = _httpClientFactory.CreateClient();
-            httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
+        private Task<AreaOfInterestResult> ComputerVisionGetAreaOfInterestByStream(Stream imageStream)
+        {
+            return _computerVisionClient.GetAreaOfInterestInStreamAsync(imageStream);
+        }
 
-            // Read request
-            var readRequestUrl = QueryHelpers.AddQueryString(new UriBuilder($"{_endpoint}{requestOperationEndpoint}").ToString(), "language", readLanguage.ToString());
-            var requestContent = new ComputerVisionApiClient.ReadOperationRequest() { Url = url };
-            var content = new StringContent(JsonConvert.SerializeObject(requestContent), Encoding.UTF8, "application/json");
-            
-            var response = await httpClient.PostAsync(readRequestUrl, content);
+        private async Task<ReadOperationResult> ComputerVisionReadByUrl(string imageUrl, ReadLanguage readLanguage)
+        {
+            var readRequestHeaders = await _computerVisionClient.ReadAsync(imageUrl, language: readLanguage.ToString());
+            return await GetReadOperationResultAsync(readRequestHeaders.OperationLocation);
+        }
 
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new Exception($"ComputerVisionReadV3 - Read request failed - Reponse code: {response.StatusCode} - Response message: '{await response.Content.ReadAsStringAsync()}'");
-            }
+        private async Task<ReadOperationResult> ComputerVisionReadByStream(Stream imageStream, ReadLanguage readLanguage)
+        {
+            var readRequestHeaders = await _computerVisionClient.ReadInStreamAsync(imageStream, language: readLanguage.ToString());
+            return await GetReadOperationResultAsync(readRequestHeaders.OperationLocation);
+        }
 
-            // Retrieve the URI where the result will be stored from the Operation-Location header
-            if (!response.Headers.TryGetValues("Operation-Location", out IEnumerable<string> operationLocationValues))
-            {
-                throw new Exception($"ComputerVisionReadV3 - Read request failed - No 'operation-location' provided");
-            }
-            
-            var operationLocation = operationLocationValues.First();
-            var operationId = operationLocation.Substring(operationLocation.Length - _computerVisionOperationIdLength);
-            var readResultBuilder = new UriBuilder($"{_endpoint}{resultOperationEndpoint}{operationId}");
-            var readResultUrl = readResultBuilder.ToString();
-            
-            var result = await GetReadOperationResultAsync(readResultUrl, httpClient);
+        private async Task<ReadOperationResult> GetReadOperationResultAsync(string operationLocation)
+        {
+            var operationId = new Guid(operationLocation.Substring(operationLocation.Length - _computerVisionOperationIdLength));
+            var result = await _computerVisionClient.GetReadResultAsync(operationId);
 
             // Wait for the operation to complete
             int i = 1;
@@ -189,37 +289,27 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
             var maxWaitTimeInMs = 30000;
             int maxTries = maxWaitTimeInMs / waitDurationInMs;
 
-            while ((result.Status == ComputerVisionApiClient.ReadOperationStatus.Running || result.Status == ComputerVisionApiClient.ReadOperationStatus.NotStarted)
+            while ((result.Status == OperationStatusCodes.Running || result.Status == OperationStatusCodes.NotStarted)
                 && i <= maxTries)
             {
-                Console.WriteLine($"ComputerVisionReadV3 - Server status: {0}, try {1}, waiting {2} milliseconds...", result.Status, i, waitDurationInMs);
+                Console.WriteLine($"Computer Vision Read - Server status: {0}, try {1}, waiting {2} milliseconds...", result.Status, i, waitDurationInMs);
                 await Task.Delay(waitDurationInMs);
 
-                result = await GetReadOperationResultAsync(readResultUrl, httpClient);
+                result = await _computerVisionClient.GetReadResultAsync(operationId);
                 i++;
             }
 
             return result;
         }
-
-        private async Task<ComputerVisionApiClient.ReadOperationResult> GetReadOperationResultAsync(string url, HttpClient httpClient)
-        {
-            var response = await httpClient.GetAsync(url);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new Exception($"ComputerVisionReadV3 - Read request failed - Reponse code: {response.StatusCode} - Response message: '{await response.Content.ReadAsStringAsync()}'");
-            }
-
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<ComputerVisionApiClient.ReadOperationResult>(responseContent);
-
-            return result;
-        }
     
-        private async Task<OcrResult> ComputerVisionRecognizedPrintedText(string url, OcrLanguages ocrLanguage)
+        private async Task<OcrResult> ComputerVisionRecognizedPrintedTextByUrl(string imageUrl, OcrLanguages ocrLanguage)
         {
-            return await _computerVisionClient.RecognizePrintedTextAsync(true, url, ocrLanguage);
+            return await _computerVisionClient.RecognizePrintedTextAsync(true, imageUrl, ocrLanguage);
+        }
+
+        private async Task<OcrResult> ComputerVisionRecognizedPrintedTextByStream(Stream imageStream, OcrLanguages ocrLanguage)
+        {
+            return await _computerVisionClient.RecognizePrintedTextInStreamAsync(true, imageStream, ocrLanguage);
         }
     }
 }

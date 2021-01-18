@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
-using Orneholm.CognitiveWorkbench.Web.Models.ComputerVision.ApiClient;
 
 namespace Orneholm.CognitiveWorkbench.Web.Models.ComputerVision
 {
@@ -10,8 +10,9 @@ namespace Orneholm.CognitiveWorkbench.Web.Models.ComputerVision
         public string ComputerVisionEndpoint { get; set; } = string.Empty;
 
         public string ImageUrl { get; set; } = string.Empty;
+        public IFormFile File { get; set; }
         public AnalysisLanguage ImageAnalysisLanguage { get; set; } = AnalysisLanguage.en;
-        public ReadV3Language ImageReadV3Language { get; set; } = ReadV3Language.en;
+        public ReadLanguage ImageReadLanguage { get; set; } = ReadLanguage.en;
         public OcrLanguages ImageOcrLanguage { get; set; } = OcrLanguages.Unk;
     }
 
@@ -27,5 +28,23 @@ namespace Orneholm.CognitiveWorkbench.Web.Models.ComputerVision
         pt,
         [Display(Name = "Simplified Chinese")]
         zh
+    }
+
+    public enum ReadLanguage
+    {
+        [Display(Name = "English")]
+        en,
+        [Display(Name = "Spanish")]
+        es,
+        [Display(Name = "French")]
+        fr,
+        [Display(Name = "German")]
+        de,
+        [Display(Name = "Italian")]
+        it,
+        [Display(Name = "Dutch")]
+        nl,
+        [Display(Name = "Portuguese")]
+        pt
     }
 }

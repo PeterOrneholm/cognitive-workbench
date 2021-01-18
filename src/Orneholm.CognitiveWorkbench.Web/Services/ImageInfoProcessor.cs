@@ -17,7 +17,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
 
             return new ImageInfo
             {
-                Url = url,
+                Src = url,
 
                 Width = image.Width,
                 Height = image.Height,

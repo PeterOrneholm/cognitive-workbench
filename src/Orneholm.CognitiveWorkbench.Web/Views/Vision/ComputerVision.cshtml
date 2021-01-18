@@ -1,7 +1,6 @@
 @using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models
 @using Orneholm.CognitiveWorkbench.Web.Extensions
 @using Orneholm.CognitiveWorkbench.Web.Models.ComputerVision
-@using Orneholm.CognitiveWorkbench.Web.Models.ComputerVision.ApiClient
 @model ComputerVisionViewModel
 <main role="main" class="pb-3">
     <div class="container">
@@ -11,7 +10,7 @@
             Identify and analyze content within images. Objects, faces, landmarks, celebrities etc.
         </p>
 
-        <form method="post">
+        <form enctype="multipart/form-data" method="post">
             <div class="card mb-3">
                 <div class="card-header">
                     <ul class="nav nav-tabs card-header-tabs">
@@ -45,9 +44,24 @@
                                 </ul>
                             </p>
 
-                            <div class="form-group">
-                                <label asp-for="ComputerVisionAnalyzeRequest.ImageUrl">Image URL</label>
-                                <input type="url" class="cwb-input-remember form-control" placeholder="https://example.org/url-to/image.jpg" asp-for="ComputerVisionAnalyzeRequest.ImageUrl" name="ImageUrl" />
+                            <div class="form-row">
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label asp-for="ComputerVisionAnalyzeRequest.ImageUrl">Image URL</label>
+                                        <input type="url" class="cwb-input-remember form-control" placeholder="https://example.org/url-to/image.jpg" asp-for="ComputerVisionAnalyzeRequest.ImageUrl" name="ImageUrl" />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2 d-flex align-items-center justify-content-center">
+                                    or
+                                </div>
+                           
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label asp-for="ComputerVisionAnalyzeRequest.File">File</label>
+                                        <input type="file" accept=".jpg,.jpeg,.png,.gif,.bmp,image/jpeg,image/png,image/gif,image/bmp" class="form-control" asp-for="ComputerVisionAnalyzeRequest.File" name="File" />
+                                    </div>
+                                </div>
                             </div>
 
                             <h3>Analyze</h3>
@@ -65,8 +79,8 @@
                             <div class="form-row">
                                 <div class="col">
                                     <div class="form-group">
-                                        <label asp-for="ComputerVisionAnalyzeRequest.ImageReadV3Language">Image Read Language (Read operation)</label>
-                                        <select asp-for="ComputerVisionAnalyzeRequest.ImageReadV3Language" asp-items="Html.GetEnumSelectList<ReadV3Language>()" class="cwb-input-remember form-control" name="ImageReadV3Language">
+                                        <label asp-for="ComputerVisionAnalyzeRequest.ImageReadLanguage">Image Read Language (Read operation)</label>
+                                        <select asp-for="ComputerVisionAnalyzeRequest.ImageReadLanguage" asp-items="Html.GetEnumSelectList<ReadLanguage>()" required class="cwb-input-remember form-control" name="ImageReadLanguage">
                                         </select>
                                     </div>
                                 </div>
@@ -144,7 +158,7 @@
                 <div class="row">
                     <div class="col-md-7">
                         <div class="card mb-3 cwb-result-image">
-                            <img src="@Model.ComputerVisionAnalyzeResponse.ImageInfo.Url" class="card-img-top" alt="@Model.ComputerVisionAnalyzeResponse.ImageInfo.Description" />
+                            <img src="@Model.ComputerVisionAnalyzeResponse.ImageInfo.Src" class="card-img-top" alt="@Model.ComputerVisionAnalyzeResponse.ImageInfo.Description" />
                             <div class="cwb-image-boxes">
                                 @if (Model.ComputerVisionAnalyzeResponse.AnalysisResult.Brands != null
                                 && Model.ComputerVisionAnalyzeResponse.AnalysisResult.Brands.Count > 0)
@@ -231,7 +245,7 @@
                 <div class="row">
                     <div class="col-md-7">
                         <div class="card mb-3 cwb-result-image">
-                            <img src="@Model.ComputerVisionAnalyzeResponse.ImageInfo.Url" class="card-img-top" alt="@Model.ComputerVisionAnalyzeResponse.ImageInfo.Description" />
+                            <img src="@Model.ComputerVisionAnalyzeResponse.ImageInfo.Src" class="card-img-top" alt="@Model.ComputerVisionAnalyzeResponse.ImageInfo.Description" />
                             <div class="cwb-image-boxes">
                                 <div class="cwb-image-boxes-aoi">
                                     <div class="cwb-image-box"
@@ -273,7 +287,7 @@
             </section>
         }
 
-        @if (Model.IsAnalyzed && Model.ComputerVisionAnalyzeResponse?.ReadV3Result?.AnalyzeResult?.ReadResults != null)
+        @if (Model.IsAnalyzed && Model.ComputerVisionAnalyzeResponse?.ReadResult?.AnalyzeResult?.ReadResults != null)
         {
             <section class="cwb-result-computervision-analyze">
                 <h2 class="mt-5">Read</h2>
@@ -281,10 +295,10 @@
                 <div class="row">
                     <div class="col-md-7">
                         <div class="card mb-3 cwb-result-image">
-                            <img src="@Model.ComputerVisionAnalyzeResponse.ImageInfo.Url" class="card-img-top" alt="@Model.ComputerVisionAnalyzeResponse.ImageInfo.Description" />
+                            <img src="@Model.ComputerVisionAnalyzeResponse.ImageInfo.Src" class="card-img-top" alt="@Model.ComputerVisionAnalyzeResponse.ImageInfo.Description" />
                             <div class="cwb-image-boxes">
-                                <div class="cwb-image-boxes-readv3-lines">
-                                    @foreach (var result in Model.ComputerVisionAnalyzeResponse.ReadV3Result.AnalyzeResult.ReadResults)
+                                <div class="cwb-image-boxes-read-lines">
+                                    @foreach (var result in Model.ComputerVisionAnalyzeResponse.ReadResult.AnalyzeResult.ReadResults)
                                     {
                                         foreach (var line in result.Lines)
                                         {
@@ -305,26 +319,26 @@
                             <div class="card-header">
                                 <ul class="nav nav-tabs card-header-tabs">
                                     <li class="nav-item">
-                                        <a class="nav-link active" data-toggle="list" href="#cwb-result-computervision-readv3-text">Text (Combined)</a>
+                                        <a class="nav-link active" data-toggle="list" href="#cwb-result-computervision-read-text">Text (Combined)</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" data-toggle="list" href="#cwb-result-computervision-readv3-info">Info (Parsed)</a>
+                                        <a class="nav-link" data-toggle="list" href="#cwb-result-computervision-read-info">Info (Parsed)</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" data-toggle="list" href="#cwb-result-computervision-readv3-json">JSON (Raw)</a>
+                                        <a class="nav-link" data-toggle="list" href="#cwb-result-computervision-read-json">JSON (Raw)</a>
                                     </li>
                                 </ul>
                             </div>
                             <div class="card-body">
                                 <div class="tab-content">
-                                    <div class="tab-pane fade show active" id="cwb-result-computervision-readv3-text">
-                                        <partial name="ComputerVision/_CombinedTextResult" model="@Model.ComputerVisionAnalyzeResponse.ReadV3Result.ToCombinedTexts()" />
+                                    <div class="tab-pane fade show active" id="cwb-result-computervision-read-text">
+                                        <partial name="ComputerVision/_CombinedTextResult" model="@Model.ComputerVisionAnalyzeResponse.ReadResult.ToCombinedTexts()" />
                                     </div>
-                                    <div class="tab-pane fade" id="cwb-result-computervision-readv3-info">
-                                        <partial name="ComputerVision/_ReadV3Result" model="@Model.ComputerVisionAnalyzeResponse.ReadV3Result" />
+                                    <div class="tab-pane fade" id="cwb-result-computervision-read-info">
+                                        <partial name="ComputerVision/_ReadResult" model="@Model.ComputerVisionAnalyzeResponse.ReadResult" />
                                     </div>
-                                    <div class="tab-pane fade" id="cwb-result-computervision-readv3-json">
-                                        <partial name="_Json" model="@Model.ComputerVisionAnalyzeResponse.ReadV3Result" />
+                                    <div class="tab-pane fade" id="cwb-result-computervision-read-json">
+                                        <partial name="_Json" model="@Model.ComputerVisionAnalyzeResponse.ReadResult" />
                                     </div>
                                 </div>
                             </div>
@@ -342,7 +356,7 @@
                 <div class="row">
                     <div class="col-md-7">
                         <div class="card mb-3 cwb-result-image">
-                            <img src="@Model.ComputerVisionAnalyzeResponse.ImageInfo.Url" class="card-img-top" alt="@Model.ComputerVisionAnalyzeResponse.ImageInfo.Description" />
+                            <img src="@Model.ComputerVisionAnalyzeResponse.ImageInfo.Src" class="card-img-top" alt="@Model.ComputerVisionAnalyzeResponse.ImageInfo.Description" />
                             <div class="cwb-image-boxes">
                                 <div class="cwb-image-boxes-ocr-regions">
                                     @foreach (var region in Model.ComputerVisionAnalyzeResponse.OcrResult.Regions)

@@ -18,6 +18,8 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly TelemetryClient _telemetryClient;
 
+        private List<string> _allowedFileContentType = new List<string> { "image/jpeg", "image/png", "image/gif", "image/bmp" };
+
         public VisionController(ILogger<VisionController> logger, IHttpClientFactory httpClientFactory, TelemetryClient telemetryClient)
         {
             _logger = logger;
@@ -45,9 +47,9 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
                 errorContent += $"Missing or invalid Computer Vision Endpoint (see 'Azure Settings' tab){Environment.NewLine}";
             }
 
-            if (string.IsNullOrWhiteSpace(request.ImageUrl))
+            if (string.IsNullOrWhiteSpace(request.ImageUrl) && (request.File == null || !_allowedFileContentType.Contains(request.File.ContentType)))
             {
-                errorContent += $"Missing or invalid Image Url";
+                errorContent += $"Missing or invalid ImageUrl / no file provided";
             }
 
             if (!string.IsNullOrWhiteSpace(errorContent))
@@ -63,7 +65,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
             Track("Vision_ComputerVision");
 
             var imageAnalyzer = new ImageComputerVisionAnalyzer(request.ComputerVisionSubscriptionKey, request.ComputerVisionEndpoint, _httpClientFactory);
-            var analyzeResult = await imageAnalyzer.Analyze(request.ImageUrl, request.ImageAnalysisLanguage, request.ImageOcrLanguage, request.ImageReadV3Language);
+            var analyzeResult = await imageAnalyzer.Analyze(request.ImageUrl, request.File, request.ImageAnalysisLanguage, request.ImageOcrLanguage, request.ImageReadLanguage);
 
             return View(ComputerVisionViewModel.Analyzed(request, analyzeResult));
         }
