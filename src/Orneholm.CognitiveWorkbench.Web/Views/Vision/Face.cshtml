@@ -9,7 +9,7 @@
             Detect faces within images. Face landmarks, emotion, etc.
         </p>
 
-        <form method="post">
+        <form enctype="multipart/form-data" method="post">
             <div class="card mb-3">
                 <div class="card-header">
                     <ul class="nav nav-tabs card-header-tabs">
@@ -50,9 +50,24 @@
                                 </ul>
                             </p>
 
-                            <div class="form-group">
-                                <label asp-for=FaceAnalyzeRequest.ImageUrl>Image URL</label>
-                                <input type="url" required class="cwb-input-remember form-control" placeholder="https://example.org/url-to/image.jpg" asp-for="FaceAnalyzeRequest.ImageUrl" name="ImageUrl" />
+                            <div class="form-row">
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label asp-for="FaceAnalyzeRequest.ImageUrl">Image URL</label>
+                                        <input type="url" class="cwb-input-remember form-control" placeholder="https://example.org/url-to/image.jpg" asp-for="FaceAnalyzeRequest.ImageUrl" name="ImageUrl" />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2 d-flex align-items-center justify-content-center">
+                                    or
+                                </div>
+                           
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label asp-for="FaceAnalyzeRequest.File">File</label>
+                                        <input type="file" accept=".jpg,.jpeg,.png,.gif,.bmp,image/jpeg,image/png,image/gif,image/bmp" class="form-control" asp-for="FaceAnalyzeRequest.File" name="File" />
+                                    </div>
+                                </div>
                             </div>
 
                             <h3>Analyze</h3>

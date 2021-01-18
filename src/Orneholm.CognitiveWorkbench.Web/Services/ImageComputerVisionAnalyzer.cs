@@ -61,7 +61,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<ComputerVisionAnalyzeResponse> Analyze(string imageUrl, IFormFile file,
+        public async Task<ComputerVisionAnalyzeResponse> AnalyzeAsync(string imageUrl, IFormFile file,
             AnalysisLanguage analysisLanguage, OcrLanguages ocrLanguage, ReadLanguage readLanguage)
         {
             // Setup
@@ -70,10 +70,10 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
             // Computer vision
             if (!string.IsNullOrWhiteSpace(imageUrl))
             {
-                var imageAnalysis = ComputerVisionAnalyzeImageByUrl(imageUrl, analysisLanguage);
-                var areaOfInterest = ComputerVisionGetAreaOfInterestByUrl(imageUrl);
-                var read = ComputerVisionReadByUrl(imageUrl, readLanguage);
-                var recognizedPrintedText = ComputerVisionRecognizedPrintedTextByUrl(imageUrl, ocrLanguage);
+                var imageAnalysis = ComputerVisionAnalyzeImageByUrlAsync(imageUrl, analysisLanguage);
+                var areaOfInterest = ComputerVisionGetAreaOfInterestByUrlAsync(imageUrl);
+                var read = ComputerVisionReadByUrlAsync(imageUrl, readLanguage);
+                var recognizedPrintedText = ComputerVisionRecognizedPrintedTextByUrlAsync(imageUrl, ocrLanguage);
 
                 // Combine
                 var task = Task.WhenAll(imageAnalysis, areaOfInterest, read, recognizedPrintedText);
@@ -157,10 +157,10 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
                     ocrStream.Seek(0, SeekOrigin.Begin);
                     outputStream.Seek(0, SeekOrigin.Begin);
 
-                    var imageAnalysis = ComputerVisionAnalyzeImageByStream(analyzeStream, analysisLanguage);
-                    var areaOfInterest = ComputerVisionGetAreaOfInterestByStream(areaOfInterestStream);
-                    var read = ComputerVisionReadByStream(readStream, readLanguage);
-                    var recognizedPrintedText = ComputerVisionRecognizedPrintedTextByStream(ocrStream, ocrLanguage);
+                    var imageAnalysis = ComputerVisionAnalyzeImageByStreamAsync(analyzeStream, analysisLanguage);
+                    var areaOfInterest = ComputerVisionGetAreaOfInterestByStreamAsync(areaOfInterestStream);
+                    var read = ComputerVisionReadByStreamAsync(readStream, readLanguage);
+                    var recognizedPrintedText = ComputerVisionRecognizedPrintedTextByStreamAsync(ocrStream, ocrLanguage);
 
                     // Combine
                     var task = Task.WhenAll(imageAnalysis, areaOfInterest, read, recognizedPrintedText);
@@ -220,7 +220,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
             }
         }
 
-        private async Task<ImageAnalysis> ComputerVisionAnalyzeImageByUrl(string imageUrl, AnalysisLanguage analysisLanguage)
+        private async Task<ImageAnalysis> ComputerVisionAnalyzeImageByUrlAsync(string imageUrl, AnalysisLanguage analysisLanguage)
         {
             var visualFeatures = AnalyzeVisualFeatureTypes;
 
@@ -238,7 +238,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
             );
         }
 
-        private async Task<ImageAnalysis> ComputerVisionAnalyzeImageByStream(Stream imageStream, AnalysisLanguage analysisLanguage)
+        private async Task<ImageAnalysis> ComputerVisionAnalyzeImageByStreamAsync(Stream imageStream, AnalysisLanguage analysisLanguage)
         {
             var visualFeatures = AnalyzeVisualFeatureTypes;
 
@@ -256,23 +256,23 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
             );
         }
 
-        private Task<AreaOfInterestResult> ComputerVisionGetAreaOfInterestByUrl(string imageUrl)
+        private Task<AreaOfInterestResult> ComputerVisionGetAreaOfInterestByUrlAsync(string imageUrl)
         {
             return _computerVisionClient.GetAreaOfInterestAsync(imageUrl);
         }
 
-        private Task<AreaOfInterestResult> ComputerVisionGetAreaOfInterestByStream(Stream imageStream)
+        private Task<AreaOfInterestResult> ComputerVisionGetAreaOfInterestByStreamAsync(Stream imageStream)
         {
             return _computerVisionClient.GetAreaOfInterestInStreamAsync(imageStream);
         }
 
-        private async Task<ReadOperationResult> ComputerVisionReadByUrl(string imageUrl, ReadLanguage readLanguage)
+        private async Task<ReadOperationResult> ComputerVisionReadByUrlAsync(string imageUrl, ReadLanguage readLanguage)
         {
             var readRequestHeaders = await _computerVisionClient.ReadAsync(imageUrl, language: readLanguage.ToString());
             return await GetReadOperationResultAsync(readRequestHeaders.OperationLocation);
         }
 
-        private async Task<ReadOperationResult> ComputerVisionReadByStream(Stream imageStream, ReadLanguage readLanguage)
+        private async Task<ReadOperationResult> ComputerVisionReadByStreamAsync(Stream imageStream, ReadLanguage readLanguage)
         {
             var readRequestHeaders = await _computerVisionClient.ReadInStreamAsync(imageStream, language: readLanguage.ToString());
             return await GetReadOperationResultAsync(readRequestHeaders.OperationLocation);
@@ -302,12 +302,12 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
             return result;
         }
     
-        private async Task<OcrResult> ComputerVisionRecognizedPrintedTextByUrl(string imageUrl, OcrLanguages ocrLanguage)
+        private async Task<OcrResult> ComputerVisionRecognizedPrintedTextByUrlAsync(string imageUrl, OcrLanguages ocrLanguage)
         {
             return await _computerVisionClient.RecognizePrintedTextAsync(true, imageUrl, ocrLanguage);
         }
 
-        private async Task<OcrResult> ComputerVisionRecognizedPrintedTextByStream(Stream imageStream, OcrLanguages ocrLanguage)
+        private async Task<OcrResult> ComputerVisionRecognizedPrintedTextByStreamAsync(Stream imageStream, OcrLanguages ocrLanguage)
         {
             return await _computerVisionClient.RecognizePrintedTextInStreamAsync(true, imageStream, ocrLanguage);
         }
