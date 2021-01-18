@@ -34,19 +34,30 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
         [HttpPost("/vision/computer-vision")]
         public async Task<ActionResult<ComputerVisionViewModel>> ComputerVision([FromForm]ComputerVisionAnalyzeRequest request)
         {
+            var errorContent = "";
             if (string.IsNullOrWhiteSpace(request.ComputerVisionSubscriptionKey))
             {
-                throw new ArgumentException("Missing or invalid ComputerVisionSubscriptionKey", nameof(request.ComputerVisionSubscriptionKey));
+                errorContent += $"Missing or invalid ComputerVisionSubscriptionKey{Environment.NewLine}";
             }
 
             if (string.IsNullOrWhiteSpace(request.ComputerVisionEndpoint))
             {
-                throw new ArgumentException("Missing or invalid ComputerVisionEndpoint", nameof(request.ComputerVisionEndpoint));
+                errorContent += $"Missing or invalid ComputerVisionEndpoint{Environment.NewLine}";
             }
 
             if (string.IsNullOrWhiteSpace(request.ImageUrl))
             {
-                throw new ArgumentException("Missing or invalid ImageUrl", nameof(request.ImageUrl));
+                errorContent += $"Missing or invalid ImageUrl";
+            }
+
+            if (!string.IsNullOrWhiteSpace(errorContent))
+            {
+                return View(ComputerVisionViewModel.Analyzed(request, 
+                    new ComputerVisionAnalyzeResponse
+                    {
+                        OtherErrorMessage = "Request not processed due to the following error(s):",
+                        OtherErrorContent = errorContent
+                    }));
             }
 
             Track("Vision_ComputerVision");
@@ -66,29 +77,40 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
         [HttpPost("/vision/custom-vision")]
         public async Task<ActionResult<CustomVisionViewModel>> CustomVision([FromForm]CustomVisionRequest request)
         {
+            var errorContent = "";
             if (string.IsNullOrWhiteSpace(request.CustomVisionPredictionKey))
             {
-                throw new ArgumentException("Missing or invalid CustomVisionPredictionKey", nameof(request.CustomVisionPredictionKey));
+                errorContent += $"Missing or invalid CustomVisionPredictionKey{Environment.NewLine}";
             }
 
             if (string.IsNullOrWhiteSpace(request.CustomVisionEndpoint))
             {
-                throw new ArgumentException("Missing or invalid CustomVisionEndpoint", nameof(request.CustomVisionEndpoint));
+                errorContent += $"Missing or invalid CustomVisionEndpoint{Environment.NewLine}";
             }
 
             if (string.IsNullOrWhiteSpace(request.ImageUrl))
             {
-                throw new ArgumentException("Missing or invalid ImageUrl", nameof(request.ImageUrl));
+                errorContent += $"Missing or invalid ImageUrl{Environment.NewLine}";
             }
 
             if (request.ProjectId == null || Guid.Empty.Equals(request.ProjectId))
             {
-                throw new ArgumentException("Missing or invalid ProjectId", nameof(request.ProjectId));
+                errorContent += $"Missing or invalid ProjectId{Environment.NewLine}";
             }
 
             if (string.IsNullOrWhiteSpace(request.IterationPublishedName))
             {
-                throw new ArgumentException("Missing or invalid IterationPublishedName", nameof(request.IterationPublishedName));
+                errorContent += $"Missing or invalid IterationPublishedName{Environment.NewLine}";
+            }
+
+            if (!string.IsNullOrWhiteSpace(errorContent))
+            {
+                return View(CustomVisionViewModel.Analyzed(request, 
+                    new CustomVisionResponse
+                    {
+                        OtherErrorMessage = "Request not processed due to the following error(s):",
+                        OtherErrorContent = errorContent
+                    }));
             }
 
             Track("Vision_CustomVision");
@@ -108,24 +130,35 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
         [HttpPost("/vision/face")]
         public async Task<ActionResult<FaceViewModel>> Face([FromForm]FaceAnalyzeRequest request)
         {
+            var errorContent = "";
             if (string.IsNullOrWhiteSpace(request.FaceSubscriptionKey))
             {
-                throw new ArgumentException("Missing or invalid FaceSubscriptionKey", nameof(request.FaceSubscriptionKey));
+                errorContent += $"Missing or invalid FaceSubscriptionKey{Environment.NewLine}";
             }
 
             if (string.IsNullOrWhiteSpace(request.FaceEndpoint))
             {
-                throw new ArgumentException("Missing or invalid FaceEndpoint", nameof(request.FaceEndpoint));
+                errorContent += $"Missing or invalid FaceEndpoint{Environment.NewLine}";
             }
 
             if (string.IsNullOrWhiteSpace(request.ImageUrl))
             {
-                throw new ArgumentException("Missing or invalid ImageUrl", nameof(request.ImageUrl));
+                errorContent += $"Missing or invalid ImageUrl{Environment.NewLine}";
             }
 
             if (request.EnableIdentification && string.IsNullOrWhiteSpace(request.IdentificationGroupId))
             {
-                throw new ArgumentException("Missing or invalid IdentificationGroupId", nameof(request.IdentificationGroupId));
+                errorContent += $"Missing or invalid IdentificationGroupId{Environment.NewLine}";
+            }
+
+            if (!string.IsNullOrWhiteSpace(errorContent))
+            {
+                return View(FaceViewModel.Analyzed(request, 
+                    new FaceAnalyzeResponse
+                    {
+                        OtherErrorMessage = "Request not processed due to the following error(s):",
+                        OtherErrorContent = errorContent
+                    }));
             }
 
             Track("Vision_Face");
