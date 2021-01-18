@@ -6,13 +6,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
+using ApiKeyServiceClientCredentials = Microsoft.Azure.CognitiveServices.Vision.ComputerVision.ApiKeyServiceClientCredentials;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
-using ComputerVisionApiClient = Orneholm.CognitiveWorkbench.Web.Models.ComputerVision.ApiClient;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Orneholm.CognitiveWorkbench.Web.Extensions;
+using ComputerVisionApiClient = Orneholm.CognitiveWorkbench.Web.Models.ComputerVision.ApiClient;
 using Orneholm.CognitiveWorkbench.Web.Models.ComputerVision;
 using Orneholm.CognitiveWorkbench.Web.Models.Generic;
-using ApiKeyServiceClientCredentials = Microsoft.Azure.CognitiveServices.Vision.ComputerVision.ApiKeyServiceClientCredentials;
 
 namespace Orneholm.CognitiveWorkbench.Web.Services
 {
@@ -74,28 +75,55 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
             var recognizedPrintedText = ComputerVisionRecognizedPrintedText(url, ocrLanguage);
 
             // Combine
-            await Task.WhenAll(imageAnalysis, areaOfInterest, readV3, recognizedPrintedText);
+            var task = Task.WhenAll(imageAnalysis, areaOfInterest, readV3, recognizedPrintedText);
 
-            return new ComputerVisionAnalyzeResponse
+            try
             {
-                ImageInfo = new ImageInfo
+                await task;
+
+                return new ComputerVisionAnalyzeResponse
                 {
-                    Url = url,
-                    Description = imageAnalysis.Result.Description?.Captions?.FirstOrDefault()?.Text.ToSentence(),
+                    ImageInfo = new ImageInfo
+                    {
+                        Url = url,
+                        Description = imageAnalysis.Result.Description?.Captions?.FirstOrDefault()?.Text.ToSentence(),
 
-                    Width = imageAnalysis.Result.Metadata.Width,
-                    Height = imageAnalysis.Result.Metadata.Height
-                },
+                        Width = imageAnalysis.Result.Metadata.Width,
+                        Height = imageAnalysis.Result.Metadata.Height
+                    },
 
-                AnalyzeVisualFeatureTypes = AnalyzeVisualFeatureTypes,
-                AnalyzeDetails = AnalyzeDetails,
+                    AnalyzeVisualFeatureTypes = AnalyzeVisualFeatureTypes,
+                    AnalyzeDetails = AnalyzeDetails,
 
-                AnalysisResult = imageAnalysis.Result,
-                AreaOfInterestResult = areaOfInterest.Result,
+                    AnalysisResult = imageAnalysis.Result,
+                    AreaOfInterestResult = areaOfInterest.Result,
 
-                OcrResult = recognizedPrintedText.Result,
-                ReadV3Result = readV3.Result
-            };
+                    OcrResult = recognizedPrintedText.Result,
+                    ReadV3Result = readV3.Result
+                };
+            }
+            catch (ComputerVisionErrorException ex)
+            {
+                var exceptionMessage = ex.Response.Content;
+                var parsedJson = JToken.Parse(exceptionMessage);
+
+                if (ex.Response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    return new ComputerVisionAnalyzeResponse
+                    {
+                        ApiRequestErrorMessage = $"Bad request thrown by the underlying API from Microsoft:",
+                        ApiRequestErrorContent = parsedJson.ToString(Formatting.Indented)
+                    };
+                }
+                else
+                {
+                    return new ComputerVisionAnalyzeResponse
+                    {
+                        OtherErrorMessage = $"Error thrown by the underlying API from Microsoft:",
+                        OtherErrorContent = parsedJson.ToString(Formatting.Indented)
+                    };
+                }
+            }
         }
 
         private async Task<ImageAnalysis> ComputerVisionAnalyzeImage(string url, AnalysisLanguage analysisLanguage)

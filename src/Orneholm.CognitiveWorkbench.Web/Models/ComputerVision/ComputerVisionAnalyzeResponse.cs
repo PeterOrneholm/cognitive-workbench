@@ -19,5 +19,10 @@ namespace Orneholm.CognitiveWorkbench.Web.Models.ComputerVision
         public OcrResult OcrResult { get; set; } = new OcrResult();
         
         public List<DetectedFace> FaceResult { get; set; } = new List<DetectedFace>();
+
+        public string ApiRequestErrorMessage { get; set; }
+        public string ApiRequestErrorContent { get; set; }
+        public string OtherErrorMessage { get; set; }
+        public string OtherErrorContent { get; set; }
     }
 }

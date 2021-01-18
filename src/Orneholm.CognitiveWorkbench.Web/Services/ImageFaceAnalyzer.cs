@@ -4,9 +4,11 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Azure.CognitiveServices.Vision.Face;
+using ApiKeyServiceClientCredentials = Microsoft.Azure.CognitiveServices.Vision.Face.ApiKeyServiceClientCredentials;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Orneholm.CognitiveWorkbench.Web.Models.Face;
-using ApiKeyServiceClientCredentials = Microsoft.Azure.CognitiveServices.Vision.ComputerVision.ApiKeyServiceClientCredentials;
 
 namespace Orneholm.CognitiveWorkbench.Web.Services
 {
@@ -49,13 +51,38 @@ namespace Orneholm.CognitiveWorkbench.Web.Services
             var imageInfo = ImageInfoProcessor.GetImageInfo(url, _httpClientFactory);
 
             // Combine
-            await Task.WhenAll(face, imageInfo);
-
-            return new FaceAnalyzeResponse
+            var task = Task.WhenAll(face, imageInfo);
+            try
             {
-                ImageInfo = imageInfo.Result,
-                FaceResult = face.Result
-            };
+                await task;
+                return new FaceAnalyzeResponse
+                {
+                    ImageInfo = imageInfo.Result,
+                    FaceResult = face.Result
+                };
+            }
+            catch (APIErrorException ex)
+            {
+                var exceptionMessage = ex.Response.Content;
+                var parsedJson = JToken.Parse(exceptionMessage);
+
+                if (ex.Response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    return new FaceAnalyzeResponse
+                    {
+                        ApiRequestErrorMessage = $"Bad request thrown by the underlying API from Microsoft:",
+                        ApiRequestErrorContent = parsedJson.ToString(Formatting.Indented)
+                    };
+                }
+                else
+                {
+                    return new FaceAnalyzeResponse
+                    {
+                        OtherErrorMessage = $"Error thrown by the underlying API from Microsoft:",
+                        OtherErrorContent = parsedJson.ToString(Formatting.Indented)
+                    };
+                }
+            }
         }
 
         private async Task<List<FaceAnalyzeItem>> FaceProcess(string url, FaceDetectionModel detectionModel, bool enableIdentification, FaceRecognitionModel recognitionModel, FaceIdentificationGroupType identificationGroupType, string identificationGroupId)

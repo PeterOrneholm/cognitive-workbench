@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Http.Connections;
-
 namespace Orneholm.CognitiveWorkbench.Web.Models.ComputerVision
 {
     public class ComputerVisionViewModel
@@ -9,20 +7,39 @@ namespace Orneholm.CognitiveWorkbench.Web.Models.ComputerVision
             return new ComputerVisionViewModel
             {
                 IsAnalyzed = false,
-
+                
                 ComputerVisionAnalyzeRequest = new ComputerVisionAnalyzeRequest(),
                 ComputerVisionAnalyzeResponse = null
             };
         }
 
-        public static ComputerVisionViewModel Analyzed(ComputerVisionAnalyzeRequest computerVisionAnalyzeRequest, ComputerVisionAnalyzeResponse computerVisionAnalyzeResponse)
+        public static ComputerVisionViewModel Analyzed(ComputerVisionAnalyzeRequest request, ComputerVisionAnalyzeResponse response)
         {
+            if (!string.IsNullOrWhiteSpace(response.ApiRequestErrorMessage)
+                || !string.IsNullOrWhiteSpace(response.ApiRequestErrorContent)
+                || !string.IsNullOrWhiteSpace(response.OtherErrorMessage)
+                || !string.IsNullOrWhiteSpace(response.OtherErrorContent))
+            {
+                return new ComputerVisionViewModel
+                {
+                    IsAnalyzed = false,
+                    
+                    ComputerVisionAnalyzeRequest = request,
+                    ComputerVisionAnalyzeResponse = null,
+                    
+                    ApiRequestErrorMessage = response.ApiRequestErrorMessage,
+                    ApiRequestErrorContent = response.ApiRequestErrorContent,
+                    OtherErrorMessage = response.OtherErrorMessage,
+                    OtherErrorContent = response.OtherErrorContent
+                };
+            }
+
             return new ComputerVisionViewModel
             {
                 IsAnalyzed = true,
 
-                ComputerVisionAnalyzeRequest = computerVisionAnalyzeRequest,
-                ComputerVisionAnalyzeResponse = computerVisionAnalyzeResponse
+                ComputerVisionAnalyzeRequest = request,
+                ComputerVisionAnalyzeResponse = response
             };
         }
 
@@ -30,5 +47,10 @@ namespace Orneholm.CognitiveWorkbench.Web.Models.ComputerVision
 
         public ComputerVisionAnalyzeRequest ComputerVisionAnalyzeRequest { get; internal set; } = new ComputerVisionAnalyzeRequest();
         public ComputerVisionAnalyzeResponse ComputerVisionAnalyzeResponse { get; internal set; }
+
+        public string ApiRequestErrorMessage { get; set; }
+        public string ApiRequestErrorContent { get; set; }
+        public string OtherErrorMessage { get; set; }
+        public string OtherErrorContent { get; set; }
     }
 }
