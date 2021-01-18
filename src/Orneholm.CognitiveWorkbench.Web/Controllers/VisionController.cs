@@ -37,17 +37,17 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
             var errorContent = "";
             if (string.IsNullOrWhiteSpace(request.ComputerVisionSubscriptionKey))
             {
-                errorContent += $"Missing or invalid ComputerVisionSubscriptionKey{Environment.NewLine}";
+                errorContent += $"Missing or invalid Computer Vision Subscription Key (see 'Azure Settings' tab){Environment.NewLine}";
             }
 
             if (string.IsNullOrWhiteSpace(request.ComputerVisionEndpoint))
             {
-                errorContent += $"Missing or invalid ComputerVisionEndpoint{Environment.NewLine}";
+                errorContent += $"Missing or invalid Computer Vision Endpoint (see 'Azure Settings' tab){Environment.NewLine}";
             }
 
             if (string.IsNullOrWhiteSpace(request.ImageUrl))
             {
-                errorContent += $"Missing or invalid ImageUrl";
+                errorContent += $"Missing or invalid Image Url";
             }
 
             if (!string.IsNullOrWhiteSpace(errorContent))
@@ -80,27 +80,27 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
             var errorContent = "";
             if (string.IsNullOrWhiteSpace(request.CustomVisionPredictionKey))
             {
-                errorContent += $"Missing or invalid CustomVisionPredictionKey{Environment.NewLine}";
+                errorContent += $"Missing or invalid Custom Vision Prediction Key (see 'Azure Settings' tab){Environment.NewLine}";
             }
 
             if (string.IsNullOrWhiteSpace(request.CustomVisionEndpoint))
             {
-                errorContent += $"Missing or invalid CustomVisionEndpoint{Environment.NewLine}";
+                errorContent += $"Missing or invalid Custom Vision Prediction Endpoint (see 'Azure Settings' tab){Environment.NewLine}";
             }
 
             if (string.IsNullOrWhiteSpace(request.ImageUrl))
             {
-                errorContent += $"Missing or invalid ImageUrl{Environment.NewLine}";
+                errorContent += $"Missing or invalid Image Url{Environment.NewLine}";
             }
 
             if (request.ProjectId == null || Guid.Empty.Equals(request.ProjectId))
             {
-                errorContent += $"Missing or invalid ProjectId{Environment.NewLine}";
+                errorContent += $"Missing or invalid Project Id{Environment.NewLine}";
             }
 
             if (string.IsNullOrWhiteSpace(request.IterationPublishedName))
             {
-                errorContent += $"Missing or invalid IterationPublishedName{Environment.NewLine}";
+                errorContent += $"Missing or invalid Iteration Published Name{Environment.NewLine}";
             }
 
             if (!string.IsNullOrWhiteSpace(errorContent))
@@ -133,22 +133,22 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
             var errorContent = "";
             if (string.IsNullOrWhiteSpace(request.FaceSubscriptionKey))
             {
-                errorContent += $"Missing or invalid FaceSubscriptionKey{Environment.NewLine}";
+                errorContent += $"Missing or invalid Face Subscription Key (see 'Azure Settings' tab){Environment.NewLine}";
             }
 
             if (string.IsNullOrWhiteSpace(request.FaceEndpoint))
             {
-                errorContent += $"Missing or invalid FaceEndpoint{Environment.NewLine}";
+                errorContent += $"Missing or invalid Face Endpoint (see 'Azure Settings' tab){Environment.NewLine}";
             }
 
             if (string.IsNullOrWhiteSpace(request.ImageUrl))
             {
-                errorContent += $"Missing or invalid ImageUrl{Environment.NewLine}";
+                errorContent += $"Missing or invalid Image Url{Environment.NewLine}";
             }
 
             if (request.EnableIdentification && string.IsNullOrWhiteSpace(request.IdentificationGroupId))
             {
-                errorContent += $"Missing or invalid IdentificationGroupId{Environment.NewLine}";
+                errorContent += $"Missing or invalid Identification Group Id{Environment.NewLine}";
             }
 
             if (!string.IsNullOrWhiteSpace(errorContent))
