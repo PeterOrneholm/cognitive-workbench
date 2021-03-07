@@ -143,7 +143,7 @@
         @if (Model.IsAnalyzed && Model.TextAnalyticsAnalyzeResponse?.Entities != null)
         {
             <section class="cwb-result-computervision-analyze">
-                <h2 class="mt-5">Enteties</h2>
+                <h2 class="mt-5">Entities</h2>
 
                 <div class="row">
                     <div class="col-md-7">
@@ -156,19 +156,19 @@
                             <div class="card-header">
                                 <ul class="nav nav-tabs card-header-tabs">
                                     <li class="nav-item">
-                                        <a class="nav-link active" data-toggle="list" href="#cwb-result-textanalytics-enteties-info">Info (Parsed)</a>
+                                        <a class="nav-link active" data-toggle="list" href="#cwb-result-textanalytics-entities-info">Info (Parsed)</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" data-toggle="list" href="#cwb-result-textanalytics-enteties-json">JSON (Raw)</a>
+                                        <a class="nav-link" data-toggle="list" href="#cwb-result-textanalytics-entities-json">JSON (Raw)</a>
                                     </li>
                                 </ul>
                             </div>
                             <div class="card-body">
                                 <div class="tab-content">
-                                    <div class="tab-pane fade show active" id="cwb-result-textanalytics-enteties-info">
+                                    <div class="tab-pane fade show active" id="cwb-result-textanalytics-entities-info">
                                         <partial name="TextAnalytics/_EntitiesResult" model="@Model.TextAnalyticsAnalyzeResponse.Entities" />
                                     </div>
-                                    <div class="tab-pane fade" id="cwb-result-textanalytics-enteties-json">
+                                    <div class="tab-pane fade" id="cwb-result-textanalytics-entities-json">
                                         <partial name="_Json" model="@Model.TextAnalyticsAnalyzeResponse.Entities" />
                                     </div>
                                 </div>
