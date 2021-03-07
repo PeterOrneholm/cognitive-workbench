@@ -32,7 +32,20 @@ stages:
         command: login
         containerRegistry: dockerHubDockerRegistryServiceConnection
     - task: Docker@2
+      displayName: Build
+      condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
+      inputs:
+        command: build
+        buildContext: ''
+        repository: peterorneholm/orneholmcognitiveworkbenchweb
+        Dockerfile: src/Orneholm.CognitiveWorkbench.Web/Dockerfile
+        tags: |
+          latest
+          $(dockerImageTag)
+
+    - task: Docker@2
       displayName: Build and Push
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
       inputs:
         command: buildAndPush
         buildContext: ''
