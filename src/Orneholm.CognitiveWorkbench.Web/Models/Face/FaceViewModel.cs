@@ -13,14 +13,33 @@ namespace Orneholm.CognitiveWorkbench.Web.Models.Face
             };
         }
 
-        public static FaceViewModel Analyzed(FaceAnalyzeRequest faceAnalyzeRequest, FaceAnalyzeResponse faceAnalyzeResponse)
+        public static FaceViewModel Analyzed(FaceAnalyzeRequest request, FaceAnalyzeResponse response)
         {
+            if (!string.IsNullOrWhiteSpace(response.ApiRequestErrorMessage)
+                || !string.IsNullOrWhiteSpace(response.ApiRequestErrorContent)
+                || !string.IsNullOrWhiteSpace(response.OtherErrorMessage)
+                || !string.IsNullOrWhiteSpace(response.OtherErrorContent))
+            {
+                return new FaceViewModel
+                {
+                    IsAnalyzed = false,
+                    
+                    FaceAnalyzeRequest = request,
+                    FaceAnalyzeResponse = null,
+                    
+                    ApiRequestErrorMessage = response.ApiRequestErrorMessage,
+                    ApiRequestErrorContent = response.ApiRequestErrorContent,
+                    OtherErrorMessage = response.OtherErrorMessage,
+                    OtherErrorContent = response.OtherErrorContent
+                };
+            }
+
             return new FaceViewModel
             {
                 IsAnalyzed = true,
 
-                FaceAnalyzeRequest = faceAnalyzeRequest,
-                FaceAnalyzeResponse = faceAnalyzeResponse
+                FaceAnalyzeRequest = request,
+                FaceAnalyzeResponse = response
             };
         }
 
@@ -28,5 +47,10 @@ namespace Orneholm.CognitiveWorkbench.Web.Models.Face
 
         public FaceAnalyzeRequest FaceAnalyzeRequest { get; internal set; } = new FaceAnalyzeRequest();
         public FaceAnalyzeResponse FaceAnalyzeResponse { get; internal set; }
+
+        public string ApiRequestErrorMessage { get; set; }
+        public string ApiRequestErrorContent { get; set; }
+        public string OtherErrorMessage { get; set; }
+        public string OtherErrorContent { get; set; }
     }
 }

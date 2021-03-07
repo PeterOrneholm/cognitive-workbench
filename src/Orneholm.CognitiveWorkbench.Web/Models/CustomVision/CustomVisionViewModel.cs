@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Http.Connections;
-
 namespace Orneholm.CognitiveWorkbench.Web.Models.CustomVision
 {
     public class CustomVisionViewModel
@@ -15,14 +13,33 @@ namespace Orneholm.CognitiveWorkbench.Web.Models.CustomVision
             };
         }
 
-        public static CustomVisionViewModel Analyzed(CustomVisionRequest customVisionAnalyzeRequest, CustomVisionResponse customVisionAnalyzeResponse)
+        public static CustomVisionViewModel Analyzed(CustomVisionRequest request, CustomVisionResponse response)
         {
+            if (!string.IsNullOrWhiteSpace(response.ApiRequestErrorMessage)
+                || !string.IsNullOrWhiteSpace(response.ApiRequestErrorContent)
+                || !string.IsNullOrWhiteSpace(response.OtherErrorMessage)
+                || !string.IsNullOrWhiteSpace(response.OtherErrorContent))
+            {
+                return new CustomVisionViewModel
+                {
+                    IsAnalyzed = false,
+                    
+                    CustomVisionAnalyzeRequest = request,
+                    CustomVisionAnalyzeResponse = null,
+                    
+                    ApiRequestErrorMessage = response.ApiRequestErrorMessage,
+                    ApiRequestErrorContent = response.ApiRequestErrorContent,
+                    OtherErrorMessage = response.OtherErrorMessage,
+                    OtherErrorContent = response.OtherErrorContent
+                };
+            }
+
             return new CustomVisionViewModel
             {
                 IsAnalyzed = true,
 
-                CustomVisionAnalyzeRequest = customVisionAnalyzeRequest,
-                CustomVisionAnalyzeResponse = customVisionAnalyzeResponse
+                CustomVisionAnalyzeRequest = request,
+                CustomVisionAnalyzeResponse = response
             };
         }
 
@@ -30,5 +47,10 @@ namespace Orneholm.CognitiveWorkbench.Web.Models.CustomVision
 
         public CustomVisionRequest CustomVisionAnalyzeRequest { get; internal set; } = new CustomVisionRequest();
         public CustomVisionResponse CustomVisionAnalyzeResponse { get; internal set; }
+
+        public string ApiRequestErrorMessage { get; set; }
+        public string ApiRequestErrorContent { get; set; }
+        public string OtherErrorMessage { get; set; }
+        public string OtherErrorContent { get; set; }
     }
 }

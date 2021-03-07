@@ -94,6 +94,30 @@
                             </div>
 
                             <button type="submit" class="btn btn-primary">Analyze</button>
+
+                            @if(!string.IsNullOrWhiteSpace(Model.ApiRequestErrorMessage) || !string.IsNullOrWhiteSpace(Model.ApiRequestErrorContent))
+                            {
+                                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                    <h4 class="alert-heading">Warning</h4>
+                                    @Model.ApiRequestErrorMessage
+                                    <pre>@Model.ApiRequestErrorContent</pre>
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            }
+
+                            @if(!string.IsNullOrWhiteSpace(Model.OtherErrorMessage) || !string.IsNullOrWhiteSpace(Model.OtherErrorContent))
+                            {
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <h4 class="alert-heading">Error</h4>
+                                    @Model.OtherErrorMessage
+                                    <pre>@Model.OtherErrorContent</pre>
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            }
                         </div>
                         <div class="tab-pane fade" id="cwb-form-face-settings">
                             <p>

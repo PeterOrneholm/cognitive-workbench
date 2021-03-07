@@ -47,7 +47,7 @@
 
                             <div class="form-group">
                                 <label asp-for="ComputerVisionAnalyzeRequest.ImageUrl">Image URL</label>
-                                <input type="url" required class="cwb-input-remember form-control" placeholder="https://example.org/url-to/image.jpg" asp-for="ComputerVisionAnalyzeRequest.ImageUrl" name="ImageUrl" />
+                                <input type="url" class="cwb-input-remember form-control" placeholder="https://example.org/url-to/image.jpg" asp-for="ComputerVisionAnalyzeRequest.ImageUrl" name="ImageUrl" />
                             </div>
 
                             <h3>Analyze</h3>
@@ -55,7 +55,7 @@
                                 <div class="col">
                                     <div class="form-group">
                                         <label asp-for="ComputerVisionAnalyzeRequest.ImageAnalysisLanguage">Image Analysis Language</label>
-                                        <select asp-for="ComputerVisionAnalyzeRequest.ImageAnalysisLanguage" asp-items="Html.GetEnumSelectList<AnalysisLanguage>()" required class="cwb-input-remember form-control" name="ImageAnalysisLanguage">
+                                        <select asp-for="ComputerVisionAnalyzeRequest.ImageAnalysisLanguage" asp-items="Html.GetEnumSelectList<AnalysisLanguage>()" class="cwb-input-remember form-control" name="ImageAnalysisLanguage">
                                         </select>
                                     </div>
                                 </div>
@@ -66,7 +66,7 @@
                                 <div class="col">
                                     <div class="form-group">
                                         <label asp-for="ComputerVisionAnalyzeRequest.ImageReadV3Language">Image Read Language (Read operation)</label>
-                                        <select asp-for="ComputerVisionAnalyzeRequest.ImageReadV3Language" asp-items="Html.GetEnumSelectList<ReadV3Language>()" required class="cwb-input-remember form-control" name="ImageReadV3Language">
+                                        <select asp-for="ComputerVisionAnalyzeRequest.ImageReadV3Language" asp-items="Html.GetEnumSelectList<ReadV3Language>()" class="cwb-input-remember form-control" name="ImageReadV3Language">
                                         </select>
                                     </div>
                                 </div>
@@ -74,13 +74,37 @@
                                 <div class="col">
                                     <div class="form-group">
                                         <label asp-for="ComputerVisionAnalyzeRequest.ImageOcrLanguage">Image OCR Language (OCR operation)</label>
-                                        <select asp-for="ComputerVisionAnalyzeRequest.ImageOcrLanguage" asp-items="Html.GetEnumSelectList<OcrLanguages>()" required class="cwb-input-remember form-control" name="ImageOcrLanguage">
+                                        <select asp-for="ComputerVisionAnalyzeRequest.ImageOcrLanguage" asp-items="Html.GetEnumSelectList<OcrLanguages>()" class="cwb-input-remember form-control" name="ImageOcrLanguage">
                                         </select>
                                     </div>
                                 </div>
                             </div>
 
                             <button type="submit" class="btn btn-primary">Analyze</button>
+
+                            @if(!string.IsNullOrWhiteSpace(Model.ApiRequestErrorMessage) || !string.IsNullOrWhiteSpace(Model.ApiRequestErrorContent))
+                            {
+                                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                    <h4 class="alert-heading">Warning</h4>
+                                    @Model.ApiRequestErrorMessage
+                                    <pre>@Model.ApiRequestErrorContent</pre>
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            }
+
+                            @if(!string.IsNullOrWhiteSpace(Model.OtherErrorMessage) || !string.IsNullOrWhiteSpace(Model.OtherErrorContent))
+                            {
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <h4 class="alert-heading">Error</h4>
+                                    @Model.OtherErrorMessage
+                                    <pre>@Model.OtherErrorContent</pre>
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            }
                         </div>
                         <div class="tab-pane fade" id="cwb-form-computervision-settings">
                             <p>
@@ -97,11 +121,11 @@
                             <div class="form-row">
                                 <div class="form-group col-md-6">
                                     <label asp-for="ComputerVisionAnalyzeRequest.ComputerVisionSubscriptionKey">Computer Vision - Subscription Key</label>
-                                    <input type="password" required class="cwb-input-remember form-control" placeholder="zq8lp6z7cqtew6h4c0bxy0r5cqx3in36" asp-for="ComputerVisionAnalyzeRequest.ComputerVisionSubscriptionKey" name="ComputerVisionSubscriptionKey" />
+                                    <input type="password" class="cwb-input-remember form-control" placeholder="zq8lp6z7cqtew6h4c0bxy0r5cqx3in36" asp-for="ComputerVisionAnalyzeRequest.ComputerVisionSubscriptionKey" name="ComputerVisionSubscriptionKey" />
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label asp-for="ComputerVisionAnalyzeRequest.ComputerVisionEndpoint">Computer Vision - Endpoint</label>
-                                    <input type="url" required class="cwb-input-remember form-control" placeholder="https://[COMPUTERVISION-RESOURCENAME].cognitiveservices.azure.com/" asp-for="ComputerVisionAnalyzeRequest.ComputerVisionEndpoint" name="ComputerVisionEndpoint" />
+                                    <input type="url" class="cwb-input-remember form-control" placeholder="https://[COMPUTERVISION-RESOURCENAME].cognitiveservices.azure.com/" asp-for="ComputerVisionAnalyzeRequest.ComputerVisionEndpoint" name="ComputerVisionEndpoint" />
                                 </div>
                             </div>
                         </div>
@@ -381,7 +405,6 @@
                 </div>
             </section>
         }
-
 
         @section Scripts
         {

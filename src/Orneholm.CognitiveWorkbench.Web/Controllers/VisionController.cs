@@ -34,19 +34,30 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
         [HttpPost("/vision/computer-vision")]
         public async Task<ActionResult<ComputerVisionViewModel>> ComputerVision([FromForm]ComputerVisionAnalyzeRequest request)
         {
+            var errorContent = "";
             if (string.IsNullOrWhiteSpace(request.ComputerVisionSubscriptionKey))
             {
-                throw new ArgumentException("Missing or invalid ComputerVisionSubscriptionKey", nameof(request.ComputerVisionSubscriptionKey));
+                errorContent += $"Missing or invalid Computer Vision Subscription Key (see 'Azure Settings' tab){Environment.NewLine}";
             }
 
             if (string.IsNullOrWhiteSpace(request.ComputerVisionEndpoint))
             {
-                throw new ArgumentException("Missing or invalid ComputerVisionEndpoint", nameof(request.ComputerVisionEndpoint));
+                errorContent += $"Missing or invalid Computer Vision Endpoint (see 'Azure Settings' tab){Environment.NewLine}";
             }
 
             if (string.IsNullOrWhiteSpace(request.ImageUrl))
             {
-                throw new ArgumentException("Missing or invalid ImageUrl", nameof(request.ImageUrl));
+                errorContent += $"Missing or invalid Image Url";
+            }
+
+            if (!string.IsNullOrWhiteSpace(errorContent))
+            {
+                return View(ComputerVisionViewModel.Analyzed(request, 
+                    new ComputerVisionAnalyzeResponse
+                    {
+                        OtherErrorMessage = "Request not processed due to the following error(s):",
+                        OtherErrorContent = errorContent
+                    }));
             }
 
             Track("Vision_ComputerVision");
@@ -66,29 +77,40 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
         [HttpPost("/vision/custom-vision")]
         public async Task<ActionResult<CustomVisionViewModel>> CustomVision([FromForm]CustomVisionRequest request)
         {
+            var errorContent = "";
             if (string.IsNullOrWhiteSpace(request.CustomVisionPredictionKey))
             {
-                throw new ArgumentException("Missing or invalid CustomVisionPredictionKey", nameof(request.CustomVisionPredictionKey));
+                errorContent += $"Missing or invalid Custom Vision Prediction Key (see 'Azure Settings' tab){Environment.NewLine}";
             }
 
             if (string.IsNullOrWhiteSpace(request.CustomVisionEndpoint))
             {
-                throw new ArgumentException("Missing or invalid CustomVisionEndpoint", nameof(request.CustomVisionEndpoint));
+                errorContent += $"Missing or invalid Custom Vision Prediction Endpoint (see 'Azure Settings' tab){Environment.NewLine}";
             }
 
             if (string.IsNullOrWhiteSpace(request.ImageUrl))
             {
-                throw new ArgumentException("Missing or invalid ImageUrl", nameof(request.ImageUrl));
+                errorContent += $"Missing or invalid Image Url{Environment.NewLine}";
             }
 
             if (request.ProjectId == null || Guid.Empty.Equals(request.ProjectId))
             {
-                throw new ArgumentException("Missing or invalid ProjectId", nameof(request.ProjectId));
+                errorContent += $"Missing or invalid Project Id{Environment.NewLine}";
             }
 
             if (string.IsNullOrWhiteSpace(request.IterationPublishedName))
             {
-                throw new ArgumentException("Missing or invalid IterationPublishedName", nameof(request.IterationPublishedName));
+                errorContent += $"Missing or invalid Iteration Published Name{Environment.NewLine}";
+            }
+
+            if (!string.IsNullOrWhiteSpace(errorContent))
+            {
+                return View(CustomVisionViewModel.Analyzed(request, 
+                    new CustomVisionResponse
+                    {
+                        OtherErrorMessage = "Request not processed due to the following error(s):",
+                        OtherErrorContent = errorContent
+                    }));
             }
 
             Track("Vision_CustomVision");
@@ -108,24 +130,35 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
         [HttpPost("/vision/face")]
         public async Task<ActionResult<FaceViewModel>> Face([FromForm]FaceAnalyzeRequest request)
         {
+            var errorContent = "";
             if (string.IsNullOrWhiteSpace(request.FaceSubscriptionKey))
             {
-                throw new ArgumentException("Missing or invalid FaceSubscriptionKey", nameof(request.FaceSubscriptionKey));
+                errorContent += $"Missing or invalid Face Subscription Key (see 'Azure Settings' tab){Environment.NewLine}";
             }
 
             if (string.IsNullOrWhiteSpace(request.FaceEndpoint))
             {
-                throw new ArgumentException("Missing or invalid FaceEndpoint", nameof(request.FaceEndpoint));
+                errorContent += $"Missing or invalid Face Endpoint (see 'Azure Settings' tab){Environment.NewLine}";
             }
 
             if (string.IsNullOrWhiteSpace(request.ImageUrl))
             {
-                throw new ArgumentException("Missing or invalid ImageUrl", nameof(request.ImageUrl));
+                errorContent += $"Missing or invalid Image Url{Environment.NewLine}";
             }
 
             if (request.EnableIdentification && string.IsNullOrWhiteSpace(request.IdentificationGroupId))
             {
-                throw new ArgumentException("Missing or invalid IdentificationGroupId", nameof(request.IdentificationGroupId));
+                errorContent += $"Missing or invalid Identification Group Id{Environment.NewLine}";
+            }
+
+            if (!string.IsNullOrWhiteSpace(errorContent))
+            {
+                return View(FaceViewModel.Analyzed(request, 
+                    new FaceAnalyzeResponse
+                    {
+                        OtherErrorMessage = "Request not processed due to the following error(s):",
+                        OtherErrorContent = errorContent
+                    }));
             }
 
             Track("Vision_Face");
