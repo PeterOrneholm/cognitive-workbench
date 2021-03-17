@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace Orneholm.CognitiveWorkbench.Web.Models.Face
 {
@@ -8,6 +9,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Models.Face
         public string FaceEndpoint { get; set; } = string.Empty;
 
         public string ImageUrl { get; set; } = string.Empty;
+        public IFormFile File { get; set; }
         public FaceDetectionModel DetectionModel { get; set; } = FaceDetectionModel.detection_01;
         public bool EnableIdentification { get; set; } = false;
         public FaceRecognitionModel RecognitionModel { get; set; } = FaceRecognitionModel.recognition_02;

@@ -18,6 +18,8 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly TelemetryClient _telemetryClient;
 
+        private List<string> _allowedFileContentType = new List<string> { "image/jpeg", "image/png", "image/gif", "image/bmp" };
+
         public VisionController(ILogger<VisionController> logger, IHttpClientFactory httpClientFactory, TelemetryClient telemetryClient)
         {
             _logger = logger;
@@ -45,9 +47,9 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
                 errorContent += $"Missing or invalid Computer Vision Endpoint (see 'Azure Settings' tab){Environment.NewLine}";
             }
 
-            if (string.IsNullOrWhiteSpace(request.ImageUrl))
+            if (string.IsNullOrWhiteSpace(request.ImageUrl) && (request.File == null || !_allowedFileContentType.Contains(request.File.ContentType)))
             {
-                errorContent += $"Missing or invalid Image Url";
+                errorContent += $"Missing or invalid ImageUrl / no file provided";
             }
 
             if (!string.IsNullOrWhiteSpace(errorContent))
@@ -63,7 +65,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
             Track("Vision_ComputerVision");
 
             var imageAnalyzer = new ImageComputerVisionAnalyzer(request.ComputerVisionSubscriptionKey, request.ComputerVisionEndpoint, _httpClientFactory);
-            var analyzeResult = await imageAnalyzer.Analyze(request.ImageUrl, request.ImageAnalysisLanguage, request.ImageOcrLanguage, request.ImageReadV3Language);
+            var analyzeResult = await imageAnalyzer.AnalyzeAsync(request.ImageUrl, request.File, request.ImageAnalysisLanguage, request.ImageOcrLanguage, request.ImageReadLanguage);
 
             return View(ComputerVisionViewModel.Analyzed(request, analyzeResult));
         }
@@ -88,9 +90,9 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
                 errorContent += $"Missing or invalid Custom Vision Prediction Endpoint (see 'Azure Settings' tab){Environment.NewLine}";
             }
 
-            if (string.IsNullOrWhiteSpace(request.ImageUrl))
+            if (string.IsNullOrWhiteSpace(request.ImageUrl) && (request.File == null || !_allowedFileContentType.Contains(request.File.ContentType)))
             {
-                errorContent += $"Missing or invalid Image Url{Environment.NewLine}";
+                errorContent += $"Missing or invalid ImageUrl / no file provided{Environment.NewLine}";
             }
 
             if (request.ProjectId == null || Guid.Empty.Equals(request.ProjectId))
@@ -116,7 +118,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
             Track("Vision_CustomVision");
 
             var imageAnalyzer = new ImageCustomVisionAnalyzer(request.CustomVisionPredictionKey, request.CustomVisionEndpoint, _httpClientFactory);
-            var analyzeResult = await imageAnalyzer.Analyze(request.ImageUrl, request.ProjectId, request.IterationPublishedName, request.ProjectType);
+            var analyzeResult = await imageAnalyzer.AnalyzeAsync(request.ImageUrl, request.File, request.ProjectId, request.IterationPublishedName, request.ProjectType);
 
             return View(CustomVisionViewModel.Analyzed(request, analyzeResult));
         }
@@ -141,9 +143,9 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
                 errorContent += $"Missing or invalid Face Endpoint (see 'Azure Settings' tab){Environment.NewLine}";
             }
 
-            if (string.IsNullOrWhiteSpace(request.ImageUrl))
+            if (string.IsNullOrWhiteSpace(request.ImageUrl) && (request.File == null || !_allowedFileContentType.Contains(request.File.ContentType)))
             {
-                errorContent += $"Missing or invalid Image Url{Environment.NewLine}";
+                errorContent += $"Missing or invalid ImageUrl / no file provided{Environment.NewLine}";
             }
 
             if (request.EnableIdentification && string.IsNullOrWhiteSpace(request.IdentificationGroupId))
@@ -164,7 +166,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Controllers
             Track("Vision_Face");
 
             var imageAnalyzer = new ImageFaceAnalyzer(request.FaceSubscriptionKey, request.FaceEndpoint, _httpClientFactory);
-            var analyzeResult = await imageAnalyzer.Analyze(request.ImageUrl, request.DetectionModel, request.EnableIdentification, request.RecognitionModel, request.IdentificationGroupType, request.IdentificationGroupId);
+            var analyzeResult = await imageAnalyzer.AnalyzeAsync(request.ImageUrl, request.File,request.DetectionModel, request.EnableIdentification, request.RecognitionModel, request.IdentificationGroupType, request.IdentificationGroupId);
 
             return View(FaceViewModel.Analyzed(request, analyzeResult));
         }

@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace Orneholm.CognitiveWorkbench.Web.Models.CustomVision
 {
@@ -9,6 +10,7 @@ namespace Orneholm.CognitiveWorkbench.Web.Models.CustomVision
         public string CustomVisionEndpoint { get; set; } = string.Empty;
 
         public string ImageUrl { get; set; } = string.Empty;
+        public IFormFile File { get; set; }
         public Guid ProjectId { get; set; } = Guid.Empty;
         public string IterationPublishedName { get; set; } = string.Empty;
         public CustomVisionProjectType ProjectType { get; set; } = CustomVisionProjectType.Classification;
